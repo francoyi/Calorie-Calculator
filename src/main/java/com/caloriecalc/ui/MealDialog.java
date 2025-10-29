@@ -1,0 +1,101 @@
+
+package com.caloriecalc.ui;
+import com.caloriecalc.model.Meal;
+import com.caloriecalc.model.MealEntry;
+import com.caloriecalc.model.Serving;
+import com.caloriecalc.service.FoodLogService;
+import javax.swing.*; import javax.swing.table.AbstractTableModel;
+import java.awt.*; import java.time.LocalDate; import java.util.ArrayList; import java.util.List;
+public class MealDialog extends JDialog {
+  private final FoodLogService service; private final LocalDate date; private final Meal meal;
+  private final JTextField labelField = new JTextField(20);
+  private final JTextField notesField = new JTextField(30);
+  private final MealTableModel tableModel = new MealTableModel();
+  private final JLabel totalLabel = new JLabel("Total: 0 kcal");
+  public MealDialog(Window owner, FoodLogService service, LocalDate date, Meal existing){
+    super(owner, existing==null?"Add Meal":"Edit Meal", ModalityType.APPLICATION_MODAL);
+    this.service = service; this.date = date; this.meal = existing==null? service.newEmptyMeal(date, "Meal"): existing;
+    setSize(700, 500); setLocationRelativeTo(owner); setLayout(new BorderLayout(8,8));
+    JPanel top = new JPanel(new GridLayout(2,2,8,8));
+    top.add(new JLabel("Meal label:")); labelField.setText(this.meal.getLabel()==null? "Meal": this.meal.getLabel()); top.add(labelField);
+    top.add(new JLabel("Notes:")); notesField.setText(this.meal.getNotes()==null? "": this.meal.getNotes()); top.add(notesField);
+    add(top, BorderLayout.NORTH);
+    JTable table = new JTable(tableModel); table.setRowHeight(24); add(new JScrollPane(table), BorderLayout.CENTER);
+    JPanel bottom = new JPanel(new BorderLayout());
+    JButton addRow = new JButton("Add Row"); JButton removeRow = new JButton("Remove Row");
+    JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT)); left.add(addRow); left.add(removeRow); bottom.add(left, BorderLayout.WEST);
+    JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT)); JButton save = new JButton("Save"); JButton cancel = new JButton("Cancel");
+    right.add(totalLabel); right.add(save); right.add(cancel); bottom.add(right, BorderLayout.EAST);
+    add(bottom, BorderLayout.SOUTH);
+    addRow.addActionListener(e -> tableModel.addEmpty());
+    removeRow.addActionListener(e -> { int row = table.getSelectedRow(); if (row>=0) tableModel.remove(row); });
+    save.addActionListener(e -> onSave()); cancel.addActionListener(e -> dispose());
+    if (existing != null){ for (MealEntry me : existing.getEntries()){ tableModel.addFromEntry(me); } recalcTotal(); }
+  }
+  private void onSave(){
+    meal.setLabel(labelField.getText().trim().isEmpty()? "Meal": labelField.getText().trim());
+    meal.setNotes(notesField.getText().trim());
+    List<MealEntry> entries = new ArrayList<>();
+    for (MealRow r : tableModel.rows){
+      if (r.item==null || r.item.isBlank()) continue;
+      Double kcal = r.kcalManual;
+      if (kcal == null){
+        try {
+          MealEntry tmp = service.resolveEntryFromInput(r.item+" "+r.amount+(r.unit==null?"":r.unit));
+          kcal = tmp.kcalForServing();
+          entries.add(new MealEntry(tmp.name(), r.item+" "+r.amount+(r.unit==null?"":r.unit),
+              new Serving(r.amount, r.unit), kcal, kcal==null?"Manual":"OpenFoodFacts", tmp.fetchedAt(), tmp.nutritionPer100g()));
+          continue;
+        } catch (Exception ex){}
+      }
+      entries.add(new MealEntry(r.item, r.item+" "+r.amount+(r.unit==null?"":r.unit),
+          new Serving(r.amount, r.unit), kcal, "Manual", java.time.ZonedDateTime.now(java.time.ZoneId.of("America/Toronto")), null));
+    }
+    meal.setEntries(entries); service.saveMeal(date, meal); dispose();
+  }
+  private void recalcTotal(){
+    double total = 0.0; for (MealRow r : tableModel.rows){ if (r.kcalManual != null) total += r.kcalManual; }
+    totalLabel.setText(String.format("Total: %.1f kcal", total));
+  }
+  private class MealRow {
+    String item = ""; double amount = 100.0; String unit = "g"; Double kcalManual = null;
+    public String toInput(){ return item+" "+amount+unit; }
+  }
+  private class MealTableModel extends AbstractTableModel {
+    private final String[] cols = {"Item (e.g., banana)", "Amount", "Unit (g/ml)", "kcal (auto or manual)","Fetch"};
+    private final java.util.List<MealRow> rows = new java.util.ArrayList<>();
+    public void addEmpty(){ rows.add(new MealRow()); fireTableRowsInserted(rows.size()-1, rows.size()-1); }
+    public void addFromEntry(MealEntry e){ MealRow r = new MealRow(); r.item=e.name(); r.amount=e.serving()!=null? e.serving().amount():100.0; r.unit=e.serving()!=null? e.serving().unit():"g"; r.kcalManual=e.kcalForServing(); rows.add(r); fireTableRowsInserted(rows.size()-1, rows.size()-1); }
+    public void remove(int row){ rows.remove(row); fireTableRowsDeleted(row,row); }
+    @Override public int getRowCount(){ return rows.size(); }
+    @Override public int getColumnCount(){ return cols.length; }
+    @Override public String getColumnName(int c){ return cols[c]; }
+    @Override public boolean isCellEditable(int r, int c){ return c != 4; }
+    @Override public Object getValueAt(int r, int c){
+      MealRow row = rows.get(r);
+      return switch (c){ case 0 -> row.item; case 1 -> row.amount; case 2 -> row.unit; case 3 -> row.kcalManual==null? "": String.format("%.1f", row.kcalManual); case 4 -> "Fetch"; default -> ""; };
+    }
+    @Override public void setValueAt(Object aValue, int r, int c){
+      MealRow row = rows.get(r);
+      switch (c){
+        case 0 -> row.item = String.valueOf(aValue).trim();
+        case 1 -> { try { row.amount = Double.parseDouble(String.valueOf(aValue)); } catch (Exception ignore){} }
+        case 2 -> { String u = String.valueOf(aValue).trim().toLowerCase(); if (u.equals("g") || u.equals("ml")) row.unit = u; }
+        case 3 -> { String s = String.valueOf(aValue).trim(); if (s.isEmpty()) row.kcalManual = null; else { try { row.kcalManual = Double.parseDouble(s); } catch (Exception ignore){} } }
+      }
+      fireTableCellUpdated(r,c);
+      if ((c==0 || c==1 || c==2) && (row.kcalManual==null) && row.item!=null && !row.item.isBlank()){
+        new Thread(() -> {
+          try {
+            MealEntry tmp = service.resolveEntryFromInput(row.item+" "+row.amount+row.unit);
+            if (tmp.kcalForServing()!=null){
+              row.kcalManual = tmp.kcalForServing();
+              SwingUtilities.invokeLater(() -> { fireTableRowsUpdated(r,r); recalcTotal(); });
+            }
+          } catch (Exception ignored){}
+        }).start();
+      } else { recalcTotal(); }
+    }
+    @Override public Class<?> getColumnClass(int c){ return (c==1)? Double.class : String.class; }
+  }
+}
