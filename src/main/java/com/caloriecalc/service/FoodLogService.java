@@ -10,12 +10,15 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import com.caloriecalc.port.UserSettingsRepository;
 public class FoodLogService {
   private final FoodLogRepository repo;
   private final NutritionDataProvider provider;
+  private final UserSettingsRepository settingsRepo;
   private final ZoneId zone = ZoneId.of("America/Toronto");
-  public FoodLogService(FoodLogRepository repo, NutritionDataProvider provider){
+  public FoodLogService(FoodLogRepository repo, NutritionDataProvider provider, UserSettingsRepository settingsRepo){
     this.repo = repo; this.provider = provider;
+    this.settingsRepo = settingsRepo;
   }
   public DailyLog getDay(LocalDate date){
     DailyLog d = repo.getDay(date);
@@ -64,4 +67,16 @@ public class FoodLogService {
     double dayTotal = 0.0; for (Meal m : day.getMeals()) dayTotal += m.getTotalKcal(); day.setTotalKcal(dayTotal);
     repo.saveDay(day);
   }
+    public UserSettings getSettings() {
+        return settingsRepo.getSettings();
+    }
+
+    public void setDailyGoal(double kcal) {
+        if (kcal <= 0) {
+            throw new IllegalArgumentException("Goal must be a positive number.");
+        }
+        UserSettings settings = settingsRepo.getSettings();
+        settings.setDailyKcalGoal(kcal);
+        settingsRepo.saveSettings(settings);
+    }
 }

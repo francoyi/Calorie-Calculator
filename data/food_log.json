@@ -48,57 +48,45 @@
     } ],
     "totalKcal" : 745.1
   }, {
-    "date" : [ 2025, 11, 3 ],
-    "meals" : [ {
-      "id" : "fea75731-4792-45b0-83d3-9ac9bf39d547",
-      "date" : [ 2025, 11, 3 ],
-      "label" : "2",
-      "notes" : "",
-      "entries" : [ {
-        "name" : "banana",
-        "input" : "banana 100.0g",
-        "serving" : {
-          "amount" : 100.0,
-          "unit" : "g"
-        },
-        "kcalForServing" : 134.0,
-        "source" : "Manual",
-        "fetchedAt" : 1762194216.278970000
-      } ],
-      "totalKcal" : 134.0
-    } ],
-    "totalKcal" : 134.0
-  }, {
-    "date" : [ 2025, 11, 4 ],
-    "meals" : [ {
-      "id" : "a4cdf79c-058c-4b49-96f1-5abd0e94ce76",
-      "date" : [ 2025, 11, 4 ],
-      "label" : "Breakfast",
-      "notes" : "",
-      "entries" : [ {
-        "name" : "banana",
-        "input" : "banana 100.0g",
-        "serving" : {
-          "amount" : 100.0,
-          "unit" : "g"
-        },
-        "kcalForServing" : 88.1,
-        "source" : "Manual",
-        "fetchedAt" : 1762198601.724624000
-      } ],
-      "totalKcal" : 88.1
-    } ],
-    "totalKcal" : 88.1
-  }, {
     "date" : [ 2025, 11, 6 ],
     "meals" : [ {
-      "id" : "49bebf6d-270e-4242-a617-67cc863712fc",
+      "id" : "18498898-c2dc-4fd2-a81d-73a2feb52374",
       "date" : [ 2025, 11, 6 ],
-      "label" : "lunch",
+      "label" : "breakfast",
       "notes" : "",
-      "entries" : [ ],
-      "totalKcal" : 0.0
+      "entries" : [ {
+        "name" : "egg",
+        "input" : "egg 100.0g",
+        "serving" : {
+          "amount" : 100.0,
+          "unit" : "g"
+        },
+        "kcalForServing" : 336.0,
+        "source" : "Manual",
+        "fetchedAt" : 1762464154.923706000
+      }, {
+        "name" : "milk",
+        "input" : "milk 100.0g",
+        "serving" : {
+          "amount" : 100.0,
+          "unit" : "g"
+        },
+        "kcalForServing" : 45.0,
+        "source" : "Manual",
+        "fetchedAt" : 1762464154.923849000
+      }, {
+        "name" : "chocolate",
+        "input" : "chocolate 100.0g",
+        "serving" : {
+          "amount" : 100.0,
+          "unit" : "g"
+        },
+        "kcalForServing" : 592.0,
+        "source" : "Manual",
+        "fetchedAt" : 1762464154.923876000
+      } ],
+      "totalKcal" : 973.0
     } ],
-    "totalKcal" : 0.0
+    "totalKcal" : 973.0
   } ]
 }
