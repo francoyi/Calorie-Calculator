@@ -38,7 +38,7 @@ Calorie-Calculator is an intelligent food diary application designed to help use
 *   Apache Maven.
 
 ### Running the Application
-1. Clone the repository: `git clone [our-repo-url]`
+1. Clone the repository: `git clone [https://github.com/francoyi/Calorie-Calculator.git]`
 2. Navigate to the project directory: `cd Calorie-Calculator`
 3. Build the project using Maven: `mvn clean install`
 4. Run the application: `mvn exec:java -Dexec.mainClass="com.caloriecalc.Main"`
