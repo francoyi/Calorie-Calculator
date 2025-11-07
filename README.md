@@ -7,7 +7,7 @@
    - Haotian Xu (personal github username & github link)
    - Rasyid Rafi Pamuji (personal github username & github link)
    - [@HaoyingZhu](https://github.com/HaoyingZhu)
-   - Zhengyu Yi (personal github username & github link)
+   - [@ZhengyuYi](https://github.com/francoyi)
 
 
 ## 1. Project Description
