@@ -6,7 +6,7 @@
    - Shourya Harsh Vardhan (personal github username & github link)
    - Haotian Xu (personal github username & github link)
    - Rasyid Rafi Pamuji (personal github username & github link)
-   - Haoying Zhu (personal github username & github link)
+   - [@HaoyingZhu](https://github.com/HaoyingZhu)
    - Zhengyu Yi (personal github username & github link)
 
 
@@ -34,7 +34,7 @@ Calorie-Calculator is an intelligent food diary application designed to help use
 ## 4. Getting Started & How to Run
 
 ### Prerequisites
-*   Java 20.
+*   Java Development Kit (JDK) 20 or higher.
 *   Apache Maven.
 
 ### Running the Application
