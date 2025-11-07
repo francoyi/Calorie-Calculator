@@ -25,7 +25,7 @@ Calorie-Calculator is an intelligent food diary application designed to help use
 
 ## 3. Tech Stack
 
-*   **Language:** Java ???
+*   **Language:** Java 20
 *   **UI Framework:** Java Swing
 *   **Build & Dependency Management:** Apache Maven
 *   **External API:** [OpenFoodFacts API](https://world.openfoodfacts.net/api/v2/product/{barcode})
@@ -34,7 +34,7 @@ Calorie-Calculator is an intelligent food diary application designed to help use
 ## 4. Getting Started & How to Run
 
 ### Prerequisites
-*   Java ???.
+*   Java 20.
 *   Apache Maven.
 
 ### Running the Application
