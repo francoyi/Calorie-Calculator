@@ -107,7 +107,7 @@ public class MainPanel extends JPanel {
         refresh();
     }
 
-    public void refresh() {
+    private void refresh() {
         dateLabel.setText(current.toString());
         DailyLog d = service.getDay(current);
         UserSettings s = service.getSettings();
