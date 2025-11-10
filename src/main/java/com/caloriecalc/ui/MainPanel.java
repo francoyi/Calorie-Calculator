@@ -22,6 +22,7 @@ public class MainPanel extends JPanel {
     private final JButton nextBtn = new JButton(">");
     private final JButton addMealBtn = new JButton("Add Meal");
     private final JButton setGoalBtn = new JButton("Set Goal");
+    //
     private final JLabel dateLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel goalLabel = new JLabel("", SwingConstants.CENTER);
     private LocalDate current = LocalDate.now(ZONE);
