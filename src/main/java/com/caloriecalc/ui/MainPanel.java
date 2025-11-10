@@ -22,7 +22,7 @@ public class MainPanel extends JPanel {
     private final JButton nextBtn = new JButton(">");
     private final JButton addMealBtn = new JButton("Add Meal");
     private final JButton setGoalBtn = new JButton("Set Goal");
-    //
+    private final JButton calExpecBtn = new JButton("BMR Calc");
     private final JLabel dateLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel goalLabel = new JLabel("", SwingConstants.CENTER);
     private LocalDate current = LocalDate.now(ZONE);
@@ -57,6 +57,7 @@ public class MainPanel extends JPanel {
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         actions.add(addMealBtn);
         actions.add(setGoalBtn);
+        actions.add(calExpecBtn);
         top.add(actions, BorderLayout.EAST);
         add(top, BorderLayout.NORTH);
 
@@ -79,6 +80,7 @@ public class MainPanel extends JPanel {
         });
         addMealBtn.addActionListener(e -> onAddMeal());
         setGoalBtn.addActionListener(e -> onSetGoal());
+        calExpecBtn.addActionListener(e -> {});
         refresh();
     }
 
