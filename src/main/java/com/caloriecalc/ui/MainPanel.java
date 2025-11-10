@@ -80,8 +80,12 @@ public class MainPanel extends JPanel {
         });
         addMealBtn.addActionListener(e -> onAddMeal());
         setGoalBtn.addActionListener(e -> onSetGoal());
-        calExpecBtn.addActionListener(e -> {});
+        calExpecBtn.addActionListener(e -> onCalcBMR());
         refresh();
+    }
+
+    private void onCalcBMR() {
+        BMRDialog BMRdlg = new BMRDialog;
     }
 
     private void onSetGoal() {
