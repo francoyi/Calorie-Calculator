@@ -85,7 +85,7 @@ public class MainPanel extends JPanel {
     }
 
     private void onCalcBMR() {
-        BMRDialog BMRdlg = new BMRDialog;
+        BMRDialog BMRdlg = new BMRDialog();
     }
 
     private void onSetGoal() {
