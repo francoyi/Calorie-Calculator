@@ -1,4 +1,4 @@
-package com.caloriecalc.port;
+package com.caloriecalc.port.tdee;
 
 import com.caloriecalc.model.UserMetrics;
 

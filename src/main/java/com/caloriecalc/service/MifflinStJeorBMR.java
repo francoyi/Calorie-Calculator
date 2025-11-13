@@ -1,11 +1,12 @@
 package com.caloriecalc.service;
 
 import com.caloriecalc.model.UserMetrics;
-import com.caloriecalc.port.BMRFormula;
+import com.caloriecalc.port.tdee.BMRFormula;
 
 // Mifflin–St Jeor BMR: BMR = 10*kg + 6.25*cm − 5*age + s, where s = +5 m or −161 f.
 public class MifflinStJeorBMR implements BMRFormula {
-    @Override public String name() { return "Mifflin–St Jeor"; }
+    @Override
+    public String name() { return "Mifflin–St Jeor"; }
 
     @Override
     public double computeBmr(UserMetrics a) {

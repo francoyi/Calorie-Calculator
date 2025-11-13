@@ -2,10 +2,11 @@ package com.caloriecalc.ui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.text.DecimalFormat;
-import java.util.LinkedHashMap;
-import java.util.Map;
+
+import com.caloriecalc.port.tdee.CalculateTDEEInputBoundary;
+import com.caloriecalc.port.tdee.CalculateTDEEOutputBoundary;
+import com.caloriecalc.service.CalculateTDEEInteractor;
+import com.caloriecalc.service.MifflinStJeorBMR;
 
 public class TDEEDialog extends JDialog {
 
@@ -18,8 +19,16 @@ public class TDEEDialog extends JDialog {
     // Convert from imperial <-> metric
     private final JRadioButton metricBtn = new JRadioButton("Metric (kg, cm)", true);
     private final JRadioButton imperialBtn = new JRadioButton("Imperial (lb, in)");
+    // Other Buttons
+    private final JButton calcBtn = new JButton("Calculate");
+    private final JButton closeBtn = new JButton("Close Window");
+    private final JButton setGoalBtn = new JButton("Set as calorie Goal");
     // Add result box
     private final JTextArea resultArea = new JTextArea(5, 28);
+
+
+    private final CalculateTDEEInputBoundary interactor;
+    private final CalculateTDEEOutputBoundary presenter = null;
 
     public static class Result {
         public final double bmr;
@@ -35,13 +44,41 @@ public class TDEEDialog extends JDialog {
     private Result result = null;
 
     public TDEEDialog(Window owner) {
-        super(owner, "Expected Calorie Burn", ModalityType.APPLICATION_MODAL);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        buildUI();
+        super(owner, "Expected Calorie Burn Calculator (TDEE)", ModalityType.APPLICATION_MODAL);
+
+        this.interactor = new CalculateTDEEInteractor(new MifflinStJeorBMR(), presenter);
+
+        makeUI();
         wireActions();
+
         pack();
         setLocationRelativeTo(owner);
     }
 
+    private void makeUI() {
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        resultArea.setEditable(false);
+        resultArea.setLineWrap(true);
+        resultArea.setWrapStyleWord(true);
+
+        ButtonGroup units = new ButtonGroup();
+        units.add(metricBtn);
+        units.add(imperialBtn);
+
+        JPanel form = new JPanel(new GridBagLayout());
+
+    }
+
+    private void wireActions() {
+        calcBtn.addActionListener(e -> onCalculate());
+        closeBtn.addActionListener(e -> dispose());
+        setGoalBtn.addActionListener(e -> setAsGoal());
+    }
+
+    private void setAsGoal() {
+    }
+
+    private void onCalculate() {
+    }
 
 }
