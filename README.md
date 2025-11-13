@@ -53,13 +53,53 @@ This project is built following the principles of **Clean Architecture** and **S
 *   **Polymorphism:** The `FoodItem` interface, with its `APIFoodItem` and `LocalFoodItem` implementations, allows our system to handle different food sources seamlessly.
 *   **Value Objects:** We used Java `record`s for immutable value objects like `NutritionValues` and `Serving` to enhance data integrity.
 *   **API Client Design:** Our `OpenFoodFactsClient` features a time-based caching mechanism to improve performance and reduce API call frequency.
+*   **Key Interactors:**
+    - **`FoodLogService`** – The main use-case class that manages user meals, goals, and calorie totals.
+       - Depends only on the *interfaces* defined in `com.caloriecalc.port`.
+       - Handles:
+           - Adding and removing meals
+           - Calculating total daily calories
+           - Managing and validating user goal settings
+           - Synchronizing with data repositories
+    - **`OpenFoodFactsClient`** – Implements an external data access boundary (`NutritionDataProvider`), serving as a *gateway* between the app and the OpenFoodFacts API.
+       - Includes request caching, timeouts, and JSON deserialization logic.
 
-## 6. Use Case Assignments
+*   **Key Boundaries:**
+    - **`FoodLogRepository`** – Interface for reading/writing daily meal logs.
+    - **`UserSettingsRepository`** – Interface for managing user calorie goals and settings.
+    - **`NutritionDataProvider`** – Interface for fetching nutrition data from external databases (e.g., OpenFoodFacts).
+
+    - Boundaries are implemented in the `com.caloriecalc.repo` and `com.caloriecalc.service` packages:
+      - **`JsonFoodLogRepository`**, **`JsonUserSettingsRepository`** → implement persistence using local JSON files.
+      - **`OpenFoodFactsClient`** → acts as a gateway to an external API, implementing the `NutritionDataProvider` boundary.
+
+
+### 6. Flow Overview
+
+```text
+┌──────────────────┐       ┌──────────────────────────┐
+│    UI Layer      │──────▶│  Interactors (Services)  │
+│ (Swing Panels)   │       │ e.g. FoodLogService      │
+└──────────────────┘       └────────────┬─────────────┘
+                                        │
+                                        ▼
+                              ┌─────────────────────┐
+                              │   Boundaries (Ports)│
+                              │ Interfaces only     │
+                              └────────┬────────────┘
+                                       │
+              ┌────────────────────────┴────────────────────────┐
+              │                 Implementations                 │
+              │ Json Repositories + OpenFoodFactsClient (APIs)  │
+              └─────────────────────────────────────────────────┘
+```
+
+## 7. Use Case Assignments
 
 | Use Case                                                    | Lead Member             |
 | ----------------------------------------------------------- | ----------------------- |
 | UC 1: Search Food via External API                          | **Zhengyu Yi**          |
-| UC 2: Add API Food to Today's Record                        | **Janice Lam**          |
+| UC 2: Add API Food to Today's Record                        | **Zhengyu Yi**          |
 | UC 3: Create Local Food (Manual Entry)                      | **Janice Lam**          |
 | UC 6: Edit or Remove an Item from Today                     | **Zhengyu Yi**          |
 | UC 7: Set Daily Calorie Goal                                | **Haoying Zhu**         |
