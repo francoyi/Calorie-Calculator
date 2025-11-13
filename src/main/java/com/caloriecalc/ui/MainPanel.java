@@ -80,13 +80,15 @@ public class MainPanel extends JPanel {
         });
         addMealBtn.addActionListener(e -> onAddMeal());
         setGoalBtn.addActionListener(e -> onSetGoal());
-        calExpecBtn.addActionListener(e -> onCalcBMR());
+        calExpecBtn.addActionListener(e -> onCalcTDEE());
         refresh();
     }
 
-    private void onCalcBMR() {
-        TDEEDialog TDEEdlg = new TDEEDialog();
+    private void onCalcTDEE() {
+        Window owner = SwingUtilities.getWindowAncestor(this);
+        new TDEEDialog(owner).setVisible(true);
     }
+
 
     private void onSetGoal() {
         UserSettings currentSettings = service.getSettings();

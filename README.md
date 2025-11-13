@@ -3,7 +3,7 @@
 **Team Name:** csc207-We-are-cooking234  
 **Team Members:** 
    - Yan Lam (personal github username & github link)
-   - Shourya Harsh Vardhan (personal github username & github link)
+   - [@Shourya](https://github.com/bALTASELAMIS17)
    - Haotian Xu (personal github username & github link)
    - Rasyid Rafi Pamuji (personal github username & github link)
    - [@HaoyingZhu](https://github.com/HaoyingZhu)

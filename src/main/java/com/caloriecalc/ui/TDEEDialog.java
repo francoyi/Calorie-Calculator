@@ -9,7 +9,8 @@ import java.util.Map;
 
 public class TDEEDialog extends JDialog {
 
-    // Input Fields    private final JTextField ageField = new JTextField(30);
+    // Input Fields
+    private final JTextField ageField = new JTextField(30);
     private final JTextField weightField = new JTextField(30);
     private final JTextField heightField = new JTextField(30);
     private final JComboBox<String> sexField = new JComboBox<>(new String[]{"Male", "Female"});
