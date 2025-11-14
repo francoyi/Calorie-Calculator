@@ -52,11 +52,42 @@ public class MealDialog extends JDialog {
         MealRecommender mr = new MealRecommender(recommendedFoods, service.getDailyGoal());
         List<Recommendation> lr = mr.getTopFoodRecommendations(1);
         if (lr.isEmpty()) { // Alternative flow: calorie goal unrealistic, must handle
-            // TODO: implement fully
+            JOptionPane.showMessageDialog(this, "Unable to recommend meal within your goal. Attempt setting another goal.", "Error", JOptionPane.ERROR_MESSAGE);
         } else { // Main flow
-            // TODO: implement adding row logic
+            // Get the top recommendation
+            Recommendation topRec = lr.get(0);
+            for (FoodItem recommendedFood : topRec.getFoodItems()) {
+                // The Recommender should ideally specify the suggested amount.
+                double suggestedAmount = 100.0;
+                String unit = "g";
+
+                Double kcalForServing = null;
+                NutritionValues nv = null;
+
+                if (recommendedFood instanceof APIFoodItem apifi) {
+                    nv = apifi.per100g();
+                    if (nv != null) {
+                        // Calculate kcal for the suggested amount (e.g., 100g)
+                        kcalForServing = (nv.energyKcal() / 100.0) * suggestedAmount;
+                    }
+                }
+
+                MealEntry recommendedEntry = new MealEntry(
+                        recommendedFood.getName(), // name
+                        recommendedFood.getName() + " " + suggestedAmount + unit, // input
+                        new Serving(suggestedAmount, unit), // serving
+                        kcalForServing, // kcalForServing
+                        "Recommended", // source
+                        java.time.ZonedDateTime.now(java.time.ZoneId.of("America/Toronto")), // fetchedAt
+                        nv // nutritionPer100g
+                );
+
+                tableModel.addFromEntry(recommendedEntry);
+            }
+
+            recalcTotal();
         }
-    }
+  }
 
   private void onSave(){
     meal.setLabel(labelField.getText().trim().isEmpty()? "Meal": labelField.getText().trim());
