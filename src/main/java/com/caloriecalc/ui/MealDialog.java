@@ -1,9 +1,10 @@
 
 package com.caloriecalc.ui;
-import com.caloriecalc.model.Meal;
-import com.caloriecalc.model.MealEntry;
-import com.caloriecalc.model.Serving;
+import com.caloriecalc.model.*;
+import com.caloriecalc.port.NutritionDataProvider;
 import com.caloriecalc.service.FoodLogService;
+import com.caloriecalc.service.OpenFoodFactsClient;
+
 import javax.swing.*; import javax.swing.table.AbstractTableModel;
 import java.awt.*; import java.time.LocalDate; import java.util.ArrayList; import java.util.List;
 public class MealDialog extends JDialog {
@@ -12,6 +13,7 @@ public class MealDialog extends JDialog {
   private final JTextField notesField = new JTextField(30);
   private final MealTableModel tableModel = new MealTableModel();
   private final JLabel totalLabel = new JLabel("Total: 0 kcal");
+    private final JButton recommendMealBtn = new JButton("Recommend Meal");
   public MealDialog(Window owner, FoodLogService service, LocalDate date, Meal existing){
     super(owner, existing==null?"Add Meal":"Edit Meal", ModalityType.APPLICATION_MODAL);
     this.service = service; this.date = date; this.meal = existing==null? service.newEmptyMeal(date, "Meal"): existing;
@@ -25,13 +27,68 @@ public class MealDialog extends JDialog {
     JButton addRow = new JButton("Add Row"); JButton removeRow = new JButton("Remove Row");
     JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT)); left.add(addRow); left.add(removeRow); bottom.add(left, BorderLayout.WEST);
     JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT)); JButton save = new JButton("Save"); JButton cancel = new JButton("Cancel");
-    right.add(totalLabel); right.add(save); right.add(cancel); bottom.add(right, BorderLayout.EAST);
+    right.add(totalLabel); right.add(recommendMealBtn); right.add(save); right.add(cancel); bottom.add(right, BorderLayout.EAST);
+
     add(bottom, BorderLayout.SOUTH);
     addRow.addActionListener(e -> tableModel.addEmpty());
     removeRow.addActionListener(e -> { int row = table.getSelectedRow(); if (row>=0) tableModel.remove(row); });
     save.addActionListener(e -> onSave()); cancel.addActionListener(e -> dispose());
+    recommendMealBtn.addActionListener(e -> onRecommendMeal());
     if (existing != null){ for (MealEntry me : existing.getEntries()){ tableModel.addFromEntry(me); } recalcTotal(); }
   }
+
+
+    private void onRecommendMeal() {
+        // TODO: magic constant for now, more permanent solution later
+        List<String> foodNames = List.of("apple", "banana", "steak", "salmon", "soybeans", "cereal", "cookie");
+        List<FoodItem> recommendedFoods = new ArrayList<>();
+        NutritionDataProvider provider = new OpenFoodFactsClient();
+        for (String foodName : foodNames) {
+            NutritionValues nv = provider.fetchNutritionPer100(foodName);
+            APIFoodItem apifi = new APIFoodItem(foodName, nv, 200);
+            recommendedFoods.add(apifi);
+        }
+
+        MealRecommender mr = new MealRecommender(recommendedFoods, service.getDailyGoal());
+        List<Recommendation> lr = mr.getTopFoodRecommendations(1);
+        if (lr.isEmpty()) { // Alternative flow: calorie goal unrealistic, must handle
+            JOptionPane.showMessageDialog(this, "Unable to recommend meal within your goal. Attempt setting another goal.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else { // Main flow
+            // Get the top recommendation
+            Recommendation topRec = lr.get(0);
+            for (FoodItem recommendedFood : topRec.getFoodItems()) {
+                // The Recommender should ideally specify the suggested amount.
+                double suggestedAmount = 100.0;
+                String unit = "g";
+
+                Double kcalForServing = null;
+                NutritionValues nv = null;
+
+                if (recommendedFood instanceof APIFoodItem apifi) {
+                    nv = apifi.per100g();
+                    if (nv != null) {
+                        // Calculate kcal for the suggested amount (e.g., 100g)
+                        kcalForServing = (nv.energyKcal() / 100.0) * suggestedAmount;
+                    }
+                }
+
+                MealEntry recommendedEntry = new MealEntry(
+                        recommendedFood.getName(), // name
+                        recommendedFood.getName() + " " + suggestedAmount + unit, // input
+                        new Serving(suggestedAmount, unit), // serving
+                        kcalForServing, // kcalForServing
+                        "Recommended", // source
+                        java.time.ZonedDateTime.now(java.time.ZoneId.of("America/Toronto")), // fetchedAt
+                        nv // nutritionPer100g
+                );
+
+                tableModel.addFromEntry(recommendedEntry);
+            }
+
+            recalcTotal();
+        }
+  }
+
   private void onSave(){
     meal.setLabel(labelField.getText().trim().isEmpty()? "Meal": labelField.getText().trim());
     meal.setNotes(notesField.getText().trim());

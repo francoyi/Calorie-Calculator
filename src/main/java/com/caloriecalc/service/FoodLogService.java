@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import com.caloriecalc.port.UserSettingsRepository;
 public class FoodLogService {
@@ -78,5 +77,9 @@ public class FoodLogService {
         UserSettings settings = settingsRepo.getSettings();
         settings.setDailyKcalGoal(kcal);
         settingsRepo.saveSettings(settings);
+    }
+
+    public double getDailyGoal() {
+      return settingsRepo.getSettings().getDailyKcalGoal();
     }
 }
