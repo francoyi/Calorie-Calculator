@@ -1,7 +1,6 @@
 package com.caloriecalc.ui;
 
-import com.caloriecalc.model.DailyLog;
-import com.caloriecalc.model.UserSettings;
+import com.caloriecalc.model.*;
 import com.caloriecalc.port.FoodLogRepository;
 import com.caloriecalc.port.NutritionDataProvider;
 import com.caloriecalc.port.UserSettingsRepository;
@@ -14,6 +13,8 @@ import java.awt.*;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainPanel extends JPanel {
     private final ZoneId ZONE = ZoneId.of("America/Toronto");
