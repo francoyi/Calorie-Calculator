@@ -4,7 +4,7 @@
 **Team Members:** 
    - Yan Lam (personal github username & github link)
    - Shourya Harsh Vardhan (personal github username & github link)
-   - Haotian Xu (personal github username & github link)
+   - [@HaotianXu](https://github.com/maxhxu)
    - Rasyid Rafi Pamuji (personal github username & github link)
    - [@HaoyingZhu](https://github.com/HaoyingZhu)
    - [@ZhengyuYi](https://github.com/francoyi)
