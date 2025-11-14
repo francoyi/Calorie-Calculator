@@ -44,6 +44,8 @@ public class TDEEDialog extends JDialog {
 
     public TDEEDialog(Window owner) {
         super(owner, "Expected Calorie Burn Calculator (TDEE)", ModalityType.APPLICATION_MODAL);
+        //FlatLightLaf.setup();
+
 
         setSize(700, 500);
 
@@ -69,10 +71,15 @@ public class TDEEDialog extends JDialog {
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        formPanel.add(new JLabel("Enter your Age:"));
         formPanel.add(ageField);
+        formPanel.add(new JLabel("Enter your Weight:"));
         formPanel.add(weightField);
+        formPanel.add(new JLabel("Enter your Height:"));
         formPanel.add(heightField);
+        formPanel.add(new JLabel("Select your sex."));
         formPanel.add(sexField);
+        formPanel.add(new JLabel("Select your activity level:"));
         formPanel.add(activityLevelField);
 
         JPanel btns = new JPanel();
