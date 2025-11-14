@@ -15,14 +15,13 @@ public class TDEEDialog extends JDialog {
     private final JTextField weightField = new JTextField(30);
     private final JTextField heightField = new JTextField(30);
     private final JComboBox<String> sexField = new JComboBox<>(new String[]{"Male", "Female"});
-    private final JComboBox<String> acitivityLevelField = new JComboBox<>(new String[]{"Very Light", "Light", "Medium", "High", "Extreme"});
+    private final JComboBox<String> activityLevelField = new JComboBox<>(new String[]{"Very Light", "Light", "Medium", "High", "Extreme"});
     // Convert from imperial <-> metric
     private final JRadioButton metricBtn = new JRadioButton("Metric (kg, cm)", true);
     private final JRadioButton imperialBtn = new JRadioButton("Imperial (lb, in)");
     // Other Buttons
     private final JButton calcBtn = new JButton("Calculate");
-    private final JButton closeBtn = new JButton("Close Window");
-    private final JButton setGoalBtn = new JButton("Set as calorie Goal");
+    private final JButton setGoalBtn = new JButton("Set as Calorie Burn Goal");
     // Add result box
     private final JTextArea resultArea = new JTextArea(5, 28);
 
@@ -46,6 +45,8 @@ public class TDEEDialog extends JDialog {
     public TDEEDialog(Window owner) {
         super(owner, "Expected Calorie Burn Calculator (TDEE)", ModalityType.APPLICATION_MODAL);
 
+        setSize(700, 500);
+
         this.interactor = new CalculateTDEEInteractor(new MifflinStJeorBMR(), presenter);
 
         makeUI();
@@ -65,13 +66,38 @@ public class TDEEDialog extends JDialog {
         units.add(metricBtn);
         units.add(imperialBtn);
 
-        JPanel form = new JPanel(new GridBagLayout());
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        formPanel.add(ageField);
+        formPanel.add(weightField);
+        formPanel.add(heightField);
+        formPanel.add(sexField);
+        formPanel.add(activityLevelField);
+
+        JPanel btns = new JPanel();
+        btns.setLayout(new BoxLayout(btns, BoxLayout.X_AXIS));
+        btns.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        btns.add(calcBtn);
+        btns.add(setGoalBtn);
+
+        JPanel unitPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        unitPanel.add(metricBtn); unitPanel.add(imperialBtn);
+
+        JPanel root = new JPanel(new BorderLayout(5,8));
+        root.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        root.add(formPanel, BorderLayout.NORTH);
+        root.add(new JScrollPane(resultArea), BorderLayout.CENTER);
+        root.add(btns, BorderLayout.SOUTH);
+        root.add(unitPanel, BorderLayout.SOUTH);
+        setContentPane(root);
+
+
 
     }
 
     private void wireActions() {
         calcBtn.addActionListener(e -> onCalculate());
-        closeBtn.addActionListener(e -> dispose());
         setGoalBtn.addActionListener(e -> setAsGoal());
     }
 
