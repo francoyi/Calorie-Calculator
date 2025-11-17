@@ -3,12 +3,13 @@ package com.caloriecalc.ui;
 import javax.swing.*;
 import java.awt.*;
 
-import com.caloriecalc.port.tdee.CalculateTDEEInputBoundary;
-import com.caloriecalc.port.tdee.CalculateTDEEOutputBoundary;
+import com.caloriecalc.model.ActivityLevel;
+import com.caloriecalc.model.UserMetrics;
+import com.caloriecalc.port.tdee.*;
 import com.caloriecalc.service.CalculateTDEEInteractor;
 import com.caloriecalc.service.MifflinStJeorBMR;
 
-public class TDEEDialog extends JDialog {
+public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary{
 
     // Input Fields
     private final JTextField ageField = new JTextField(30);
@@ -27,7 +28,16 @@ public class TDEEDialog extends JDialog {
 
 
     private final CalculateTDEEInputBoundary interactor;
-    private final CalculateTDEEOutputBoundary presenter = null;
+
+    @Override
+    public void present(CalculateTDEEOutputData output) {
+
+    }
+
+    @Override
+    public void presentValidationError(String message) {
+
+    }
 
     public static class Result {
         public final double bmr;
@@ -49,7 +59,7 @@ public class TDEEDialog extends JDialog {
 
         setSize(700, 500);
 
-        this.interactor = new CalculateTDEEInteractor(new MifflinStJeorBMR(), presenter);
+        this.interactor = new CalculateTDEEInteractor(new MifflinStJeorBMR(), this);
 
         makeUI();
         wireActions();
@@ -69,7 +79,7 @@ public class TDEEDialog extends JDialog {
         units.add(imperialBtn);
 
         JPanel formPanel = new JPanel();
-        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+        formPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         formPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         formPanel.add(new JLabel("Enter your Age:"));
         formPanel.add(ageField);
@@ -77,9 +87,9 @@ public class TDEEDialog extends JDialog {
         formPanel.add(weightField);
         formPanel.add(new JLabel("Enter your Height:"));
         formPanel.add(heightField);
-        formPanel.add(new JLabel("Select your sex."));
+        formPanel.add(new JLabel("Select your Sex."));
         formPanel.add(sexField);
-        formPanel.add(new JLabel("Select your activity level:"));
+        formPanel.add(new JLabel("Select your Activity Level:"));
         formPanel.add(activityLevelField);
 
         JPanel btns = new JPanel();
@@ -96,7 +106,7 @@ public class TDEEDialog extends JDialog {
         root.add(formPanel, BorderLayout.NORTH);
         root.add(new JScrollPane(resultArea), BorderLayout.CENTER);
         root.add(btns, BorderLayout.SOUTH);
-        root.add(unitPanel, BorderLayout.SOUTH);
+        // root.add(unitPanel, BorderLayout.SOUTH);
         setContentPane(root);
 
 
@@ -108,10 +118,34 @@ public class TDEEDialog extends JDialog {
         setGoalBtn.addActionListener(e -> setAsGoal());
     }
 
+    private void onCalculate() {
+        try {
+            int age = Integer.parseInt(ageField.getText().trim());
+            double weight = Double.parseDouble(weightField.getText().trim());
+            double height = Double.parseDouble(heightField.getText().trim());
+
+            boolean metric = metricBtn.isSelected();
+            UserMetrics.Sex sex = (sexField.getSelectedIndex() == 0)
+                    ? UserMetrics.Sex.MALE : UserMetrics.Sex.FEMALE;
+
+            ActivityLevel level = switch (activityLevelField.getSelectedIndex()) {
+                case 0 -> ActivityLevel.VERY_LIGHT;
+                case 1 -> ActivityLevel.LIGHT;
+                case 2 -> ActivityLevel.MEDIUM;
+                case 3 -> ActivityLevel.HIGH;
+                default -> ActivityLevel.EXTREME;
+            };
+
+            interactor.execute(new CalculateTDEEInputData(
+                    age, weight, height, metric, sex, level
+            ));
+        } catch (NumberFormatException ex) {
+            //presentValidationError("please enter valid nums.");
+        }
+    }
+
     private void setAsGoal() {
     }
 
-    private void onCalculate() {
-    }
 
 }
