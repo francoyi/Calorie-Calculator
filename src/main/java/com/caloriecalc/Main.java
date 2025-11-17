@@ -9,6 +9,7 @@ import com.caloriecalc.service.FoodLogService;
 import com.caloriecalc.service.OpenFoodFactsClient;
 import com.caloriecalc.ui.MainFrame;
 import com.caloriecalc.ui.MainPanel;
+import com.caloriecalc.ui.GraphPanel;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.*;
@@ -29,7 +30,13 @@ public class Main {
             FoodLogService service = new FoodLogService(foodLogRepo, provider, settingsRepo);
 
             MainPanel mainPanel = new MainPanel(service);
-            MainFrame mainFrame = new MainFrame(mainPanel);
+            GraphPanel graphPanel = new GraphPanel(service);
+
+            JTabbedPane tabbedPane = new JTabbedPane();
+            tabbedPane.addTab("Dashboard", mainPanel);
+            tabbedPane.addTab("Progress", graphPanel);
+
+            MainFrame mainFrame = new MainFrame(tabbedPane);
 
             mainFrame.setVisible(true);
         });
