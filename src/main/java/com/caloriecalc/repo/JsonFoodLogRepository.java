@@ -1,4 +1,3 @@
-
 package com.caloriecalc.repo;
 import com.caloriecalc.model.DailyLog;
 import com.caloriecalc.port.FoodLogRepository;
@@ -25,5 +24,11 @@ public class JsonFoodLogRepository extends AbstractJsonRepository<JsonFoodLogRep
     }
     if (!replaced) r.days.add(day);
     atomicWrite(r);
+  }
+
+  @Override
+  public synchronized List<DailyLog> getAllDays() {
+    Root r = load();
+    return r.days;
   }
 }

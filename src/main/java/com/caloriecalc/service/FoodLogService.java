@@ -1,4 +1,3 @@
-
 package com.caloriecalc.service;
 import com.caloriecalc.model.*;
 import com.caloriecalc.port.FoodLogRepository;
@@ -8,6 +7,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import com.caloriecalc.port.UserSettingsRepository;
 public class FoodLogService {
@@ -61,11 +61,16 @@ public class FoodLogService {
     repo.saveDay(day);
   }
   public void deleteMeal(LocalDate date, String mealId){
-    DailyLog day = repo.getDay(date); if (day==null) return;
-    day.getMeals().removeIf(m -> m.getId().equals(mealId));
-    double dayTotal = 0.0; for (Meal m : day.getMeals()) dayTotal += m.getTotalKcal(); day.setTotalKcal(dayTotal);
-    repo.saveDay(day);
-  }
+        DailyLog day = repo.getDay(date); if (day==null) return;
+        day.getMeals().removeIf(m -> m.getId().equals(mealId));
+        double dayTotal = 0.0; for (Meal m : day.getMeals()) dayTotal += m.getTotalKcal(); day.setTotalKcal(dayTotal);
+        repo.saveDay(day);
+    }
+
+    public List<DailyLog> getAllDailyLogs() {
+        return repo.getAllDays();
+    }
+
     public UserSettings getSettings() {
         return settingsRepo.getSettings();
     }
