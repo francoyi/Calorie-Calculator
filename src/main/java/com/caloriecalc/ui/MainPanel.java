@@ -80,13 +80,13 @@ public class MainPanel extends JPanel {
         });
         addMealBtn.addActionListener(e -> onAddMeal());
         setGoalBtn.addActionListener(e -> onSetGoal());
-        calExpecBtn.addActionListener(e -> onCalcTDEE());
+        calExpecBtn.addActionListener(e -> openCalcTDEE());
         refresh();
     }
 
-    private void onCalcTDEE() {
+    private void openCalcTDEE() {
         Window owner = SwingUtilities.getWindowAncestor(this);
-        new TDEEDialog(owner,service).setVisible(true);
+        new TDEEDialog(owner, service, this::refresh).setVisible(true);
     }
 
 

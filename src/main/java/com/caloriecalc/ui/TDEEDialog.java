@@ -40,6 +40,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
 
     private final CalculateTDEEInputBoundary interactor;
     private final FoodLogService foodService;
+    private final Runnable refreshCallback;
 
     private boolean metricSelected = true;
 
@@ -57,10 +58,11 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
 
     private Result result = null;
 
-    public TDEEDialog(Window owner, FoodLogService foodService) {
+    public TDEEDialog(Window owner, FoodLogService foodService, Runnable refreshCallback) {
         super(owner, "Expected Calorie Burn Calculator (TDEE)", ModalityType.APPLICATION_MODAL);
 
-        this.foodService = foodService;  // use injected service, don't recreate
+        this.foodService = foodService;
+        this.refreshCallback = refreshCallback;
 
         setSize(700, 500);
 
@@ -276,6 +278,11 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
 
         int goal = (int) Math.round(result.tdee);
         foodService.setDailyGoal(goal);
+
+
+        if (refreshCallback != null) {
+            refreshCallback.run();
+        }
 
         JOptionPane.showMessageDialog(
                 this,
