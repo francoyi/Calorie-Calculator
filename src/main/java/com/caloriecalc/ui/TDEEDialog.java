@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import com.caloriecalc.model.ActivityLevel;
 import com.caloriecalc.model.UserMetrics;
+import com.caloriecalc.model.UserSettings;
 import com.caloriecalc.port.tdee.*;
 import com.caloriecalc.service.CalculateTDEEInteractor;
 import com.caloriecalc.service.FoodLogService;
@@ -26,6 +27,8 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
             new JComboBox<>(new String[]{"Male", "Female"});
     private final JComboBox<String> activityLevelField =
             new JComboBox<>(new String[]{"Very Light", "Light", "Medium", "High", "Extreme"});
+    private final JComboBox<String> goalTweak =
+            new  JComboBox<>(new String[]{"Lose", "Gain"});
 
     // Units
     private final JRadioButton metricBtn = new JRadioButton("Metric (kg, cm)", true);
