@@ -1,17 +1,12 @@
 package com.caloriecalc.ui;
 
+import com.caloriecalc.Main;
 import com.caloriecalc.model.DailyLog;
 import com.caloriecalc.model.UserSettings;
-import com.caloriecalc.port.FoodLogRepository;
-import com.caloriecalc.port.NutritionDataProvider;
-import com.caloriecalc.port.UserSettingsRepository;
-import com.caloriecalc.repo.JsonFoodLogRepository;
-import com.caloriecalc.repo.JsonUserSettingsRepository;
 import com.caloriecalc.service.FoodLogService;
-import com.caloriecalc.service.OpenFoodFactsClient;
+
 import javax.swing.*;
 import java.awt.*;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
@@ -22,6 +17,7 @@ public class MainPanel extends JPanel {
     private final JButton nextBtn = new JButton(">");
     private final JButton addMealBtn = new JButton("Add Meal");
     private final JButton setGoalBtn = new JButton("Set Goal");
+    private final JButton themeSwitchBtn = new JButton("Toggle Theme");
     private final JLabel dateLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel goalLabel = new JLabel("", SwingConstants.CENTER);
     private LocalDate current = LocalDate.now(ZONE);
@@ -29,13 +25,11 @@ public class MainPanel extends JPanel {
     private final DailyLogPanel dailyPanel;
     private DailyLog lastRendered;
 
-    public MainPanel() {
-        setLayout(new BorderLayout(8, 8));
-        FoodLogRepository repo = new JsonFoodLogRepository(Path.of("data", "food_log.json"));
-        NutritionDataProvider provider = new OpenFoodFactsClient();
-        UserSettingsRepository settingsRepo = new JsonUserSettingsRepository(Path.of("data", "user_settings.json"));
-        this.service = new FoodLogService(repo, provider, settingsRepo);
+    public MainPanel(FoodLogService service) {
+        this.service = service;
         this.dailyPanel = new DailyLogPanel(service, this);
+
+        setLayout(new BorderLayout(8, 8));
 
         JPanel top = new JPanel(new BorderLayout());
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -56,6 +50,7 @@ public class MainPanel extends JPanel {
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         actions.add(addMealBtn);
         actions.add(setGoalBtn);
+        actions.add(themeSwitchBtn);
         top.add(actions, BorderLayout.EAST);
         add(top, BorderLayout.NORTH);
 
@@ -78,7 +73,12 @@ public class MainPanel extends JPanel {
         });
         addMealBtn.addActionListener(e -> onAddMeal());
         setGoalBtn.addActionListener(e -> onSetGoal());
+        themeSwitchBtn.addActionListener(e -> onSwitchTheme());
         refresh();
+    }
+
+    private void onSwitchTheme() {
+        Main.toggleTheme();
     }
 
     private void onSetGoal() {
