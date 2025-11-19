@@ -86,7 +86,7 @@ public class MainPanel extends JPanel {
 
     private void onCalcTDEE() {
         Window owner = SwingUtilities.getWindowAncestor(this);
-        new TDEEDialog(owner).setVisible(true);
+        new TDEEDialog(owner,service).setVisible(true);
     }
 
 
