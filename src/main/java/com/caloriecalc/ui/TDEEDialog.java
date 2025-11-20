@@ -5,7 +5,9 @@ import java.awt.*;
 import java.util.Locale;
 
 import com.caloriecalc.model.ActivityLevel;
+import com.caloriecalc.model.CalDevianceRate;
 import com.caloriecalc.model.UserMetrics;
+import com.caloriecalc.model.UserSettings;
 import com.caloriecalc.port.tdee.*;
 import com.caloriecalc.service.CalculateTDEEInteractor;
 import com.caloriecalc.service.FoodLogService;
@@ -26,6 +28,10 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
             new JComboBox<>(new String[]{"Male", "Female"});
     private final JComboBox<String> activityLevelField =
             new JComboBox<>(new String[]{"Very Light", "Light", "Medium", "High", "Extreme"});
+    private final JComboBox<String> goalWeightRateTweak =
+            new  JComboBox<>(new String[]{"Maintain Weight",
+                    "Lose 0.25kg or 0.55lbs per week", "Lose 0.5kg or 1.1lbs per week",
+                    "Gain 0.25kg or 0.55lbs per week", "Gain 0.5kg or 1.1lbs per week"});
 
     // Units
     private final JRadioButton metricBtn = new JRadioButton("Metric (kg, cm)", true);
@@ -36,7 +42,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
     private final JButton setGoalBtn = new JButton("Set as Calorie Burn Goal");
 
     // Result box
-    private final JTextArea resultArea = new JTextArea(5, 15);
+    private final JTextArea resultArea = new JTextArea(6, 15);
 
     private final CalculateTDEEInputBoundary interactor;
     private final FoodLogService foodService;
@@ -59,7 +65,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
     private Result result = null;
 
     public TDEEDialog(Window owner, FoodLogService foodService, Runnable refreshCallback) {
-        super(owner, "Expected Calorie Burn Calculator (TDEE)", ModalityType.APPLICATION_MODAL);
+        super(owner, "Daily Calorie Burn Calculator (TDEE)", ModalityType.APPLICATION_MODAL);
 
         this.foodService = foodService;
         this.refreshCallback = refreshCallback;
@@ -112,6 +118,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
         addRow(formPanel, c, 2, "Height:", heightField);
         addRow(formPanel, c, 3, "Sex:", sexField);
         addRow(formPanel, c, 4, "Activity Level:", activityLevelField);
+        addRow(formPanel, c, 5, "Calorie Deficit/Surplus:", goalWeightRateTweak);
 
         JPanel unitPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         unitPanel.add(metricBtn);
@@ -126,7 +133,8 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
 
         JPanel top = new JPanel(new BorderLayout(5, 5));
         top.add(formPanel, BorderLayout.NORTH);
-        top.add(unitPanel, BorderLayout.SOUTH);
+        top.add(unitPanel, BorderLayout.CENTER);
+//      top.add(goalWeightRateTweak, BorderLayout.SOUTH);
 
         JPanel root = new JPanel(new BorderLayout(5, 8));
         root.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -232,6 +240,17 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
         };
     }
 
+    private CalDevianceRate fromCalRateIndex(int idx) {
+        return switch (idx) {
+            case 0 -> CalDevianceRate.MAINTAIN_0wk;
+            case 1 -> CalDevianceRate.LOSE_250wk;
+            case 2 -> CalDevianceRate.LOSE_500wk;
+            case 3 -> CalDevianceRate.GAIN_250wk;
+            case 4 -> CalDevianceRate.GAIN_500wk;
+            default -> throw new IllegalStateException("Unexpected calRate index: " + idx);
+        };
+    }
+
     private void onCalculate() {
         try {
             int age = Integer.parseInt(ageField.getText().trim());
@@ -243,6 +262,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
                     ? UserMetrics.Sex.MALE : UserMetrics.Sex.FEMALE;
 
             ActivityLevel level = fromIndex(activityLevelField.getSelectedIndex());
+            CalDevianceRate calrate = fromCalRateIndex(goalWeightRateTweak.getSelectedIndex());
 
 
             if (age >= 18 && weight > 0 && height > 0) {
@@ -257,7 +277,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
             }
 
             interactor.execute(new CalculateTDEEInputData(
-                    age, weight, height, metric, sex, level
+                    age, weight, height, metric, sex, level, calrate
             ));
         } catch (NumberFormatException ex) {
             presentValidationError("Please enter valid numeric values for age, weight, and height.");
@@ -300,11 +320,13 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
                     BMR (%s): %.1f kcal/day
                     Activity factor: %.2f
                     Estimated TDEE: %.1f kcal/day
+                    Deficit/Surplus: %.1f kcal/day
                     """.formatted(
                     output.formulaName(),
                     output.bmr(),
                     output.activityFactor(),
-                    output.tdee()
+                    output.tdee(),
+                    output.calDeviance()
             );
             resultArea.setText(text);
         });

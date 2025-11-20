@@ -1,6 +1,7 @@
 package com.caloriecalc.service;
 
 import com.caloriecalc.model.ActivityLevel;
+import com.caloriecalc.model.CalDevianceRate;
 import com.caloriecalc.model.UserMetrics;
 import com.caloriecalc.port.tdee.*;
 
@@ -46,6 +47,9 @@ public class CalculateTDEEInteractor implements CalculateTDEEInputBoundary {
             ActivityLevel lvl = input.activityLevel();
             double userTDEE = userBMR * lvl.multiplier;
 
+            CalDevianceRate rate = input.caldeviancerate();
+            userTDEE = userTDEE + rate.deviancerate;
+
 
             userTDEE = Math.max(0, userTDEE);
 
@@ -54,7 +58,8 @@ public class CalculateTDEEInteractor implements CalculateTDEEInputBoundary {
                     userBMR,
                     userTDEE,
                     bmrFormula.name(),
-                    lvl.multiplier
+                    lvl.multiplier,
+                    rate.deviancerate
             ));
 
         } catch (IllegalArgumentException ex) {
