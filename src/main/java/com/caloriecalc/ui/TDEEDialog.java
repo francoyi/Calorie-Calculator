@@ -5,6 +5,7 @@ import java.awt.*;
 import java.util.Locale;
 
 import com.caloriecalc.model.ActivityLevel;
+import com.caloriecalc.model.CalDevianceRate;
 import com.caloriecalc.model.UserMetrics;
 import com.caloriecalc.model.UserSettings;
 import com.caloriecalc.port.tdee.*;
@@ -28,9 +29,9 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
     private final JComboBox<String> activityLevelField =
             new JComboBox<>(new String[]{"Very Light", "Light", "Medium", "High", "Extreme"});
     private final JComboBox<String> goalWeightRateTweak =
-            new  JComboBox<>(new String[]{"Maintain Weight", "Lose 0.5kg or 1.1lbs per week",
-                    "Lose 0.25kg or 0.55lbs per week", "Gain 0.5kg or 1.1lbs per week",
-                    "Gain 0.25kg or 0.55lbs per week"});
+            new  JComboBox<>(new String[]{"Maintain Weight",
+                    "Lose 0.25kg or 0.55lbs per week", "Lose 0.5kg or 1.1lbs per week",
+                    "Gain 0.25kg or 0.55lbs per week", "Gain 0.5kg or 1.1lbs per week"});
 
     // Units
     private final JRadioButton metricBtn = new JRadioButton("Metric (kg, cm)", true);
@@ -238,6 +239,17 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
         };
     }
 
+    private CalDevianceRate fromCalRateIndex(int idx) {
+        return switch (idx) {
+            case 0 -> CalDevianceRate.MAINTAIN_0wk;
+            case 1 -> CalDevianceRate.LOSE_250wk;
+            case 2 -> CalDevianceRate.LOSE_500wk;
+            case 3 -> CalDevianceRate.GAIN_250wk;
+            case 4 -> CalDevianceRate.GAIN_500wk;
+            default -> throw new IllegalStateException("Unexpected calRate index: " + idx);
+        };
+    }
+
     private void onCalculate() {
         try {
             int age = Integer.parseInt(ageField.getText().trim());
@@ -249,6 +261,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
                     ? UserMetrics.Sex.MALE : UserMetrics.Sex.FEMALE;
 
             ActivityLevel level = fromIndex(activityLevelField.getSelectedIndex());
+            CalDevianceRate calrate = fromCalRateIndex(goalWeightRateTweak.getSelectedIndex());
 
 
             if (age >= 18 && weight > 0 && height > 0) {
@@ -263,7 +276,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
             }
 
             interactor.execute(new CalculateTDEEInputData(
-                    age, weight, height, metric, sex, level
+                    age, weight, height, metric, sex, level, calrate
             ));
         } catch (NumberFormatException ex) {
             presentValidationError("Please enter valid numeric values for age, weight, and height.");
