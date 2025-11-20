@@ -65,7 +65,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
     private Result result = null;
 
     public TDEEDialog(Window owner, FoodLogService foodService, Runnable refreshCallback) {
-        super(owner, "Expected Calorie Burn Calculator (TDEE)", ModalityType.APPLICATION_MODAL);
+        super(owner, "Daily Calorie Burn Calculator (TDEE)", ModalityType.APPLICATION_MODAL);
 
         this.foodService = foodService;
         this.refreshCallback = refreshCallback;
@@ -118,6 +118,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
         addRow(formPanel, c, 2, "Height:", heightField);
         addRow(formPanel, c, 3, "Sex:", sexField);
         addRow(formPanel, c, 4, "Activity Level:", activityLevelField);
+        addRow(formPanel, c, 5, "Calorie Deficit/Surplus:", goalWeightRateTweak);
 
         JPanel unitPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         unitPanel.add(metricBtn);
@@ -133,7 +134,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
         JPanel top = new JPanel(new BorderLayout(5, 5));
         top.add(formPanel, BorderLayout.NORTH);
         top.add(unitPanel, BorderLayout.CENTER);
-        top.add(goalWeightRateTweak, BorderLayout.SOUTH);
+//      top.add(goalWeightRateTweak, BorderLayout.SOUTH);
 
         JPanel root = new JPanel(new BorderLayout(5, 8));
         root.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));

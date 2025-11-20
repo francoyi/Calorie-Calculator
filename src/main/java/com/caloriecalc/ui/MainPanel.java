@@ -18,7 +18,7 @@ public class MainPanel extends JPanel {
     private final JButton addMealBtn = new JButton("Add Meal");
     private final JButton setGoalBtn = new JButton("Set Goal");
     private final JButton themeSwitchBtn = new JButton("Toggle Theme");
-    private final JButton calExpecBtn = new JButton("Expenditure Calculator");
+    private final JButton calExpecBtn = new JButton("Daily Calorie Burn Helper");
     private final JLabel dateLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel goalLabel = new JLabel("", SwingConstants.CENTER);
     private LocalDate current = LocalDate.now(ZONE);
