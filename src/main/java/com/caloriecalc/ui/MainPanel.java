@@ -18,6 +18,7 @@ public class MainPanel extends JPanel {
     private final JButton addMealBtn = new JButton("Add Meal");
     private final JButton setGoalBtn = new JButton("Set Goal");
     private final JButton themeSwitchBtn = new JButton("Toggle Theme");
+    private final JButton calExpecBtn = new JButton("Expenditure Calculator");
     private final JLabel dateLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel goalLabel = new JLabel("", SwingConstants.CENTER);
     private LocalDate current = LocalDate.now(ZONE);
@@ -51,6 +52,7 @@ public class MainPanel extends JPanel {
         actions.add(addMealBtn);
         actions.add(setGoalBtn);
         actions.add(themeSwitchBtn);
+        actions.add(calExpecBtn);
         top.add(actions, BorderLayout.EAST);
         add(top, BorderLayout.NORTH);
 
@@ -73,9 +75,16 @@ public class MainPanel extends JPanel {
         });
         addMealBtn.addActionListener(e -> onAddMeal());
         setGoalBtn.addActionListener(e -> onSetGoal());
+        calExpecBtn.addActionListener(e -> openCalcTDEE());
         themeSwitchBtn.addActionListener(e -> onSwitchTheme());
         refresh();
     }
+
+    private void openCalcTDEE() {
+        Window owner = SwingUtilities.getWindowAncestor(this);
+        new TDEEDialog(owner, service, this::refresh).setVisible(true);
+    }
+
 
     private void onSwitchTheme() {
         Main.toggleTheme();
