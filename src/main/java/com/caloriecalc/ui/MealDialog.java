@@ -28,12 +28,14 @@ public class MealDialog extends JDialog {
 
 
 
+
     public MealDialog(Window owner, FoodLogService service, LocalDate date, Meal existing) {
         super(owner, existing == null ? "Add Meal" : "Edit Meal", ModalityType.APPLICATION_MODAL);
         this.service = service;
         this.date = date;
         this.meal = existing == null ? service.newEmptyMeal(date, "Meal") : existing;
         this.lookup = new FoodCalorieLookupService(service);
+
         setSize(700, 500);
         setLocationRelativeTo(owner);
         setLayout(new BorderLayout(8, 8));
@@ -48,6 +50,7 @@ public class MealDialog extends JDialog {
         add(top, BorderLayout.NORTH);
         JTable table = new JTable(tableModel);
         table.setRowHeight(24);
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 
         TableColumn itemColumn = table.getColumnModel().getColumn(0);
         itemColumn.setCellEditor(new AutoCompleteEditor(tableModel, table));
@@ -181,6 +184,13 @@ public class MealDialog extends JDialog {
             this.table = table;
 
             popup.setFocusable(false);
+            field.addFocusListener(new java.awt.event.FocusAdapter() {
+                @Override
+                public void focusLost(java.awt.event.FocusEvent e) {
+                    popup.setVisible(false);
+                    stopCellEditing();
+                }
+            });
 
 
             field.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
@@ -213,12 +223,12 @@ public class MealDialog extends JDialog {
                 item.addActionListener(e -> {
                     field.setText(s);
                     popup.setVisible(false);
-                    SwingUtilities.invokeLater(()-> field.requestFocusInWindow());
+                    stopCellEditing();
                 });
                 popup.add(item);
             }
 
-            JMenuItem create = new JMenuItem("Create own food");
+            JMenuItem create = new JMenuItem("Create own recipe");
 
             create.setFocusable(false);
             create.setRequestFocusEnabled(false);
@@ -227,9 +237,15 @@ public class MealDialog extends JDialog {
             {
                 popup.setVisible(false);
 
+                int editingRow = table.getEditingRow();
+                if (editingRow < 0) editingRow = table.getSelectedRow();
+
                 CreateFoodDialog dlg =
                         new CreateFoodDialog(SwingUtilities.getWindowAncestor(table), text,model.getService());
                 CreateFoodDialog.CreateFood result = dlg.showDialog();
+
+                if (table.isEditing()) table.getCellEditor().stopCellEditing();
+
 
                 if (result != null && !result.ingredients.isEmpty()) {
                     int row = table.getEditingRow();
@@ -241,7 +257,7 @@ public class MealDialog extends JDialog {
                     model.fireTableRowsUpdated(row, row);
                     field.setText(result.name);
                 }
-                SwingUtilities.invokeLater(() -> field.requestFocusInWindow());
+                stopCellEditing();
             });
             popup.addSeparator();
             popup.add(create);
@@ -255,10 +271,7 @@ public class MealDialog extends JDialog {
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int col) {
             field.setText(value == null ? "" : value.toString());
-            SwingUtilities.invokeLater(() -> {
-                showSuggestions();
-                field.requestFocusInWindow();
-            });
+            SwingUtilities.invokeLater(field::requestFocusInWindow);
             return field;
         }
 
@@ -270,15 +283,22 @@ public class MealDialog extends JDialog {
 
 
   private class MealTableModel extends AbstractTableModel {
-    private final String[] cols = {"Item (e.g., banana)", "Amount", "Unit (g/ml)", "kcal (auto or manual)","Fetch"};
+    private final String[] cols = {"Item (e.g., banana)", "Amount", "Unit (g/ml)", "kcal (auto or manual)"};
     private final java.util.List<MealRow> rows = new java.util.ArrayList<>();
     private final FoodLogService service;
     private final FoodCalorieLookupService lookup;
 
-    public MealTableModel (FoodCalorieLookupService service, FoodCalorieLookupService lookup){
+
+    public MealTableModel (FoodLogService service, FoodCalorieLookupService lookup){
         this.service = service;
         this.lookup = lookup;
     }
+
+
+
+      public java.util.List<MealRow> getRows() {
+          return rows;
+      }
 
       public FoodLogService getService() {
           return service;
@@ -325,18 +345,17 @@ public class MealDialog extends JDialog {
         //return c != 4;
         return true;
     }
-    @Override public Object getValueAt(int r, int c){
-      MealRow row = rows.get(r);
-      switch (c){
-          case 0: row.item;
-          case 1: row.amount;
-          case 2: row.unit;
-          case 3: row.kcalManual==null? "": String.format("%.1f", row.kcalManual);
-
-          default:
-              return "";
-          };
-    }
+      @Override
+      public Object getValueAt(int r, int c){
+          MealRow row = rows.get(r);
+          switch (c){
+              case 0: return row.item;
+              case 1: return row.amount;
+              case 2: return row.unit;
+              case 3: return row.kcalManual == null ? "" : String.format("%.1f", row.kcalManual);
+              default: return "";
+          }
+      }
     @Override public void setValueAt(Object aValue, int r, int c){
       MealRow row = rows.get(r);
       switch (c){
@@ -350,24 +369,26 @@ public class MealDialog extends JDialog {
         new Thread(() -> {
           Double kcal = lookup.lookupKcal(row.item, row.amount, row.unit);
 
-          if (kcal != null) {
-              row.kcalManual = kcal;
-              row.fromApi = true;
-              SwingUtilities.invokeLater(() -> {
-                  fireTableRowsUpdated(r,r);
-                  recalcTotal();
-              });
-            } else{
-              row.suggestionAvailable = true;
-              SwingUtilities.invokeLater(() -> fireTableRowsUpdated(r,r,));
-          }
-         }).start();
-        } else{
+            if (kcal != null) {
+                row.kcalManual = kcal;
+                row.fromApi = true;
+                SwingUtilities.invokeLater(() -> {
+                    fireTableRowsUpdated(r, r);
+                    recalcTotal();
+                });
+            } else {
+                row.suggestionAvailable = true;
+                SwingUtilities.invokeLater(() -> fireTableRowsUpdated(r, r));
+            }
+        }).start();
+      } else {
           recalcTotal();
       }
 
     }
-    @Override public Class<?> getColumnClass(int c){
+
+      @Override
+      public Class<?> getColumnClass(int c){
         return (c==1)? Double.class : String.class;
     }
 
@@ -419,8 +440,10 @@ public class MealDialog extends JDialog {
                       result = dlg.showDialog();
                   } catch (Exception ignored) {
                   }
+                  if (tableRef.isEditing()) tableRef.getCellEditor().stopCellEditing();
                   if (result != null && result.ingredients != null && !result.ingredients.isEmpty()) {
-                      r.kcalManual = result.ingredients.get(0).getKcal();
+                      r.item = result.name;
+                      r.kcalManual = result.totalKcal;
                       r.fromApi = false;
                       r.suggestionAvailable = false;
                       SwingUtilities.invokeLater(() -> {

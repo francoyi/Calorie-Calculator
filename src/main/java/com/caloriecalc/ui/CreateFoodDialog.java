@@ -20,7 +20,7 @@ public class CreateFoodDialog extends JDialog {
 
 
     public CreateFoodDialog(Window owner, String suggestedName, FoodLogService service) {
-        super(owner, "Create Own Food", ModalityType.APPLICATION_MODAL);
+        super(owner, "Create Own Recipe", ModalityType.APPLICATION_MODAL);
         this.service = service;
         this.lookup = new FoodCalorieLookupService(service);
         setLayout(new BorderLayout(8, 8));
@@ -49,7 +49,7 @@ public class CreateFoodDialog extends JDialog {
         controls.add(left, BorderLayout.WEST);
 
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton ok = new JButton("OK");
+        JButton ok = new JButton("OK and save to My Foods");
         JButton cancel = new JButton("Cancel");
         right.add(ok);
         right.add(cancel);
