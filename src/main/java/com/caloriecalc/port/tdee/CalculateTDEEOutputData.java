@@ -4,5 +4,6 @@ public record CalculateTDEEOutputData(
         double bmr,
         double tdee,
         String formulaName,
-        double activityFactor
+        double activityFactor,
+        double calDeviance
 ) { }

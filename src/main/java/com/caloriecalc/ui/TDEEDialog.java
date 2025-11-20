@@ -27,8 +27,10 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
             new JComboBox<>(new String[]{"Male", "Female"});
     private final JComboBox<String> activityLevelField =
             new JComboBox<>(new String[]{"Very Light", "Light", "Medium", "High", "Extreme"});
-    private final JComboBox<String> goalTweak =
-            new  JComboBox<>(new String[]{"Lose", "Gain"});
+    private final JComboBox<String> goalWeightRateTweak =
+            new  JComboBox<>(new String[]{"Maintain Weight", "Lose 0.5kg or 1.1lbs per week",
+                    "Lose 0.25kg or 0.55lbs per week", "Gain 0.5kg or 1.1lbs per week",
+                    "Gain 0.25kg or 0.55lbs per week"});
 
     // Units
     private final JRadioButton metricBtn = new JRadioButton("Metric (kg, cm)", true);
@@ -39,7 +41,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
     private final JButton setGoalBtn = new JButton("Set as Calorie Burn Goal");
 
     // Result box
-    private final JTextArea resultArea = new JTextArea(5, 15);
+    private final JTextArea resultArea = new JTextArea(6, 15);
 
     private final CalculateTDEEInputBoundary interactor;
     private final FoodLogService foodService;
@@ -129,7 +131,8 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
 
         JPanel top = new JPanel(new BorderLayout(5, 5));
         top.add(formPanel, BorderLayout.NORTH);
-        top.add(unitPanel, BorderLayout.SOUTH);
+        top.add(unitPanel, BorderLayout.CENTER);
+        top.add(goalWeightRateTweak, BorderLayout.SOUTH);
 
         JPanel root = new JPanel(new BorderLayout(5, 8));
         root.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -303,11 +306,13 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
                     BMR (%s): %.1f kcal/day
                     Activity factor: %.2f
                     Estimated TDEE: %.1f kcal/day
+                    Deficit/Surplus: %.1f kcal/day
                     """.formatted(
                     output.formulaName(),
                     output.bmr(),
                     output.activityFactor(),
-                    output.tdee()
+                    output.tdee(),
+                    output.calDeviance()
             );
             resultArea.setText(text);
         });
