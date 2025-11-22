@@ -31,28 +31,30 @@ public class CalculateTDEEInteractor implements CalculateTDEEInputBoundary {
                 return;
             }
 
-
             final double weightKg = input.metric() ? input.weight() : input.weight() * 0.453592;
             final double heightCm = input.metric() ? input.height() : input.height() * 2.54;
 
-            UserMetrics userMetrics = new UserMetrics(input.ageYears(), weightKg, heightCm, input.sex());
-
-
-            double userBMR = bmrFormula.computeBmr(userMetrics);
-
-
-            userBMR = Math.max(0, userBMR);
-
 
             ActivityLevel lvl = input.activityLevel();
-            double userTDEE = userBMR * lvl.multiplier;
-
             CalDevianceRate rate = input.caldeviancerate();
+
+
+            UserMetrics userMetrics = new UserMetrics(
+                    input.ageYears(),
+                    weightKg,
+                    heightCm,
+                    input.sex(),
+                    lvl,
+                    rate,
+                    input.metric()
+            );
+
+            double userBMR = bmrFormula.computeBmr(userMetrics);
+            userBMR = Math.max(0, userBMR);
+
+            double userTDEE = userBMR * lvl.multiplier;
             userTDEE = userTDEE + rate.deviancerate;
-
-
             userTDEE = Math.max(0, userTDEE);
-
 
             presenter.present(new CalculateTDEEOutputData(
                     userBMR,
