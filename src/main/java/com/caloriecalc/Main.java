@@ -2,8 +2,10 @@ package com.caloriecalc;
 
 import com.caloriecalc.port.FoodLogRepository;
 import com.caloriecalc.port.NutritionDataProvider;
+import com.caloriecalc.port.UserMetricsRepository;
 import com.caloriecalc.port.UserSettingsRepository;
 import com.caloriecalc.repo.JsonFoodLogRepository;
+import com.caloriecalc.repo.JsonUserMetricsRepository;
 import com.caloriecalc.repo.JsonUserSettingsRepository;
 import com.caloriecalc.service.FoodLogService;
 import com.caloriecalc.service.OpenFoodFactsClient;
@@ -27,8 +29,10 @@ public class Main {
             UserSettingsRepository settingsRepo = new JsonUserSettingsRepository(Path.of("data", "user_settings.json"));
             NutritionDataProvider provider = new OpenFoodFactsClient();
             FoodLogService service = new FoodLogService(foodLogRepo, provider, settingsRepo);
+            UserMetricsRepository metricsRepo =
+                    new JsonUserMetricsRepository(Path.of("data", "user_metrics.json"));
 
-            MainPanel mainPanel = new MainPanel(service);
+            MainPanel mainPanel = new MainPanel(service, metricsRepo);
             MainFrame mainFrame = new MainFrame(mainPanel);
 
             mainFrame.setVisible(true);
