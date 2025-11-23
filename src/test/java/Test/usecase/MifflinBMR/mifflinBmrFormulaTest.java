@@ -39,6 +39,26 @@ public class mifflinBmrFormulaTest {
         assertEquals(1569.0, userBMR, 0.01);
     }
 
+    @Test
+    void passCalcNegBMR() {
+        BMRFormula bmrFormula = new MifflinStJeorBMR();
+        String bmrName = bmrFormula.name();
+
+        UserMetrics userMetrics = new UserMetrics(
+                190000,
+                70,
+                180,
+                UserMetrics.Sex.FEMALE,
+                ActivityLevel.MEDIUM,
+                CalDevianceRate.MAINTAIN_0wk,
+                true
+        );
+
+        double userBMR = bmrFormula.computeBmr(userMetrics);
+
+        assertEquals(-948336.0, userBMR, 0.01);
+    }
+
 }
 
 
