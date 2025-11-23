@@ -1,6 +1,8 @@
+package com.caloriecalc.FoodItemImpl;
+
 import com.caloriecalc.model.FoodItem;
 
-class FoodItemImpl implements FoodItem {
+public class FoodItemImpl implements FoodItem {
     private final String name;
     private final double kcalPerServing;
 
@@ -10,12 +12,12 @@ class FoodItemImpl implements FoodItem {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return name;
     }
 
     @Override
-    public double getKcalPerServing() {
+    public double kcalPerServing() {
         return kcalPerServing;
     }
 

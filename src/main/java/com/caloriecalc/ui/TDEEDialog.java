@@ -7,7 +7,6 @@ import java.util.Locale;
 import com.caloriecalc.model.ActivityLevel;
 import com.caloriecalc.model.CalDevianceRate;
 import com.caloriecalc.model.UserMetrics;
-import com.caloriecalc.model.UserSettings;
 import com.caloriecalc.port.tdee.*;
 import com.caloriecalc.service.CalculateTDEEInteractor;
 import com.caloriecalc.service.FoodLogService;
@@ -29,7 +28,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
     private final JComboBox<String> activityLevelField =
             new JComboBox<>(new String[]{"Very Light", "Light", "Medium", "High", "Extreme"});
     private final JComboBox<String> goalWeightRateTweak =
-            new  JComboBox<>(new String[]{"Maintain Weight",
+            new JComboBox<>(new String[]{"Maintain Weight",
                     "Lose 0.25kg or 0.55lbs per week", "Lose 0.5kg or 1.1lbs per week",
                     "Gain 0.25kg or 0.55lbs per week", "Gain 0.5kg or 1.1lbs per week"});
 
@@ -50,16 +49,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
 
     private boolean metricSelected = true;
 
-    public static class Result {
-        public final double bmr;
-        public final double tdee;
-        public final String formula;
-
-        public Result(double bmr, double tdee, String formula) {
-            this.bmr = bmr;
-            this.tdee = tdee;
-            this.formula = formula;
-        }
+    public record Result(double bmr, double tdee, String formula) {
     }
 
     private Result result = null;

@@ -1,3 +1,4 @@
 package com.caloriecalc.model;
 
-public class TDEEEstimate { }
+public class TDEEEstimate {
+}

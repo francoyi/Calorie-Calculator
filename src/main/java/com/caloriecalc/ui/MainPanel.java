@@ -4,6 +4,7 @@ import com.caloriecalc.Main;
 import com.caloriecalc.model.DailyLog;
 import com.caloriecalc.model.UserSettings;
 import com.caloriecalc.service.FoodLogService;
+import com.caloriecalc.service.MealRecommendationService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,12 +24,14 @@ public class MainPanel extends JPanel {
     private final JLabel goalLabel = new JLabel("", SwingConstants.CENTER);
     private LocalDate current = LocalDate.now(ZONE);
     private final FoodLogService service;
+    private final MealRecommendationService mealRecommendationService;
     private final DailyLogPanel dailyPanel;
     private DailyLog lastRendered;
 
-    public MainPanel(FoodLogService service) {
+    public MainPanel(FoodLogService service, MealRecommendationService mealRecommendationService) {
         this.service = service;
-        this.dailyPanel = new DailyLogPanel(service, this);
+        this.mealRecommendationService = mealRecommendationService;
+        this.dailyPanel = new DailyLogPanel(service, mealRecommendationService, this);
 
         setLayout(new BorderLayout(8, 8));
 
@@ -111,7 +114,7 @@ public class MainPanel extends JPanel {
     }
 
     private void onAddMeal() {
-        MealDialog dlg = new MealDialog(SwingUtilities.getWindowAncestor(this), service, current, null);
+        MealDialog dlg = new MealDialog(SwingUtilities.getWindowAncestor(this), service, current, null, mealRecommendationService);
         dlg.setVisible(true);
         refresh();
     }
