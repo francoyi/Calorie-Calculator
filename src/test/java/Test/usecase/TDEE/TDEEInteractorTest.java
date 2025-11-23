@@ -245,7 +245,7 @@ public class TDEEInteractorTest {
         assertEquals(0 * ActivityLevel.MEDIUM.multiplier + CalDevianceRate.MAINTAIN_0wk.deviancerate,
                 presenter.output.tdee());
 
-        assertEquals("Mifflin–St Jeor", presenter.output.formulaName());
+        assertEquals("Mifflin-St Jeor", presenter.output.formulaName());
     }
 
     @Test
@@ -287,7 +287,7 @@ public class TDEEInteractorTest {
         assertEquals(0 * ActivityLevel.MEDIUM.multiplier + CalDevianceRate.MAINTAIN_0wk.deviancerate,
                 presenter.output.tdee());
 
-        assertEquals("Mifflin–St Jeor", presenter.output.formulaName());
+        assertEquals("Mifflin-St Jeor", presenter.output.formulaName());
     }
 
     @Test
