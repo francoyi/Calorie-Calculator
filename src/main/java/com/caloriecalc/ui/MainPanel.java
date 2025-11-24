@@ -3,6 +3,7 @@ package com.caloriecalc.ui;
 import com.caloriecalc.Main;
 import com.caloriecalc.model.DailyLog;
 import com.caloriecalc.model.UserSettings;
+import com.caloriecalc.port.UserMetricsRepository;
 import com.caloriecalc.service.FoodLogService;
 
 import javax.swing.*;
@@ -21,13 +22,15 @@ public class MainPanel extends JPanel {
     private final JButton calExpecBtn = new JButton("Daily Calorie Burn Helper");
     private final JLabel dateLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel goalLabel = new JLabel("", SwingConstants.CENTER);
+    private final UserMetricsRepository metricsRepo;
     private LocalDate current = LocalDate.now(ZONE);
     private final FoodLogService service;
     private final DailyLogPanel dailyPanel;
     private DailyLog lastRendered;
 
-    public MainPanel(FoodLogService service) {
+    public MainPanel(FoodLogService service, UserMetricsRepository metricsRepo) {
         this.service = service;
+        this.metricsRepo = metricsRepo;
         this.dailyPanel = new DailyLogPanel(service, this);
 
         setLayout(new BorderLayout(8, 8));
@@ -82,8 +85,9 @@ public class MainPanel extends JPanel {
 
     private void openCalcTDEE() {
         Window owner = SwingUtilities.getWindowAncestor(this);
-        new TDEEDialog(owner, service, this::refresh).setVisible(true);
+        new TDEEDialog(owner, service, metricsRepo, this::refresh).setVisible(true);
     }
+
 
 
     private void onSwitchTheme() {

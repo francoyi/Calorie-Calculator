@@ -1,3 +1,5 @@
+package Test;
+
 import com.caloriecalc.model.FoodItem;
 
 class FoodItemImpl implements FoodItem {

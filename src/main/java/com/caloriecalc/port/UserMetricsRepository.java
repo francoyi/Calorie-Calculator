@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface UserMetricsRepository {
 
     /**
-     * Load the last saved metrics, if any.
+     * Load the last saved metrics, if there are any.
      */
     Optional<UserMetrics> load();
 
