@@ -7,7 +7,6 @@ import java.util.Locale;
 import com.caloriecalc.model.ActivityLevel;
 import com.caloriecalc.model.CalDevianceRate;
 import com.caloriecalc.model.UserMetrics;
-import com.caloriecalc.model.UserSettings;
 import com.caloriecalc.port.UserMetricsRepository;
 import com.caloriecalc.port.tdee.*;
 import com.caloriecalc.service.CalculateTDEEInteractor;
@@ -46,7 +45,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
     private final FoodLogService foodService;
     private final Runnable refreshCallback;
 
-    private boolean metricSelected = true;
+    private boolean isMetricInputSelected = true;
 
     public static class Result {
         public final double bmr;
@@ -150,16 +149,16 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
         setGoalBtn.addActionListener(e -> onSetGoal());
 
         metricBtn.addActionListener(e -> {
-            if (!metricSelected) {
+            if (!isMetricInputSelected) {
                 convertImperialToMetric();
-                metricSelected = true;
+                isMetricInputSelected = true;
             }
         });
 
         imperialBtn.addActionListener(e -> {
-            if (metricSelected) {
+            if (isMetricInputSelected) {
                 convertMetricToImperial();
-                metricSelected = false;
+                isMetricInputSelected = false;
             }
         });
     }
@@ -208,12 +207,12 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
 
         if (m.metricInput()) {
             metricBtn.setSelected(true);
-            metricSelected = true;
+            isMetricInputSelected = true;
             weightField.setText(formatOneDecimal(m.weightKg()));
             heightField.setText(formatOneDecimal(m.heightCm()));
         } else {
             imperialBtn.setSelected(true);
-            metricSelected = false;
+            isMetricInputSelected = false;
             double weightLb = m.weightKg() / 0.453592;
             double heightIn = m.heightCm() / 2.54;
             weightField.setText(formatOneDecimal(weightLb));
