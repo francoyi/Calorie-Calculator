@@ -10,12 +10,21 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 import com.caloriecalc.port.UserSettingsRepository;
+import com.caloriecalc.port.MyFoodRepository;
+import com.caloriecalc.repo.InMemoryMyFoodRepository;
+
 public class FoodLogService {
   private final FoodLogRepository repo;
   private final NutritionDataProvider provider;
   private final UserSettingsRepository settingsRepo;
   private final ZoneId zone = ZoneId.of("America/Toronto");
-  public FoodLogService(FoodLogRepository repo, NutritionDataProvider provider, UserSettingsRepository settingsRepo){
+  private final MyFoodRepository myFoodRepository = new InMemoryMyFoodRepository();
+
+    public MyFoodRepository getMyFoodRepository() {
+        return myFoodRepository;
+    }
+
+    public FoodLogService(FoodLogRepository repo, NutritionDataProvider provider, UserSettingsRepository settingsRepo){
     this.repo = repo; this.provider = provider;
     this.settingsRepo = settingsRepo;
   }
@@ -80,6 +89,6 @@ public class FoodLogService {
     }
 
     public double getDailyGoal() {
-      return settingsRepo.getSettings().getDailyKcalGoal();
+        return settingsRepo.getSettings().getDailyKcalGoal();
     }
 }

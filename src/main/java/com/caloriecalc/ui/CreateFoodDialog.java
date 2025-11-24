@@ -7,8 +7,17 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.caloriecalc.model.Ingredient;
+import com.caloriecalc.port.savetomyfood.SaveToMyFoodInputData;
 import com.caloriecalc.service.FoodLogService;
 import com.caloriecalc.service.FoodCalorieLookupService;
+import com.caloriecalc.ui.myfoods.SaveToMyFoodController;
+import com.caloriecalc.ui.myfoods.SaveToMyFoodPresenter;
+import com.caloriecalc.ui.myfoods.MyFoodsViewModel;
+import com.caloriecalc.port.MyFoodRepository;
+import com.caloriecalc.repo.InMemoryMyFoodRepository;
+import com.caloriecalc.service.SaveToMyFoodInteractor;
+import com.caloriecalc.port.savetomyfood.SaveToMyFoodOutputBoundary;
+import com.caloriecalc.port.savetomyfood.SaveToMyFoodInputBoundary;
 
 public class CreateFoodDialog extends JDialog {
     private final JTextField nameField = new JTextField(30);
@@ -17,6 +26,7 @@ public class CreateFoodDialog extends JDialog {
     private CreateFood result = null;
     private final FoodLogService service;
     private final FoodCalorieLookupService lookup;
+    private final SaveToMyFoodController saveMyFoodController;
 
 
     public CreateFoodDialog(Window owner, String suggestedName, FoodLogService service) {
@@ -24,6 +34,11 @@ public class CreateFoodDialog extends JDialog {
         this.service = service;
         this.lookup = new FoodCalorieLookupService(service);
         setLayout(new BorderLayout(8, 8));
+        MyFoodsViewModel vm = new MyFoodsViewModel();
+        SaveToMyFoodPresenter presenter = new SaveToMyFoodPresenter(vm);
+        SaveToMyFoodInteractor interactor =
+                new SaveToMyFoodInteractor(service.getMyFoodRepository(), presenter);
+        this.saveMyFoodController = new SaveToMyFoodController(interactor);
 
         if (suggestedName != null) nameField.setText(suggestedName);
 
@@ -84,9 +99,15 @@ public class CreateFoodDialog extends JDialog {
                 if (row.name == null || row.name.trim().isEmpty()) continue;
                 list.add(new Ingredient(row.name.trim(), row.amount, row.unit, row.kcal));
             }
+            // Trigger SaveToMyFood use case
+            SaveToMyFoodInputData data = new SaveToMyFoodInputData(name, list);
+            saveMyFoodController.execute(data);
 
+            // Return result for MealDialog (existing behavior)
             result = new CreateFood(name, list);
             dispose();
+
+
         });
         cancel.addActionListener(e -> { result = null; dispose(); });
 

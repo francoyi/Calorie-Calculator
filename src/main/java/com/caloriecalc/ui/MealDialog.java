@@ -14,6 +14,16 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import java.awt.*; import java.time.LocalDate; import java.util.ArrayList; import java.util.List;
 
+import com.caloriecalc.ui.myfoods.MyFoodsDialog;
+import com.caloriecalc.ui.myfoods.ListMyFoodsController;
+import com.caloriecalc.ui.myfoods.ListMyFoodsPresenter;
+import com.caloriecalc.ui.myfoods.MyFoodsListViewModel;
+import com.caloriecalc.port.listmyfoods.ListMyFoodsInputBoundary;
+import com.caloriecalc.service.ListMyFoodsInteractor;
+import com.caloriecalc.model.MyFood;
+import com.caloriecalc.ui.myfoods.AddMyFoodToMealController;
+import com.caloriecalc.ui.myfoods.MyFoodsViewModel;
+
 
 public class MealDialog extends JDialog {
   private final FoodLogService service;
@@ -144,7 +154,7 @@ public class MealDialog extends JDialog {
 
 
 
-  private void onSave(){
+    private void onSave(){
     meal.setLabel(labelField.getText().trim().isEmpty()? "Meal": labelField.getText().trim());
     meal.setNotes(notesField.getText().trim());
     List<MealEntry> entries = new ArrayList<>();
@@ -261,6 +271,53 @@ public class MealDialog extends JDialog {
             });
             popup.addSeparator();
             popup.add(create);
+
+
+            // ===== Browse My Foods (new feature) =====
+            JMenuItem browse = new JMenuItem("Browse My Foods");
+            browse.setFocusable(false);
+            browse.setRequestFocusEnabled(false);
+
+            browse.addActionListener(e -> {
+                popup.setVisible(false);
+
+                MyFoodsListViewModel vm = new MyFoodsListViewModel();
+                ListMyFoodsPresenter presenter = new ListMyFoodsPresenter(vm);
+                ListMyFoodsInputBoundary interactor =
+                        new ListMyFoodsInteractor(service.getMyFoodRepository(), presenter);
+                ListMyFoodsController controller = new ListMyFoodsController(interactor);
+
+                controller.listFoods();
+
+                MyFoodsDialog dlg = new MyFoodsDialog(SwingUtilities.getWindowAncestor(table), vm.getFoods());
+                MyFood selected = dlg.showDialog();
+
+                if (selected != null) {
+
+                    int row = table.getEditingRow();
+                    if (row < 0) row = table.getSelectedRow();
+                    if (row < 0) return;
+
+                    MealRow r = model.getRows().get(row);
+
+                    r.item = selected.getName();
+                    r.amount = 100;
+                    r.unit = "g";
+                    r.kcalManual = selected.getTotalKcal();
+                    r.fromApi = false;
+
+                    model.fireTableRowsUpdated(row, row);
+                    field.setText(selected.getName());
+                }
+
+                stopCellEditing();
+            });
+
+            popup.add(browse);
+
+
+
+
 
             popup.show(field, 0, field.getHeight());
 
