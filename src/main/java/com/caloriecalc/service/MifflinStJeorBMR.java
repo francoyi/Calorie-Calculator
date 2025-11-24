@@ -7,7 +7,7 @@ import com.caloriecalc.port.tdee.BMRFormula;
 public class MifflinStJeorBMR implements BMRFormula {
     @Override
     public String name() {
-        return "Mifflin–St Jeor";
+        return "Mifflin-St Jeor";
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.util.Locale;
 import com.caloriecalc.model.ActivityLevel;
 import com.caloriecalc.model.CalDevianceRate;
 import com.caloriecalc.model.UserMetrics;
+import com.caloriecalc.port.UserMetricsRepository;
 import com.caloriecalc.port.tdee.*;
 import com.caloriecalc.service.CalculateTDEEInteractor;
 import com.caloriecalc.service.FoodLogService;
@@ -14,10 +15,7 @@ import com.caloriecalc.service.MifflinStJeorBMR;
 
 public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
 
-    // “memory” of last user metrics
-    private static UserMetrics lastMetrics = null;
-    private static ActivityLevel lastActivityLevel = ActivityLevel.MEDIUM;
-    private static boolean lastInputMetric = true; // true = metric, false = imperial
+    private final UserMetricsRepository metricsRepository;
 
     // Input Fields
     private final JTextField ageField = new JTextField(5);
@@ -47,30 +45,41 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
     private final FoodLogService foodService;
     private final Runnable refreshCallback;
 
-    private boolean metricSelected = true;
+    private boolean isMetricInputSelected = true;
 
-    public record Result(double bmr, double tdee, String formula) {
+    public static class Result {
+        public final double bmr;
+        public final double tdee;
+        public final String formula;
+
+        public Result(double bmr, double tdee, String formula) {
+            this.bmr = bmr;
+            this.tdee = tdee;
+            this.formula = formula;
+        }
     }
 
     private Result result = null;
 
-    public TDEEDialog(Window owner, FoodLogService foodService, Runnable refreshCallback) {
+    public TDEEDialog(Window owner, FoodLogService foodService, UserMetricsRepository metricsRepository,
+                      Runnable refreshCallback) {
         super(owner, "Daily Calorie Burn Calculator (TDEE)", ModalityType.APPLICATION_MODAL);
 
         this.foodService = foodService;
+        this.metricsRepository = metricsRepository;
         this.refreshCallback = refreshCallback;
 
-        setSize(700, 500);
+    setSize(700, 500);
 
         this.interactor = new CalculateTDEEInteractor(new MifflinStJeorBMR(), this);
 
-        makeUI();
-        restoreLastInputs();
-        wireActions();
+    makeUI();
+    restoreLastInputs();
+    wireActions();
 
-        pack();
-        setLocationRelativeTo(owner);
-    }
+    pack();
+    setLocationRelativeTo(owner);
+}
 
     private void addRow(JPanel panel, GridBagConstraints c, int row,
                         String label, JComponent field) {
@@ -140,18 +149,16 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
         setGoalBtn.addActionListener(e -> onSetGoal());
 
         metricBtn.addActionListener(e -> {
-            if (!metricSelected) {
+            if (!isMetricInputSelected) {
                 convertImperialToMetric();
-                metricSelected = true;
-                lastInputMetric = true;
+                isMetricInputSelected = true;
             }
         });
 
         imperialBtn.addActionListener(e -> {
-            if (metricSelected) {
+            if (isMetricInputSelected) {
                 convertMetricToImperial();
-                metricSelected = false;
-                lastInputMetric = false;
+                isMetricInputSelected = false;
             }
         });
     }
@@ -185,30 +192,47 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
     }
 
     private void restoreLastInputs() {
-        if (lastMetrics == null) {
+        var opt = metricsRepository.load();
+        if (opt.isEmpty()) {
             return;
         }
 
-        ageField.setText(Integer.toString(lastMetrics.ageYears()));
-        sexField.setSelectedIndex(
-                lastMetrics.sex() == UserMetrics.Sex.MALE ? 0 : 1
-        );
-        activityLevelField.setSelectedIndex(toIndex(lastActivityLevel));
+        UserMetrics m = opt.get();
 
-        if (lastInputMetric) {
+        ageField.setText(Integer.toString(m.ageYears()));
+        sexField.setSelectedIndex(
+                m.sex() == UserMetrics.Sex.MALE ? 0 : 1
+        );
+        activityLevelField.setSelectedIndex(toIndex(m.activityLevel()));
+
+        if (m.metricInput()) {
             metricBtn.setSelected(true);
-            metricSelected = true;
-            weightField.setText(formatOneDecimal(lastMetrics.weightKg()));
-            heightField.setText(formatOneDecimal(lastMetrics.heightCm()));
+            isMetricInputSelected = true;
+            weightField.setText(formatOneDecimal(m.weightKg()));
+            heightField.setText(formatOneDecimal(m.heightCm()));
         } else {
             imperialBtn.setSelected(true);
-            metricSelected = false;
-            double weightLb = lastMetrics.weightKg() / 0.453592;
-            double heightIn = lastMetrics.heightCm() / 2.54;
+            isMetricInputSelected = false;
+            double weightLb = m.weightKg() / 0.453592;
+            double heightIn = m.heightCm() / 2.54;
             weightField.setText(formatOneDecimal(weightLb));
             heightField.setText(formatOneDecimal(heightIn));
         }
+
+        // Also restore the calorie deficit/surplus selection:
+        goalWeightRateTweak.setSelectedIndex(fromCalRate(m.calDevianceRate()));
     }
+
+    private int fromCalRate(CalDevianceRate rate) {
+        return switch (rate) {
+            case MAINTAIN_0wk -> 0;
+            case LOSE_250wk   -> 1;
+            case LOSE_500wk   -> 2;
+            case GAIN_250wk   -> 3;
+            case GAIN_500wk   -> 4;
+        };
+    }
+
 
     private int toIndex(ActivityLevel lvl) {
         return switch (lvl) {
@@ -259,12 +283,20 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
                 double weightKg = metric ? weight : weight * 0.453592;
                 double heightCm = metric ? height : height * 2.54;
                 try {
-                    lastMetrics = new UserMetrics(age, weightKg, heightCm, sex);
-                    lastActivityLevel = level;
-                    lastInputMetric = metric;
+                    UserMetrics metrics = new UserMetrics(
+                            age,
+                            weightKg,
+                            heightCm,
+                            sex,
+                            level,
+                            calrate,
+                            metric
+                    );
+                    metricsRepository.save(metrics);
                 } catch (IllegalArgumentException ignored) {
                 }
             }
+
 
             interactor.execute(new CalculateTDEEInputData(
                     age, weight, height, metric, sex, level, calrate

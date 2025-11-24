@@ -4,8 +4,10 @@ import com.caloriecalc.factory.MealRecommenderFactory;
 import com.caloriecalc.factory.RecommenderFactory;
 import com.caloriecalc.port.FoodLogRepository;
 import com.caloriecalc.port.NutritionDataProvider;
+import com.caloriecalc.port.UserMetricsRepository;
 import com.caloriecalc.port.UserSettingsRepository;
 import com.caloriecalc.repo.JsonFoodLogRepository;
+import com.caloriecalc.repo.JsonUserMetricsRepository;
 import com.caloriecalc.repo.JsonUserSettingsRepository;
 import com.caloriecalc.service.DefaultMealRecommendationService;
 import com.caloriecalc.service.FoodLogService;
@@ -31,13 +33,15 @@ public class Main {
             UserSettingsRepository settingsRepo = new JsonUserSettingsRepository(Path.of("data", "user_settings.json"));
             NutritionDataProvider provider = new OpenFoodFactsClient();
             FoodLogService service = new FoodLogService(foodLogRepo, provider, settingsRepo);
+            UserMetricsRepository metricsRepo =
+                    new JsonUserMetricsRepository(Path.of("data", "user_metrics.json"));
             RecommenderFactory recommenderFactory = new MealRecommenderFactory(service);
             MealRecommendationService mealRecommendationService = new DefaultMealRecommendationService(
                     provider,
                     recommenderFactory
             );
 
-            MainPanel mainPanel = new MainPanel(service, mealRecommendationService);
+            MainPanel mainPanel = new MainPanel(service, mealRecommendationService, metricsRepo);
             MainFrame mainFrame = new MainFrame(mainPanel);
 
             mainFrame.setVisible(true);
