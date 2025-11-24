@@ -30,26 +30,34 @@ public class OpenFoodFactsClient implements NutritionDataProvider {
         String key = term.toLowerCase();
         CacheItem ci = cache.get(key);
         Instant now = Instant.now();
+        
         if (ci != null && now.getEpochSecond() - ci.ts <= TTL_SECONDS) {
             return ci.val;
         }
+        
         try {
             String url = String.format(SEARCH_URL, URLEncoder.encode(term, StandardCharsets.UTF_8));
             HttpRequest req = HttpRequest.newBuilder().uri(URI.create(url)).timeout(Duration.ofSeconds(20))
                     .header("User-Agent", "CalorieCalc/0.4 (desktop; Swing)").GET().build();
             HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+            
             if (resp.statusCode() != 200) throw new RuntimeException("OpenFoodFacts HTTP " + resp.statusCode());
+            
             JsonNode root = JsonUtil.mapper().readTree(resp.body());
             JsonNode products = root.path("products");
+            
             if (!products.isArray() || products.size() == 0) return null;
             for (JsonNode p : products) {
                 JsonNode nutr = p.path("nutriments");
+                
                 if (nutr.isMissingNode()) continue;
                 Double kcal = getD(nutr, "energy-kcal_100g");
+                
                 if (kcal == null) {
                     Double kj = getD(nutr, "energy-kj_100g");
                     if (kj != null) kcal = EnergyConverter.kjToKcal(kj);
                 }
+                
                 if (kcal != null) {
                     Double protein = getD(nutr, "proteins_100g");
                     Double fat = getD(nutr, "fat_100g");
@@ -58,6 +66,7 @@ public class OpenFoodFactsClient implements NutritionDataProvider {
                     Double fiber = getD(nutr, "fiber_100g");
                     Double sodium = getD(nutr, "sodium_100g");
                     NutritionValues nv = new NutritionValues(kcal, protein, fat, carb, sugar, fiber, sodium);
+                    
                     cache.put(key, new CacheItem(nv, now.getEpochSecond()));
                     return nv;
                 }
