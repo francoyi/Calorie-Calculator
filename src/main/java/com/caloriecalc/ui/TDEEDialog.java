@@ -26,7 +26,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
     private final JComboBox<String> activityLevelField =
             new JComboBox<>(new String[]{"Very Light", "Light", "Medium", "High", "Extreme"});
     private final JComboBox<String> goalWeightRateTweak =
-            new  JComboBox<>(new String[]{"Maintain Weight",
+            new JComboBox<>(new String[]{"Maintain Weight",
                     "Lose 0.25kg or 0.55lbs per week", "Lose 0.5kg or 1.1lbs per week",
                     "Gain 0.25kg or 0.55lbs per week", "Gain 0.5kg or 1.1lbs per week"});
 
