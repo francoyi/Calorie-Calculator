@@ -5,7 +5,7 @@
    - Yan Lam (personal github username & github link)
    - Shourya Harsh Vardhan (personal github username & github link)
    - [@HaotianXu](https://github.com/maxhxu)
-   - Rasyid Rafi Pamuji (personal github username & github link)
+   - [@RasyidRP](https://github.com/RasyidRP)
    - [@HaoyingZhu](https://github.com/HaoyingZhu)
    - [@ZhengyuYi](https://github.com/francoyi)
 
@@ -106,4 +106,4 @@ This project is built following the principles of **Clean Architecture** and **S
 | UC 8: View Past Day by Date                                 | **Haoying Zhu**         |
 | UC 10: Receive food recommendations/references              | **Max Xu**              |
 | UC 11: Calculate the user's basal metabolic rate (BMR)      | **Shourya Harsh Vardhan** |
-| UC 12: Login to the application                             | **Rasyid Rafi Pamuji**  |
+| UC 12: Graphs showing user nutrition components             | **Rasyid Rafi Pamuji**  |
