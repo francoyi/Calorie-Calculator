@@ -198,7 +198,6 @@ public class MealDialog extends JDialog {
                 @Override
                 public void focusLost(java.awt.event.FocusEvent e) {
                     popup.setVisible(false);
-                    stopCellEditing();
                 }
             });
 
@@ -217,6 +216,20 @@ public class MealDialog extends JDialog {
             });
         }
 
+        @Override
+        public boolean stopCellEditing() {
+            String text = field.getText();
+
+            int row = table.getEditingRow();
+            int col = table.getEditingColumn();
+
+            if (row >= 0 && col == 0) {
+                model.setValueAt(text, row, col);   // <-- update MealRow properly
+            }
+
+            return super.stopCellEditing();
+        }
+
         private void showSuggestions() {
             popup.setVisible(false);
             popup.removeAll();
@@ -233,7 +246,6 @@ public class MealDialog extends JDialog {
                 item.addActionListener(e -> {
                     field.setText(s);
                     popup.setVisible(false);
-                    stopCellEditing();
                 });
                 popup.add(item);
             }
@@ -247,12 +259,16 @@ public class MealDialog extends JDialog {
             {
                 popup.setVisible(false);
 
-                int editingRow = table.getEditingRow();
-                if (editingRow < 0) editingRow = table.getSelectedRow();
+                if (table.isEditing()) table.getCellEditor().stopCellEditing();
+
+                int roww = table.getSelectedRow();   // <-- read the row from the table, NOT from editing state
+                if (roww < 0) return;
 
                 CreateFoodDialog dlg =
                         new CreateFoodDialog(SwingUtilities.getWindowAncestor(table), text,model.getService());
                 CreateFoodDialog.CreateFood result = dlg.showDialog();
+
+                if (table.isEditing()) table.getCellEditor().stopCellEditing();
 
                 if (table.isEditing()) table.getCellEditor().stopCellEditing();
 
@@ -263,6 +279,9 @@ public class MealDialog extends JDialog {
                     r.item = result.name;
                     r.kcalManual = result.totalKcal;
                     r.fromApi = false;
+                    r.amount = 100.0;
+                    r.unit = "g";
+                    r.suggestionAvailable = false;
 
                     model.fireTableRowsUpdated(row, row);
                     field.setText(result.name);
@@ -291,6 +310,7 @@ public class MealDialog extends JDialog {
 
                 MyFoodsDialog dlg = new MyFoodsDialog(SwingUtilities.getWindowAncestor(table), vm.getFoods());
                 MyFood selected = dlg.showDialog();
+                if (table.isEditing()) table.getCellEditor().stopCellEditing();
 
                 if (selected != null) {
 
