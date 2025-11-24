@@ -1,5 +1,6 @@
 package Test;
 
+import com.caloriecalc.FoodItemImpl.FoodItemImpl;
 import com.caloriecalc.model.FoodItem;
 import com.caloriecalc.model.MealRecommender;
 import com.caloriecalc.model.Recommendation;
@@ -35,7 +36,7 @@ public class MealRecommenderTest {
             for (int i = 0; i < top.size(); i++) {
                 System.out.println("#" + Integer.toString(i + 1) + " recommendation:");
                 System.out.println(top.get(i));
-                if (top.get(i).getCalories() > fr.getMaxKCal()) {
+                if (top.get(i).getCalories() > fr.getGoal()) {
                     flag = false;
                 }
             }
