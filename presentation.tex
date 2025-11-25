@@ -1,43 +1,59 @@
 \documentclass{beamer}
 \usetheme{Madrid}
 \usecolortheme{default}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\tiny,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\lstset{style=mystyle}
 
 \title
 {CSC207 Final Project: Calorie Calculator}
 
 \subtitle{Group \#14}
 
-\author[Yi, Xu, Zhu, Vardhan, Lam, Pamuji] % (optional, for multiple authors)
-{}
-
-\institute % (optional)
-{
-
-  \inst{1}%
-    Zhengyu Yi
-  \and
-  \inst{2}%
-    Max (Haotian) Xu
-  \and
-  \inst{3}%
-    Haoying Zhu
-  \and
-  \inst{4}%
-    Shourya Harsh Vardhan
-  \and
-  \inst{5}%
-    Yan Lam
-  \and
-  \inst{6}%
+\author[Group \#14]{
+    Zhengyu Yi \\
+    Max (Haotian) Xu \\
+    Haoying Zhu \\
+    Shourya Harsh Vardhan \\
+    Yan Lam \\
     Rasyid Rafi Pamuji
 }
+\institute{University of Toronto}
 
 \date{\today}
 
 
+% --- UofT Blue Theme Settings ---
 \definecolor{uoftblue}{RGB}{6,41,88}
-\setbeamercolor{titlelike}{bg=uoftblue}
-\setbeamerfont{title}{series=\bfseries}
+\usecolortheme[named=uoftblue]{structure}
+
+\setbeamercolor{palette primary}{bg=uoftblue,fg=white}
+\setbeamercolor{palette secondary}{bg=uoftblue!80!white,fg=white}
+\setbeamercolor{palette tertiary}{bg=uoftblue!60!white,fg=white}
 
 \begin{document}
 
@@ -48,204 +64,280 @@
 % \tableofcontents
 % \end{frame}
 
+% =========================================
+% SECTION 1: OVERVIEW
+% =========================================
+\section{Project Overview}
+
+% --- Slide 1: What is CalorieCalc? ---
 \begin{frame}
-    \frametitle{User Stories (i.e., what functionality is in your team's MVP?)}
+    \frametitle{Project Overview: CalorieCalc}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \Large
+        \textbf{What is it?}
+        \vspace{0.3cm}
+
+        \normalsize
+        A smart nutrition tracking application built with Java Swing.
+
+        \vspace{0.8cm}
+
+        \Large
+        \textbf{Our Goal}
+        \vspace{0.3cm}
+
+        \normalsize
+        To help users manage daily intake through API integration and intelligent algorithms.
+
+        \column{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth]{example-image}
+        \\ \tiny{Figure: Main Application Interface}
+    \end{columns}
+\end{frame}
+
+% --- Slide 2: MVP Key Features ---
+\begin{frame}
+    \frametitle{Key Features (MVP)}
     \begin{itemize}
-    \item Explain what functionality your program provides.
-    \item You can use whatever format you want — just make sure to clearly and concisely convey this information.
-    \item Advice: avoid too many words here and don’t plan to read a full paragraph of text on the slide when presenting — just highlight the key points.
-    \item Focus on the WHAT and not the HOW!
-    \item Recommended time limit: [1 minute]
+        \setlength\itemsep{1em}
+
+        \item \textbf{Smart Search}:
+        OpenFoodFacts API integration for real-time data.
+
+        \item \textbf{Personalized Tracking}:
+        Custom TDEE/BMR goals tailored to user metrics.
+
+        \item \textbf{Intelligent Recommendations}:
+        DP-based meal suggestions within calorie budget.
+
+        \item \textbf{Secure Persistence}:
+        Local JSON storage with atomic write safety.
+
+        \item \textbf{Data Visualization}:
+        Nutritional breakdown charts.
     \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{API Usage}
-    \begin{itemize}
-        \item What API(s) did your team use?
-        \item Make sure to show appropriate information (briefly).
-        \item Recommended time limit: [30 seconds]
-    \end{itemize}
-\end{frame}
+    \frametitle{Technical Highlights}
 
-\begin{frame}
-    \frametitle{Data Persistence}
-    \begin{itemize}
-        \item What data is persistent in your program?
-        \item Either here or in one of the use case demonstrations of functionality, data persistence should be demonstrated.
-        \item Recommended time limit: [30 seconds]
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Your Name Case Walkthrough (1 minute)}
-    \begin{itemize}
-        \item Briefly state your user story and which associated use case you will focus on
-        \item Show the before and after views for when the use case executes
-        \item Show a UML class diagram for the use case; it should be clear from the diagram that your code adheres to CA!
-        \item Show the code for your Use Case Interactor class.
-        \item Discuss the flow of control when your use case executes.
-        \item \ [This should be rehearsed so that it is around 1 minute per member]
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Zhengyu Yi Use Case Walkthrough (1 minute)}
-    \begin{itemize}
-        \item Briefly state your user story and which associated use case you will focus on
-        \item Show the before and after views for when the use case executes
-        \item Show a UML class diagram for the use case; it should be clear from the diagram that your code adheres to CA!
-        \item Show the code for your Use Case Interactor class.
-        \item Discuss the flow of control when your use case executes.
-        \item \ [This should be rehearsed so that it is around 1 minute per member]
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Max Xu Use Case Walkthrough (1 minute)}
-    \begin{itemize}
-        \item Briefly state your user story and which associated use case you will focus on
-        \item Show the before and after views for when the use case executes
-        \item Show a UML class diagram for the use case; it should be clear from the diagram that your code adheres to CA!
-        \item Show the code for your Use Case Interactor class.
-        \item Discuss the flow of control when your use case executes.
-        \item \ [This should be rehearsed so that it is around 1 minute per member]
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Haoying Zhu Use Case Walkthrough (1 minute)}
-    \begin{itemize}
-        \item Briefly state your user story and which associated use case you will focus on
-        \item Show the before and after views for when the use case executes
-        \item Show a UML class diagram for the use case; it should be clear from the diagram that your code adheres to CA!
-        \item Show the code for your Use Case Interactor class.
-        \item Discuss the flow of control when your use case executes.
-        \item \ [This should be rehearsed so that it is around 1 minute per member]
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Shourya Harsh Vardhan Use Case Walkthrough (1 minute)}
-    \begin{itemize}
-        \item Briefly state your user story and which associated use case you will focus on
-        \item Show the before and after views for when the use case executes
-        \item Show a UML class diagram for the use case; it should be clear from the diagram that your code adheres to CA!
-        \item Show the code for your Use Case Interactor class.
-        \item Discuss the flow of control when your use case executes.
-        \item \ [This should be rehearsed so that it is around 1 minute per member]
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Yan Lam Use Case Walkthrough (1 minute)}
-    \begin{itemize}
-        \item Briefly state your user story and which associated use case you will focus on
-        \item Show the before and after views for when the use case executes
-        \item Show a UML class diagram for the use case; it should be clear from the diagram that your code adheres to CA!
-        \item Show the code for your Use Case Interactor class.
-        \item Discuss the flow of control when your use case executes.
-        \item \ [This should be rehearsed so that it is around 1 minute per member]
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Rasyid Rafi Pamuji Use Case Walkthrough (1 minute)}
-    \begin{itemize}
-        \item Briefly state your user story and which associated use case you will focus on
-        \item Show the before and after views for when the use case executes
-        \item Show a UML class diagram for the use case; it should be clear from the diagram that your code adheres to CA!
-        \item Show the code for your Use Case Interactor class.
-        \item Discuss the flow of control when your use case executes.
-        \item \ [This should be rehearsed so that it is around 1 minute per member]
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Design (Recommended time: 2.5 minutes)}
-    \begin{itemize}
-        \item How does your program adhere to SOLID?
+    \begin{block}{External API: OpenFoodFacts}
         \begin{itemize}
-            \item Should aim to talk about two specific examples present in your project; touching on at least two principles.
+            \item Real-time nutritional data fetching.
+            \item \textbf{Optimization}: Implemented \textbf{In-Memory Caching} to handle rate limits.
         \end{itemize}
-        \item How does your program adhere to the Clean Architecture?
-        \begin{itemize}
-            \item This can be very short, or most likely skipped entirely, depending on what each member talked about in the previous use case part.
-        \end{itemize}
-        \item What is the best example of a design pattern used in your program?
-        \begin{itemize}
-            \item Aim to talk about one design pattern that your team introduced — don't talk about a pattern that was already implemented in the starter code to earn full marks here.
-        \end{itemize}
-        \item As appropriate, your team should make use of diagrams and other visuals to convey this information.
-        \begin{itemize}
-            \item Almost always, diagrams will be more effective than showing the details of the code! 
+    \end{block}
 
-[Image of relevant design diagram]
+    \vspace{0.5cm}
 
+    \begin{alertblock}{Data Persistence}
+        \begin{itemize}
+            \item \textbf{Format}: JSON (via Jackson library).
+            \item \textbf{Safety}: Uses \textbf{Atomic File Writes} (\texttt{Files.move}) to ensure integrity.
         \end{itemize}
-        \item Roughly, your team might aim for something 2–4 slides in total about design, but the exact number can vary depending on how you are presenting the information.
-    \end{itemize}
+    \end{alertblock}
+
+\end{frame}
+
+% =========================================
+% SECTION 2: INDIVIDUAL WALKTHROUGHS
+% =========================================
+\section{Individual Walkthroughs}
+
+% --- Member 1: Zhengyu Yi (API) ---
+\begin{frame}[fragile]
+    \frametitle{Use Case: Search \& Add API Food (Zhengyu Yi)}
+    \textbf{User Story:} "Search for food via API and add it to today's log."
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{Key Tech}: \texttt{OpenFoodFactsClient} with Caching.
+            \item \textbf{Logic}: Handles JSON parsing and mapping to \texttt{FoodItem}.
+            \item \textbf{Feature}: Supports natural language parsing (e.g., "100g chicken").
+        \end{itemize}
+        \column{0.5\textwidth}
+        \centering \textbf{[TODO: Insert API Search Screenshot]}
+        % \includegraphics[width=0.9\textwidth]{ui_api.png}
+    \end{columns}
+\end{frame}
+
+% --- Member 2: Janice Lam (Local Food) ---
+\begin{frame}[fragile]
+    \frametitle{Use Case: Create Local Food (Janice Lam)}
+    \textbf{User Story:} "Manually create custom foods when API data is missing."
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{UI}: Dynamic \texttt{JTable} to add/remove ingredients.
+            \item \textbf{Polymorphism}: Implements \texttt{LocalFoodItem} which shares the \texttt{FoodItem} interface.
+        \end{itemize}
+        \column{0.5\textwidth}
+        \centering \textbf{[TODO: Insert Create Food Dialog Screenshot]}
+        % \includegraphics[width=0.9\textwidth]{ui_create.png}
+    \end{columns}
+\end{frame}
+
+% --- Member 3: Haoying Zhu (Goals/History) ---
+\begin{frame}[fragile]
+    \frametitle{Use Case: Goal Setting \& History (Haoying Zhu)}
+    \textbf{User Story:} "Set daily calorie goals and view past consumption."
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{Persistence}: Manages \texttt{UserSettings} retrieval.
+            \item \textbf{UI Logic}: Visual feedback (Red text) when intake $>$ goal.
+            \item \textbf{Navigation}: Browse history by date.
+        \end{itemize}
+        \column{0.5\textwidth}
+        \centering \textbf{[TODO: Insert Main Panel Screenshot]}
+        % \includegraphics[width=0.9\textwidth]{ui_history.png}
+    \end{columns}
+\end{frame}
+
+% --- Member 4: Max Xu (Recommendation) ---
+\begin{frame}[fragile]
+    \frametitle{Use Case: Meal Recommendations (Max Xu)}
+    \textbf{User Story:} "Get food recommendations based on remaining calorie budget."
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{Algorithm}: \textbf{Dynamic Programming} (Knapsack-style).
+            \item \textbf{Complexity}: Optimizes food combinations to maximize utility under the calorie cap.
+        \end{itemize}
+        \column{0.5\textwidth}
+        \centering \textbf{[TODO: Insert Recommendation Screenshot]}
+        % \includegraphics[width=0.9\textwidth]{ui_recommend.png}
+    \end{columns}
+\end{frame}
+
+% --- Member 5: Shourya Harsh Vardhan (TDEE) ---
+\begin{frame}[fragile]
+    \frametitle{Use Case: Calculate BMR/TDEE (Shourya Harsh Vardhan)}
+    \textbf{User Story:} "Calculate Basal Metabolic Rate to understand energy needs."
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{Design Pattern}: \textbf{Strategy Pattern} (\texttt{BMRFormula}).
+            \item \textbf{Clean Arch}: Pure Interactor logic with strict Input/Output Boundaries.
+        \end{itemize}
+        \column{0.5\textwidth}
+        \centering \textbf{[TODO: Insert TDEE Screenshot]}
+        % \includegraphics[width=0.9\textwidth]{ui_tdee.png}
+    \end{columns}
+\end{frame}
+
+% --- Member 6: Rasyid Rafi Pamuji (Visualization) ---
+\begin{frame}[fragile]
+    \frametitle{Use Case: Visualize Nutrition (Rasyid Rafi Pamuji)}
+    \textbf{User Story:} "Visualize daily protein, carb, and fat distribution."
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{Goal}: Provide visual insights into diet balance (Macronutrients).
+            \item \textbf{Implementation}: Processes \texttt{NutritionValues} from Daily Logs.
+        \end{itemize}
+        \column{0.5\textwidth}
+        \centering \textbf{[TODO: Insert Chart Screenshot]}
+        % \includegraphics[width=0.9\textwidth]{ui_chart.png}
+    \end{columns}
+\end{frame}
+
+% =========================================
+% SECTION 3: ARCHITECTURE & DESIGN
+% =========================================
+\section{Architecture \& Design}
+
+\begin{frame}
+    \frametitle{Clean Architecture & SOLID}
+    \begin{columns}
+        \column{0.55\textwidth}
+        \begin{itemize}
+            \item \textbf{Dependency Inversion (DIP)}:
+            \begin{itemize}
+                \item High-level Interactors depend on \textbf{Interfaces} (OutputBoundary, Repository), never on concrete implementations.
+            \end{itemize}
+            \vspace{0.3cm}
+            \item \textbf{Single Responsibility (SRP)}:
+            \begin{itemize}
+                \item Strict separation: \texttt{UnitParser} (Parsing) vs \texttt{FoodLogService} (Logic) vs \texttt{JsonRepository} (IO).
+            \end{itemize}
+        \end{itemize}
+
+        \column{0.45\textwidth}
+        \centering
+        % TODO:replace w ca_diagram.png
+        \includegraphics[width=\textwidth]{example-image}
+        \\ \tiny{Project Dependency Graph}
+    \end{columns}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Functionality Demonstration (Recommended time: 3.5 minutes)}
-    \begin{itemize}
-        \item Make sure to time things out so that your team can demonstrate at least the core functionality of your MVP.
-        \item Feel free to demo live or show recordings, but you should have a working version of the program available to demo specific functionality live immediately after the 15-minute presentation if there are questions.
-        \item Make sure to especially rehearse the demo, as it can be easy to spend too much time here!
-        \item Focus on the most interesting parts of the program (e.g., don't spend time on things like signing up a user, changing password, or similar unless it is central to the program)
-        \item NOTE: depending on how your team decides to present, it might be appropriate to wait until the very end to do your demo.
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Code Organization (Recommended time: 30 seconds)}
-    \begin{itemize}
-        \item Talk about how your team organized your code.
-        \item How did you package your code?
-        \item Tip: make sure you follow proper naming conventions throughout your code, especially package names.
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Code Quality (Recommended time: 30 seconds)}
-    \begin{itemize}
-        \item Briefly explain how your team was able to maintain code quality.
+    \frametitle{Design Patterns}
+    \begin{enumerate}
+        \item \textbf{Strategy Pattern} (in TDEE):
         \begin{itemize}
-            \item You might discuss how you used Checkstyle or similar tools.
-            \item You might discuss your approach to pull requests and code reviews.
-            \item For the exceptional level, reminder that your team needs to explicitly draw attention to a representative pull request demonstrating your team's approach to code quality.
+            \item \texttt{BMRFormula} interface allows hot-swapping calculation algorithms (e.g., Mifflin-St Jeor).
+        \end{itemize}
+        \item \textbf{Template Method Pattern} (in Persistence):
+        \begin{itemize}
+            \item \texttt{AbstractJsonRepository} defines the standard atomic write skeleton, subclasses define types.
+        \end{itemize}
+        \item \textbf{Facade Pattern} (in Service):
+        \begin{itemize}
+            \item \texttt{FoodLogService} simplifies complex interactions between Repositories and API Clients for the UI.
+        \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+% =========================================
+% SECTION 4: QUALITY & PROCESS
+% =========================================
+\section{Quality \& Process}
+
+\begin{frame}
+    \frametitle{Code Quality \& Process}
+    \small
+    \begin{itemize}
+        \item \textbf{Testing Strategy}:
+        \begin{itemize}
+            \item Achieved \textbf{100\% Coverage} on critical Interactors (TDEE, MealRecommender).
+            \item Integration tests for OpenFoodFacts API.
+        \end{itemize}
+        \item \textbf{Collaboration}:
+        \begin{itemize}
+            \item Feature branches workflow.
+            \item Pull Requests with meaningful code reviews.
         \end{itemize}
     \end{itemize}
+    \vspace{0.3cm}
+    \centering
+    % TODO:Replace with the green bar of test coverage or the screenshot of the Git PR.
+    \includegraphics[width=0.4\textwidth]{example-image}
+    \\ \tiny{Evidence of Test Coverage \& Git Flow}
 \end{frame}
 
 \begin{frame}
-    \frametitle{The End}
+    \centering
+    \Huge Thank You! \\
+    \vspace{1cm}
+    \Large Questions?
+\end{frame}
+
+% =========================================
+% APPENDIX: Q&A DEFENSE
+% =========================================
+\appendix
+\begin{frame}
+    \frametitle{Appendix: Architecture Decision}
+    \textbf{Q: Why does the View talk to Service directly in some cases?}
+    \vspace{0.5cm}
     \begin{itemize}
-        \item Time permitting, your team can highlight anything else about the project that you want to share.
-        \item You’ll likely fill the time with covering the required rubric elements, so only say more if you have extra time to fill.
-        \item The recommended time limits would put your presentation around 15 minutes, so your team most likely won't have time for anything else.
+        \item Ideally, we would use a Controller for every single interaction.
+        \item However, for complex Swing components requiring background threading (like the dynamic Food Table), we used the \texttt{FoodLogService} as a \textbf{Facade}.
+        \item This keeps the code pragmatic while still ensuring Business Logic is decoupled from Data Sources via Repositories.
     \end{itemize}
 \end{frame}
 
-% \begin{frame}
-% \frametitle{Highlighting text}
-% 
-% In this slide, some important text will be
-% \alert{highlighted} because it's important.
-% Please, don't abuse it.
-% 
-% \begin{block}{Remark}
-% Sample text
-% \end{block}
-% 
-% \begin{alertblock}{Important theorem}
-% Sample text in red box
-% \end{alertblock}
-% 
-% \begin{examples}
-% Sample text in green box. The title of the block is ``Examples".
-% \end{examples}
-% \end{frame}
-% 
-% \end{document}
+\end{document}
