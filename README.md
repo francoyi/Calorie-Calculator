@@ -106,4 +106,4 @@ This project is built following the principles of **Clean Architecture** and **S
 | UC 8: View Past Day by Date                                 | **Haoying Zhu**         |
 | UC 10: Receive food recommendations/references              | **Max Xu**              |
 | UC 11: Calculate the user's basal metabolic rate (BMR)      | **Shourya Harsh Vardhan** |
-| UC 12: Login to the application                             | **Rasyid Rafi Pamuji**  |
+| UC 12: Visualize Daily Macronutrients                             | **Rasyid Rafi Pamuji**  |
