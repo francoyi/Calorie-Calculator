@@ -1,6 +1,7 @@
 package com.caloriecalc.ui;
 
 import com.caloriecalc.model.*;
+import com.caloriecalc.port.NutritionDataProvider;
 import com.caloriecalc.service.FoodLogService;
 import com.caloriecalc.service.MealRecommendationService;
 
