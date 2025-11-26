@@ -9,6 +9,7 @@ public enum ActivityLevel {
     EXTREME(1.9);
 
     public final double multiplier;
+
     ActivityLevel(double multiplier) {
 
         this.multiplier = multiplier;

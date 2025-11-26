@@ -7,25 +7,26 @@ import com.caloriecalc.service.FoodCalorieLookupService;
 import com.caloriecalc.model.*;
 import com.caloriecalc.port.NutritionDataProvider;
 import com.caloriecalc.service.FoodLogService;
-import com.caloriecalc.service.OpenFoodFactsClient;
+import com.caloriecalc.service.MealRecommendationService;
 
-import javax.swing.*; import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
-import java.awt.*; import java.time.LocalDate; import java.util.ArrayList; import java.util.List;
-
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MealDialog extends JDialog {
-  private final FoodLogService service;
-  private final LocalDate date;
-  private final Meal meal;
-  private final JTextField labelField = new JTextField(20);
-  private final JTextField notesField = new JTextField(30);
-  private final MealTableModel tableModel;
-  private final JLabel totalLabel = new JLabel("Total: 0 kcal");
-  private final JButton recommendMealBtn = new JButton("Recommend Meal");
-  private final FoodCalorieLookupService lookup;
-  private boolean autoLookupOnEdit = true;
+    private final FoodLogService service;
+    private final LocalDate date;
+    private final Meal meal;
+    private final JTextField labelField = new JTextField(20);
+    private final JTextField notesField = new JTextField(30);
+    private final MealTableModel tableModel = new MealTableModel();
+    private final JLabel totalLabel = new JLabel("Total: 0 kcal");
+    private final JButton recommendMealBtn = new JButton("Recommend Meal");
+    private final MealRecommendationService mealRecommendationService;
+    private boolean autoLookupOnEdit = true;
 
 
     /** For external calls, used to turn off/on the automatic API lookup */
@@ -33,11 +34,12 @@ public class MealDialog extends JDialog {
         this.autoLookupOnEdit = enabled;
     }
 
-
-    public MealDialog(Window owner, FoodLogService service, LocalDate date, Meal existing) {
+    public MealDialog(Window owner, FoodLogService service, LocalDate date, Meal existing,
+                      MealRecommendationService mealRecommendationService) {
         super(owner, existing == null ? "Add Meal" : "Edit Meal", ModalityType.APPLICATION_MODAL);
         this.service = service;
         this.date = date;
+        this.mealRecommendationService = mealRecommendationService;
         this.meal = existing == null ? service.newEmptyMeal(date, "Meal") : existing;
         this.lookup = new FoodCalorieLookupService(service);
         setSize(700, 500);
@@ -93,200 +95,64 @@ public class MealDialog extends JDialog {
     }
 
     private void onRecommendMeal() {
-        // TODO: magic constant for now, more permanent solution later
-        List<String> foodNames = List.of("apple", "banana", "steak", "salmon", "soybeans", "cereal", "cookie");
-        List<FoodItem> recommendedFoods = new ArrayList<>();
-        NutritionDataProvider provider = new OpenFoodFactsClient();
-        for (String foodName : foodNames) {
-            NutritionValues nv = provider.fetchNutritionPer100(foodName);
-            APIFoodItem apifi = new APIFoodItem(foodName, nv, 200);
-            recommendedFoods.add(apifi);
-        }
+        List<MealEntry> recommendedEntries = mealRecommendationService.recommendMealEntries();
 
-        MealRecommender mr = new MealRecommender(recommendedFoods, service.getDailyGoal());
-        List<Recommendation> lr = mr.getTopFoodRecommendations(1);
-        if (lr.isEmpty()) { // Alternative flow: calorie goal unrealistic, must handle
+        if (recommendedEntries.isEmpty()) {
+            // Alternative flow: calorie goal unrealistic, must handle
             JOptionPane.showMessageDialog(this, "Unable to recommend meal within your goal. Attempt setting another goal.", "Error", JOptionPane.ERROR_MESSAGE);
-        } else { // Main flow
-            // Get the top recommendation
-            Recommendation topRec = lr.get(0);
-            for (FoodItem recommendedFood : topRec.getFoodItems()) {
-                // The Recommender should ideally specify the suggested amount.
-                double suggestedAmount = 100.0;
-                String unit = "g";
-
-                Double kcalForServing = null;
-                NutritionValues nv = null;
-
-                if (recommendedFood instanceof APIFoodItem apifi) {
-                    nv = apifi.per100g();
-                    if (nv != null) {
-                        // Calculate kcal for the suggested amount (e.g., 100g)
-                        kcalForServing = (nv.energyKcal() / 100.0) * suggestedAmount;
-                    }
-                }
-
-                MealEntry recommendedEntry = new MealEntry(
-                        recommendedFood.getName(), // name
-                        recommendedFood.getName() + " " + suggestedAmount + unit, // input
-                        new Serving(suggestedAmount, unit), // serving
-                        kcalForServing, // kcalForServing
-                        "Recommended", // source
-                        java.time.ZonedDateTime.now(java.time.ZoneId.of("America/Toronto")), // fetchedAt
-                        nv // nutritionPer100g
-                );
-
-                tableModel.addFromEntry(recommendedEntry);
+        } else {
+            // Main flow: UI display logic
+            for (MealEntry entry : recommendedEntries) {
+                tableModel.addFromEntry(entry);
             }
 
             recalcTotal();
         }
     }
 
-
-
-
-
-  private void onSave(){
-    meal.setLabel(labelField.getText().trim().isEmpty()? "Meal": labelField.getText().trim());
-    meal.setNotes(notesField.getText().trim());
-    List<MealEntry> entries = new ArrayList<>();
-    for (MealRow r : tableModel.rows){
-      if (r.item==null || r.item.isBlank()) continue;
-      Double kcal = r.kcalManual;
-      if (kcal == null){
-        kcal = lookup.lookupKcal(r.item, r.amount, r.unit);}
-      entries.add(new MealEntry(r.item, r.item+" "+r.amount+(r.unit==null?"":r.unit),
-          new Serving(r.amount, r.unit), kcal, "Manual", java.time.ZonedDateTime.now(java.time.ZoneId.of("America/Toronto")), null));
-    }
-    meal.setEntries(entries); service.saveMeal(date, meal); dispose();
-  }
-  private void recalcTotal(){
-    double total = 0.0; for (MealRow r : tableModel.rows){ if (r.kcalManual != null) total += r.kcalManual; }
-    totalLabel.setText(String.format("Total: %.1f kcal", total));
-  }
-  private class MealRow {
-    String item = ""; double amount = 100.0; String unit = "g"; Double kcalManual = null;
-    public String toInput(){
-        return item+" "+amount+unit;}
-
-    boolean fromApi = false;
-    boolean suggestionAvailable = false;
-  }
-
-    private class AutoCompleteEditor extends AbstractCellEditor implements TableCellEditor {
-
-        private final JTextField field = new JTextField();
-        private final MealTableModel model;
-        private final JPopupMenu popup = new JPopupMenu();
-        private final JTable table;
-
-        public AutoCompleteEditor(MealTableModel model, JTable table) {
-            this.model = model;
-            this.table = table;
-
-            popup.setFocusable(false);
-
-            // Popup disappear when use typing in the blank
-            field.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-                @Override
-                public void insertUpdate(javax.swing.event.DocumentEvent e) {
-                    if (popup.isVisible()) {
-                        popup.setVisible(false);
-                    }
+    private void onSave() {
+        meal.setLabel(labelField.getText().trim().isEmpty() ? "Meal" : labelField.getText().trim());
+        meal.setNotes(notesField.getText().trim());
+        List<MealEntry> entries = new ArrayList<>();
+        for (MealRow r : tableModel.rows) {
+            if (r.item == null || r.item.isBlank()) continue;
+            Double kcal = r.kcalManual;
+            if (kcal == null) {
+                try {
+                    MealEntry tmp = service.resolveEntryFromInput(r.item + " " + r.amount + (r.unit == null ? "" : r.unit));
+                    kcal = tmp.kcalForServing();
+                    entries.add(new MealEntry(tmp.name(), r.item + " " + r.amount + (r.unit == null ? "" : r.unit),
+                            new Serving(r.amount, r.unit), kcal, kcal == null ? "Manual" : "OpenFoodFacts", tmp.fetchedAt(), tmp.nutritionPer100g()));
+                    continue;
+                } catch (Exception ex) {
                 }
-
-                @Override
-                public void removeUpdate(javax.swing.event.DocumentEvent e) {
-                    if (popup.isVisible()) {
-                        popup.setVisible(false);
-                    }
-                }
-
-                @Override
-                public void changedUpdate(javax.swing.event.DocumentEvent e) {
-                }
-            });
-        }
-
-        /** pop Create own food blank） */
-        private void showSuggestions() {
-            if (!field.isDisplayable() || !field.isShowing()) {
-                return;
             }
-
-            popup.setVisible(false);
-            popup.removeAll();
-
-            String text = field.getText();
-
-            java.util.List<String> suggestions = java.util.List.of();
-            for (String s : suggestions) {
-                JMenuItem item = new JMenuItem(s);
-                item.setFocusable(false);
-                item.setRequestFocusEnabled(false);
-                item.addActionListener(e -> {
-                    popup.setVisible(false);
-                    field.setText(s);
-                    SwingUtilities.invokeLater(field::requestFocusInWindow);
-                });
-                popup.add(item);
-            }
-
-            JMenuItem create = new JMenuItem("Create own food");
-            create.setFocusable(false);
-            create.setRequestFocusEnabled(false);
-            create.addActionListener(e -> {
-                popup.setVisible(false);
-
-                CreateFoodDialog dlg =
-                        new CreateFoodDialog(
-                                SwingUtilities.getWindowAncestor(table),
-                                text,
-                                model.getService()
-                        );
-                CreateFoodDialog.CreateFood result = dlg.showDialog();
-
-                if (result != null && !result.ingredients.isEmpty()) {
-                    int row = table.getEditingRow();
-                    if (row >= 0) {
-                        MealRow r = model.getRows().get(row);
-                        r.item = result.name;
-                        r.kcalManual = result.totalKcal;
-                        r.fromApi = false;
-                        r.suggestionAvailable = false;
-
-                        model.fireTableRowsUpdated(row, row);
-                        field.setText(result.name);
-                        recalcTotal();
-                    }
-                }
-                SwingUtilities.invokeLater(field::requestFocusInWindow);
-            });
-            popup.addSeparator();
-            popup.add(create);
-
-            popup.show(field, 0, field.getHeight());
-            SwingUtilities.invokeLater(field::requestFocusInWindow);
+            entries.add(new MealEntry(r.item, r.item + " " + r.amount + (r.unit == null ? "" : r.unit),
+                    new Serving(r.amount, r.unit), kcal, "Manual", java.time.ZonedDateTime.now(java.time.ZoneId.of("America/Toronto")), null));
         }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                                                     boolean isSelected, int row, int col) {
-            field.setText(value == null ? "" : value.toString());
-
-            //popup pops up
-            SwingUtilities.invokeLater(this::showSuggestions);
-
-            return field;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return field.getText();
-        }
+        meal.setEntries(entries);
+        service.saveMeal(date, meal);
+        dispose();
     }
 
+    private void recalcTotal() {
+        double total = 0.0;
+        for (MealRow r : tableModel.rows) {
+            if (r.kcalManual != null) total += r.kcalManual;
+        }
+        totalLabel.setText(String.format("Total: %.1f kcal", total));
+    }
+
+    private class MealRow {
+        String item = "";
+        double amount = 100.0;
+        String unit = "g";
+        Double kcalManual = null;
+
+        public String toInput() {
+            return item + " " + amount + unit;
+        }
+    }
 
 
     private class MealTableModel extends AbstractTableModel {
@@ -304,136 +170,104 @@ public class MealDialog extends JDialog {
           return service;
       }
 
-      public void addEmpty(){
-        rows.add(new MealRow());
-        fireTableRowsInserted(rows.size()-1, rows.size()-1); }
-
-    public void addFromEntry(MealEntry e){
-        MealRow r = new MealRow();
-        r.item=e.name();
-        r.amount=e.serving()!=null? e.serving().amount():100.0;
-        r.unit=e.serving()!=null? e.serving().unit():"g";
-        r.kcalManual=e.kcalForServing();
-        try {
-            r.fromApi = e.fetchedAt()!=null;
-            r.suggestionAvailable = (r.kcalManual == null)&& !r.fromApi;
-        }catch (Exception ignore){
-            r.fromApi = false;
-            r.suggestionAvailable = (r.kcalManual == null);
+        public void addEmpty() {
+            rows.add(new MealRow());
+            fireTableRowsInserted(rows.size() - 1, rows.size() - 1);
         }
-        rows.add(r);
-        fireTableRowsInserted(rows.size()-1, rows.size()-1); }
 
-    public void remove(int row){
-        rows.remove(row);
-        fireTableRowsDeleted(row,row);
-    }
+        public void addFromEntry(MealEntry e) {
+            MealRow r = new MealRow();
+            r.item = e.name();
+            r.amount = e.serving() != null ? e.serving().amount() : 100.0;
+            r.unit = e.serving() != null ? e.serving().unit() : "g";
+            r.kcalManual = e.kcalForServing();
+            rows.add(r);
+            fireTableRowsInserted(rows.size() - 1, rows.size() - 1);
+        }
 
+        public void remove(int row) {
+            rows.remove(row);
+            fireTableRowsDeleted(row, row);
+        }
 
-    @Override public int getRowCount(){
-        return rows.size();
-    }
+        @Override
+        public int getRowCount() {
+            return rows.size();
+        }
 
+        @Override
+        public int getColumnCount() {
+            return cols.length;
+        }
 
-    @Override
-    public int getColumnCount(){
-        return cols.length;
-    }
-    @Override
-    public String getColumnName(int c){
-        return cols[c];
-    }
-    @Override
-    public boolean isCellEditable(int r, int c){
-        //return c != 4;
-        return true;
-    }
-    @Override
-    public Object getValueAt(int r, int c) {
-        MealRow row = rows.get(r);
-        return switch (c) {
-            case 0 -> row.item;
-            case 1 -> row.amount;
-            case 2 -> row.unit;
-            case 3 -> (row.kcalManual == null ? "" : String.format("%.1f", row.kcalManual));
-            default -> "";
-        };
-    }
+        @Override
+        public String getColumnName(int c) {
+            return cols[c];
+        }
 
-      public List<MealRow> getRows() {
-          return rows;
-      }
+        @Override
+        public boolean isCellEditable(int r, int c) {
+            return c != 4;
+        }
 
-      @Override
-      public void setValueAt(Object aValue, int r, int c) {
-          MealRow row = rows.get(r);
+        @Override
+        public Object getValueAt(int r, int c) {
+            MealRow row = rows.get(r);
+            return switch (c) {
+                case 0 -> row.item;
+                case 1 -> row.amount;
+                case 2 -> row.unit;
+                case 3 -> row.kcalManual == null ? "" : String.format("%.1f", row.kcalManual);
+                case 4 -> "Fetch";
+                default -> "";
+            };
+        }
 
-          switch (c) {
-              case 0 -> row.item = String.valueOf(aValue).trim();
-              case 1 -> {
-                  try {
-                      row.amount = Double.parseDouble(String.valueOf(aValue));
-                  } catch (Exception ignore) {
-                  }
-              }
-              case 2 -> {
-                  String u = String.valueOf(aValue).trim().toLowerCase();
-                  if (u.equals("g") || u.equals("ml")) {
-                      row.unit = u;
-                  }
-              }
-              case 3 -> {
-                  String s = String.valueOf(aValue).trim();
-                  if (s.isEmpty()) {
-                      row.kcalManual = null;
-                  } else {
-                      try {
-                          row.kcalManual = Double.parseDouble(s);
-                      } catch (Exception ignore) {
-                      }
-                  }
-              }
-              default -> {
-              }
-          }
-      }
-
-
-      @Override
-      public Class<?> getColumnClass(int c){
-        return (c==1)? Double.class : String.class;
-      }
-
-      private class ButtonEditor extends AbstractCellEditor implements javax.swing.table.TableCellEditor, java.awt.event.ActionListener {
-          private final JButton button = new JButton();
-          private int editingRow = -1;
-          private final JTable tableRef;
-
-          public ButtonEditor(JTable table) {
-              this.tableRef = table;
-              button.addActionListener(this);
-          }
-
-
-          @Override
-          public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-              editingRow = row;
-              MealRow r = rows.get(row);
-              if (r.suggestionAvailable) {
-                  button.setText("Create local food");
-              } else if (r.fromApi) {
-                  button.setText("From API");
-              } else {
-                  button.setText("Fetch");
-              }
-              button.setEnabled(!r.fromApi);
-              return button;
-          }
-
-          @Override
-          public Object getCellEditorValue() {
-              return "";
-          }
+        @Override
+        public void setValueAt(Object aValue, int r, int c) {
+            MealRow row = rows.get(r);
+            switch (c) {
+                case 0 -> row.item = String.valueOf(aValue).trim();
+                case 1 -> {
+                    try {
+                        row.amount = Double.parseDouble(String.valueOf(aValue));
+                    } catch (Exception ignore) {
+                    }
+                }
+                case 2 -> {
+                    String u = String.valueOf(aValue).trim().toLowerCase();
+                    if (u.equals("g") || u.equals("ml")) row.unit = u;
+                }
+                case 3 -> {
+                    String s = String.valueOf(aValue).trim();
+                    if (s.isEmpty()) row.kcalManual = null;
+                    else {
+                        try {
+                            row.kcalManual = Double.parseDouble(s);
+                        } catch (Exception ignore) {
+                        }
+                    }
+                }
+            }
+            fireTableCellUpdated(r, c);
+            if ((c == 0 || c == 1 || c == 2) && (row.kcalManual == null) && row.item != null && !row.item.isBlank()) {
+                new Thread(() -> {
+                    try {
+                        MealEntry tmp = service.resolveEntryFromInput(row.item + " " + row.amount + row.unit);
+                        if (tmp.kcalForServing() != null) {
+                            row.kcalManual = tmp.kcalForServing();
+                            SwingUtilities.invokeLater(() -> {
+                                fireTableRowsUpdated(r, r);
+                                recalcTotal();
+                            });
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }).start();
+            } else {
+                recalcTotal();
+            }
+        }
 
           @Override
           public void actionPerformed(java.awt.event.ActionEvent e) {
