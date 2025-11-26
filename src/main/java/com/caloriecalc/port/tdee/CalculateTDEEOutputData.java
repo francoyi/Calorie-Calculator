@@ -6,5 +6,4 @@ public record CalculateTDEEOutputData(
         String formulaName,
         double activityFactor,
         double calDeviance
-) {
-}
+) { }

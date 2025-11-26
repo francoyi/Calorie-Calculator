@@ -13,7 +13,7 @@ public class Recommendation {
         if (!foodItems.isEmpty()) {
             for (int i = 0; i < foodItems.size(); i++) {
                 this.foodItems.add(foodItems.get(i));
-                sum += (int) foodItems.get(i).kcalPerServing();
+                sum += (int) foodItems.get(i).getKcalPerServing();
             }
         }
         this.calories = sum;
@@ -21,7 +21,7 @@ public class Recommendation {
 
     public void addFoodItem(FoodItem foodItem) {
         this.foodItems.add(foodItem);
-        this.calories += (int) foodItem.kcalPerServing();
+        this.calories += (int) foodItem.getKcalPerServing();
     }
 
     public int getCalories() {
@@ -36,7 +36,7 @@ public class Recommendation {
         StringBuilder sb = new StringBuilder();
         sb.append("Calories: ").append(this.calories).append("\n");
         for (FoodItem foodItem : this.foodItems) {
-            sb.append(foodItem.name()).append(" ");
+            sb.append(foodItem.getName()).append(" ");
         }
         return sb.toString();
     }

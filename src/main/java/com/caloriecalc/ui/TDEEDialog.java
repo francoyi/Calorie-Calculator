@@ -7,6 +7,7 @@ import java.util.Locale;
 import com.caloriecalc.model.ActivityLevel;
 import com.caloriecalc.model.CalDevianceRate;
 import com.caloriecalc.model.UserMetrics;
+import com.caloriecalc.model.UserSettings;
 import com.caloriecalc.port.UserMetricsRepository;
 import com.caloriecalc.port.tdee.*;
 import com.caloriecalc.service.CalculateTDEEInteractor;
@@ -26,7 +27,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
     private final JComboBox<String> activityLevelField =
             new JComboBox<>(new String[]{"Very Light", "Light", "Medium", "High", "Extreme"});
     private final JComboBox<String> goalWeightRateTweak =
-            new JComboBox<>(new String[]{"Maintain Weight",
+            new  JComboBox<>(new String[]{"Maintain Weight",
                     "Lose 0.25kg or 0.55lbs per week", "Lose 0.5kg or 1.1lbs per week",
                     "Gain 0.25kg or 0.55lbs per week", "Gain 0.5kg or 1.1lbs per week"});
 
@@ -45,7 +46,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
     private final FoodLogService foodService;
     private final Runnable refreshCallback;
 
-    private boolean isMetricInputSelected = true;
+    private boolean metricSelected = true;
 
     public static class Result {
         public final double bmr;
@@ -149,16 +150,16 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
         setGoalBtn.addActionListener(e -> onSetGoal());
 
         metricBtn.addActionListener(e -> {
-            if (!isMetricInputSelected) {
+            if (!metricSelected) {
                 convertImperialToMetric();
-                isMetricInputSelected = true;
+                metricSelected = true;
             }
         });
 
         imperialBtn.addActionListener(e -> {
-            if (isMetricInputSelected) {
+            if (metricSelected) {
                 convertMetricToImperial();
-                isMetricInputSelected = false;
+                metricSelected = false;
             }
         });
     }
@@ -207,12 +208,12 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
 
         if (m.metricInput()) {
             metricBtn.setSelected(true);
-            isMetricInputSelected = true;
+            metricSelected = true;
             weightField.setText(formatOneDecimal(m.weightKg()));
             heightField.setText(formatOneDecimal(m.heightCm()));
         } else {
             imperialBtn.setSelected(true);
-            isMetricInputSelected = false;
+            metricSelected = false;
             double weightLb = m.weightKg() / 0.453592;
             double heightIn = m.heightCm() / 2.54;
             weightField.setText(formatOneDecimal(weightLb));

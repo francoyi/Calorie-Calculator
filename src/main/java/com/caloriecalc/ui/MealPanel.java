@@ -3,25 +3,20 @@ package com.caloriecalc.ui;
 import com.caloriecalc.model.Meal;
 import com.caloriecalc.model.MealEntry;
 import com.caloriecalc.service.FoodLogService;
-import com.caloriecalc.service.MealRecommendationService;
-
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
 public class MealPanel extends JPanel {
     private final FoodLogService service;
-    private final MealRecommendationService mealRecommendationService;
     private final Meal meal;
     private final MainPanel mainPanel;
-    private Runnable onChanged = () -> {
-    };
+    private Runnable onChanged = () -> {};
 
-    public MealPanel(FoodLogService service, MealRecommendationService mealRecommendationService, Meal meal, MainPanel mainPanel) {
+    public MealPanel(FoodLogService service, Meal meal, MainPanel mainPanel) {
         this.service = service;
         this.meal = meal;
         this.mainPanel = mainPanel;
-        this.mealRecommendationService = mealRecommendationService;
 
         setLayout(new BorderLayout(5, 5));
         setBorder(new LineBorder(new Color(220, 220, 220)));
@@ -50,7 +45,7 @@ public class MealPanel extends JPanel {
         add(btns, BorderLayout.SOUTH);
 
         edit.addActionListener(e -> {
-            MealDialog dlg = new MealDialog(SwingUtilities.getWindowAncestor(this), service, meal.getDate(), meal, mealRecommendationService);
+            MealDialog dlg = new MealDialog(SwingUtilities.getWindowAncestor(this), service, meal.getDate(), meal);
             dlg.setVisible(true);
             mainPanel.refresh();
         });
@@ -69,7 +64,6 @@ public class MealPanel extends JPanel {
     }
 
     public void setOnChanged(Runnable onChanged) {
-        this.onChanged = (onChanged != null) ? onChanged : () -> {
-        };
+        this.onChanged = (onChanged != null) ? onChanged : () -> {};
     }
 }

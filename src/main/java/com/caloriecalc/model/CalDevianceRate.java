@@ -9,7 +9,6 @@ public enum CalDevianceRate {
 
 
     public final int deviancerate;
-
     CalDevianceRate(int deviancerate) {
         this.deviancerate = deviancerate;
     }

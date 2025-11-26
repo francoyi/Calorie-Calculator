@@ -12,5 +12,4 @@ public record CalculateTDEEInputData(
         UserMetrics.Sex sex,
         ActivityLevel activityLevel,
         CalDevianceRate caldeviancerate
-) {
-}
+) { }

@@ -4,8 +4,6 @@ import com.caloriecalc.model.DailyLog;
 import com.caloriecalc.model.Meal;
 import com.caloriecalc.model.UserSettings;
 import com.caloriecalc.service.FoodLogService;
-import com.caloriecalc.service.MealRecommendationService;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -14,17 +12,15 @@ import java.util.List;
 public class DailyLogPanel extends JPanel {
     private final FoodLogService service;
     private final MainPanel mainPanel;
-    private final MealRecommendationService mealRecommendationService;
 
-    public DailyLogPanel(FoodLogService service, MealRecommendationService mealRecommendationService, MainPanel mainPanel) {
+    public DailyLogPanel(FoodLogService service, MainPanel mainPanel){
         this.service = service;
         this.mainPanel = mainPanel;
-        this.mealRecommendationService = mealRecommendationService;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBorder(new EmptyBorder(10, 10, 10, 10));
+        setBorder(new EmptyBorder(10,10,10,10));
     }
 
-    public void renderDay(DailyLog day, UserSettings settings) {
+    public void renderDay(DailyLog day, UserSettings settings){
         removeAll();
 
         double totalKcal = day.getTotalKcal();
@@ -40,11 +36,11 @@ public class DailyLogPanel extends JPanel {
         add(Box.createVerticalStrut(10));
 
         List<Meal> meals = day.getMeals();
-        if (meals.isEmpty()) {
+        if (meals.isEmpty()){
             add(new JLabel("No meals recorded for this day."));
         } else {
-            for (Meal m : meals) {
-                MealPanel mp = new MealPanel(service, mealRecommendationService, m, mainPanel);
+            for (Meal m : meals){
+                MealPanel mp = new MealPanel(service, m, mainPanel);
                 mp.setOnChanged(() -> mainPanel.refresh());
                 add(mp);
                 add(Box.createVerticalStrut(10));
