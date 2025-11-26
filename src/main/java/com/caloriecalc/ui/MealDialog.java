@@ -25,7 +25,13 @@ public class MealDialog extends JDialog {
   private final JLabel totalLabel = new JLabel("Total: 0 kcal");
   private final JButton recommendMealBtn = new JButton("Recommend Meal");
   private final FoodCalorieLookupService lookup;
+  private boolean autoLookupOnEdit = true;
 
+
+    /** For external calls, used to turn off/on the automatic API lookup */
+    public void setAutoLookupOnEdit(boolean enabled) {
+        this.autoLookupOnEdit = enabled;
+    }
 
 
     public MealDialog(Window owner, FoodLogService service, LocalDate date, Meal existing) {
@@ -175,90 +181,103 @@ public class MealDialog extends JDialog {
         private final JPopupMenu popup = new JPopupMenu();
         private final JTable table;
 
-
         public AutoCompleteEditor(MealTableModel model, JTable table) {
             this.model = model;
             this.table = table;
 
             popup.setFocusable(false);
 
-
+            // Popup disappear when use typing in the blank
             field.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+                @Override
                 public void insertUpdate(javax.swing.event.DocumentEvent e) {
-                    showSuggestions();
+                    if (popup.isVisible()) {
+                        popup.setVisible(false);
+                    }
                 }
 
+                @Override
                 public void removeUpdate(javax.swing.event.DocumentEvent e) {
-                    showSuggestions();
+                    if (popup.isVisible()) {
+                        popup.setVisible(false);
+                    }
                 }
 
+                @Override
                 public void changedUpdate(javax.swing.event.DocumentEvent e) {
                 }
             });
         }
 
+        /** pop Create own food blank） */
         private void showSuggestions() {
+            if (!field.isDisplayable() || !field.isShowing()) {
+                return;
+            }
+
             popup.setVisible(false);
             popup.removeAll();
+
             String text = field.getText();
-            if (text.isEmpty()) return;
 
-            List<String> suggestions = List.of();
-
-
+            java.util.List<String> suggestions = java.util.List.of();
             for (String s : suggestions) {
                 JMenuItem item = new JMenuItem(s);
                 item.setFocusable(false);
                 item.setRequestFocusEnabled(false);
                 item.addActionListener(e -> {
-                    field.setText(s);
                     popup.setVisible(false);
-                    SwingUtilities.invokeLater(()-> field.requestFocusInWindow());
+                    field.setText(s);
+                    SwingUtilities.invokeLater(field::requestFocusInWindow);
                 });
                 popup.add(item);
             }
 
             JMenuItem create = new JMenuItem("Create own food");
-
             create.setFocusable(false);
             create.setRequestFocusEnabled(false);
-
-            create.addActionListener(e ->
-            {
+            create.addActionListener(e -> {
                 popup.setVisible(false);
 
                 CreateFoodDialog dlg =
-                        new CreateFoodDialog(SwingUtilities.getWindowAncestor(table), text,model.getService());
+                        new CreateFoodDialog(
+                                SwingUtilities.getWindowAncestor(table),
+                                text,
+                                model.getService()
+                        );
                 CreateFoodDialog.CreateFood result = dlg.showDialog();
 
                 if (result != null && !result.ingredients.isEmpty()) {
                     int row = table.getEditingRow();
-                    MealRow r = model.getRows().get(row);
-                    r.item = result.name;
-                    r.kcalManual = result.totalKcal;
-                    r.fromApi = false;
+                    if (row >= 0) {
+                        MealRow r = model.getRows().get(row);
+                        r.item = result.name;
+                        r.kcalManual = result.totalKcal;
+                        r.fromApi = false;
+                        r.suggestionAvailable = false;
 
-                    model.fireTableRowsUpdated(row, row);
-                    field.setText(result.name);
+                        model.fireTableRowsUpdated(row, row);
+                        field.setText(result.name);
+                        recalcTotal();
+                    }
                 }
-                SwingUtilities.invokeLater(() -> field.requestFocusInWindow());
+                SwingUtilities.invokeLater(field::requestFocusInWindow);
             });
             popup.addSeparator();
             popup.add(create);
 
             popup.show(field, 0, field.getHeight());
-
-            SwingUtilities.invokeLater(() -> field.requestFocusInWindow());
+            SwingUtilities.invokeLater(field::requestFocusInWindow);
         }
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int col) {
             field.setText(value == null ? "" : value.toString());
-            SwingUtilities.invokeLater(() -> {
-                showSuggestions();
-                field.requestFocusInWindow();
-            });
+
+            //popup pops up
+            SwingUtilities.invokeLater(this::showSuggestions);
+
             return field;
         }
 
@@ -269,13 +288,14 @@ public class MealDialog extends JDialog {
     }
 
 
-  private class MealTableModel extends AbstractTableModel {
+
+    private class MealTableModel extends AbstractTableModel {
     private final String[] cols = {"Item (e.g., banana)", "Amount", "Unit (g/ml)", "kcal (auto or manual)","Fetch"};
     private final java.util.List<MealRow> rows = new java.util.ArrayList<>();
     private final FoodLogService service;
     private final FoodCalorieLookupService lookup;
 
-    public MealTableModel (FoodCalorieLookupService service, FoodCalorieLookupService lookup){
+    public MealTableModel (FoodLogService service, FoodCalorieLookupService lookup){
         this.service = service;
         this.lookup = lookup;
     }
@@ -315,61 +335,74 @@ public class MealDialog extends JDialog {
     }
 
 
-    @Override public int getColumnCount(){
+    @Override
+    public int getColumnCount(){
         return cols.length;
     }
-    @Override public String getColumnName(int c){
+    @Override
+    public String getColumnName(int c){
         return cols[c];
     }
-    @Override public boolean isCellEditable(int r, int c){
+    @Override
+    public boolean isCellEditable(int r, int c){
         //return c != 4;
         return true;
     }
-    @Override public Object getValueAt(int r, int c){
-      MealRow row = rows.get(r);
-      switch (c){
-          case 0: row.item;
-          case 1: row.amount;
-          case 2: row.unit;
-          case 3: row.kcalManual==null? "": String.format("%.1f", row.kcalManual);
-
-          default:
-              return "";
-          };
+    @Override
+    public Object getValueAt(int r, int c) {
+        MealRow row = rows.get(r);
+        return switch (c) {
+            case 0 -> row.item;
+            case 1 -> row.amount;
+            case 2 -> row.unit;
+            case 3 -> (row.kcalManual == null ? "" : String.format("%.1f", row.kcalManual));
+            default -> "";
+        };
     }
-    @Override public void setValueAt(Object aValue, int r, int c){
-      MealRow row = rows.get(r);
-      switch (c){
-        case 0 -> row.item = String.valueOf(aValue).trim();
-        case 1 -> { try { row.amount = Double.parseDouble(String.valueOf(aValue)); } catch (Exception ignore){} }
-        case 2 -> { String u = String.valueOf(aValue).trim().toLowerCase(); if (u.equals("g") || u.equals("ml")) row.unit = u; }
-        case 3 -> { String s = String.valueOf(aValue).trim(); if (s.isEmpty()) row.kcalManual = null; else { try { row.kcalManual = Double.parseDouble(s); } catch (Exception ignore){} } }
-      }
-      fireTableCellUpdated(r,c);
-      if ((c==0 || c==1 || c==2) && (row.kcalManual==null) && row.item!=null && !row.item.isBlank()){
-        new Thread(() -> {
-          Double kcal = lookup.lookupKcal(row.item, row.amount, row.unit);
 
-          if (kcal != null) {
-              row.kcalManual = kcal;
-              row.fromApi = true;
-              SwingUtilities.invokeLater(() -> {
-                  fireTableRowsUpdated(r,r);
-                  recalcTotal();
-              });
-            } else{
-              row.suggestionAvailable = true;
-              SwingUtilities.invokeLater(() -> fireTableRowsUpdated(r,r,));
+      public List<MealRow> getRows() {
+          return rows;
+      }
+
+      @Override
+      public void setValueAt(Object aValue, int r, int c) {
+          MealRow row = rows.get(r);
+
+          switch (c) {
+              case 0 -> row.item = String.valueOf(aValue).trim();
+              case 1 -> {
+                  try {
+                      row.amount = Double.parseDouble(String.valueOf(aValue));
+                  } catch (Exception ignore) {
+                  }
+              }
+              case 2 -> {
+                  String u = String.valueOf(aValue).trim().toLowerCase();
+                  if (u.equals("g") || u.equals("ml")) {
+                      row.unit = u;
+                  }
+              }
+              case 3 -> {
+                  String s = String.valueOf(aValue).trim();
+                  if (s.isEmpty()) {
+                      row.kcalManual = null;
+                  } else {
+                      try {
+                          row.kcalManual = Double.parseDouble(s);
+                      } catch (Exception ignore) {
+                      }
+                  }
+              }
+              default -> {
+              }
           }
-         }).start();
-        } else{
-          recalcTotal();
       }
 
-    }
-    @Override public Class<?> getColumnClass(int c){
+
+      @Override
+      public Class<?> getColumnClass(int c){
         return (c==1)? Double.class : String.class;
-    }
+      }
 
       private class ButtonEditor extends AbstractCellEditor implements javax.swing.table.TableCellEditor, java.awt.event.ActionListener {
           private final JButton button = new JButton();
@@ -415,14 +448,18 @@ public class MealDialog extends JDialog {
               if (r.suggestionAvailable) {
                   CreateFoodDialog.CreateFood result = null;
                   try {
-                      CreateFoodDialog dlg = new CreateFoodDialog(SwingUtilities.getWindowAncestor(tableRef), r.item,service);
+                      CreateFoodDialog dlg =
+                              new CreateFoodDialog(SwingUtilities.getWindowAncestor(tableRef), r.item, service);
                       result = dlg.showDialog();
                   } catch (Exception ignored) {
                   }
+
                   if (result != null && result.ingredients != null && !result.ingredients.isEmpty()) {
-                      r.kcalManual = result.ingredients.get(0).getKcal();
+                      r.item = result.name;
+                      r.kcalManual = result.totalKcal;
                       r.fromApi = false;
                       r.suggestionAvailable = false;
+
                       SwingUtilities.invokeLater(() -> {
                           fireTableRowsUpdated(editingRow, editingRow);
                           MealDialog.this.recalcTotal();
@@ -445,14 +482,20 @@ public class MealDialog extends JDialog {
                                       fireTableRowsUpdated(editingRow, editingRow);
                                       MealDialog.this.recalcTotal();
                                   });
+                              } else {
+                                  r.suggestionAvailable = true;
+                                  SwingUtilities.invokeLater(
+                                          () -> fireTableRowsUpdated(editingRow, editingRow)
+                                  );
                               }
                           } catch (Exception ignored) {
                           }
                       }).start();
                   }
+
+                  editingRow = -1;
               }
 
-              editingRow = -1;
           }
       }
   }
