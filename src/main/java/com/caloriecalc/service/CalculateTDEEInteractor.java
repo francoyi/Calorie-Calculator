@@ -53,7 +53,7 @@ public class CalculateTDEEInteractor implements CalculateTDEEInputBoundary {
             userBMR = Math.max(0, userBMR);
 
             double userTDEE = userBMR * lvl.multiplier;
-            userTDEE = userTDEE + rate.deviancerate;
+            userTDEE = userTDEE + rate.devianceRate;
             userTDEE = Math.max(0, userTDEE);
 
             presenter.present(new CalculateTDEEOutputData(
@@ -61,7 +61,7 @@ public class CalculateTDEEInteractor implements CalculateTDEEInputBoundary {
                     userTDEE,
                     bmrFormula.name(),
                     lvl.multiplier,
-                    rate.deviancerate
+                    rate.devianceRate
             ));
 
         } catch (IllegalArgumentException ex) {

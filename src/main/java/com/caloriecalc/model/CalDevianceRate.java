@@ -8,9 +8,9 @@ public enum CalDevianceRate {
     GAIN_500wk(550);
 
 
-    public final int deviancerate;
+    public final int devianceRate;
 
-    CalDevianceRate(int deviancerate) {
-        this.deviancerate = deviancerate;
+    CalDevianceRate(int devianceRate) {
+        this.devianceRate = devianceRate;
     }
 }

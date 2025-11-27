@@ -201,7 +201,7 @@ public class TDEEInteractorTest {
         assertNull(presenter.error);
         assertNotNull(presenter.output);
         assertEquals(1600, presenter.output.bmr());
-        assertEquals(1600 * ActivityLevel.MEDIUM.multiplier + CalDevianceRate.MAINTAIN_0wk.deviancerate,
+        assertEquals(1600 * ActivityLevel.MEDIUM.multiplier + CalDevianceRate.MAINTAIN_0wk.devianceRate,
                 presenter.output.tdee());
         assertEquals("Testing BMR - 1600", presenter.output.formulaName());
     }
@@ -242,7 +242,7 @@ public class TDEEInteractorTest {
         assertNull(presenter.error);
         assertNotNull(presenter.output);
         assertEquals(0, presenter.output.bmr());
-        assertEquals(0 * ActivityLevel.MEDIUM.multiplier + CalDevianceRate.MAINTAIN_0wk.deviancerate,
+        assertEquals(0 * ActivityLevel.MEDIUM.multiplier + CalDevianceRate.MAINTAIN_0wk.devianceRate,
                 presenter.output.tdee());
 
         assertEquals("Mifflin-St Jeor", presenter.output.formulaName());
@@ -284,7 +284,7 @@ public class TDEEInteractorTest {
         assertNull(presenter.error);
         assertNotNull(presenter.output);
         assertEquals(0, presenter.output.bmr());
-        assertEquals(0 * ActivityLevel.MEDIUM.multiplier + CalDevianceRate.MAINTAIN_0wk.deviancerate,
+        assertEquals(0 * ActivityLevel.MEDIUM.multiplier + CalDevianceRate.MAINTAIN_0wk.devianceRate,
                 presenter.output.tdee());
 
         assertEquals("Mifflin-St Jeor", presenter.output.formulaName());
