@@ -2,7 +2,7 @@
 
 **Team Name:** csc207-We-are-cooking234  
 **Team Members:** 
-   - [@janiceelamm] (http://github.com/janiceelamm)
+   - [@janiceelamm](http://github.com/janiceelamm)
    - [@Shourya](https://github.com/bALTASELAMIS17)
    - [@HaotianXu](https://github.com/maxhxu)
    - Rasyid Rafi Pamuji (personal github username & github link)
