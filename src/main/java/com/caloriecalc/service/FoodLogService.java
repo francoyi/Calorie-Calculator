@@ -113,4 +113,8 @@ public class FoodLogService {
     public double getDailyGoal() {
         return settingsRepo.getSettings().getDailyKcalGoal();
     }
+
+    public com.caloriecalc.port.FoodLogRepository getRepository() {
+        return repo;
+    }
 }

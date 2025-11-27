@@ -5,7 +5,7 @@
    - [@janiceelamm](http://github.com/janiceelamm)
    - [@Shourya](https://github.com/bALTASELAMIS17)
    - [@HaotianXu](https://github.com/maxhxu)
-   - Rasyid Rafi Pamuji (personal github username & github link)
+   - [@RasyidRafiPamuji](https://github.com/RasyidRP)
    - [@HaoyingZhu](https://github.com/HaoyingZhu)
    - [@ZhengyuYi](https://github.com/francoyi)
 
