@@ -129,13 +129,9 @@ public class MainPanel extends JPanel {
         UserSettings s = service.getSettings();
         goalLabel.setText(String.format("Goal: %.2f kcal", s.getDailyKcalGoal()));
 
-        if ((d == null || d.getMeals() == null || d.getMeals().isEmpty())
-                && lastRendered != null
-                && current.equals(lastRendered.getDate())) {
-            dailyPanel.renderDay(lastRendered, s);
-        } else {
-            dailyPanel.renderDay(d, s);
-            lastRendered = d;
-        }
+        dailyPanel.renderDay(d, s);
+        lastRendered = d;
     }
+
+
 }

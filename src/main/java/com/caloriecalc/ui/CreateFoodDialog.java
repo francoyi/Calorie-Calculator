@@ -17,6 +17,7 @@ public class CreateFoodDialog extends JDialog {
     private CreateFood result = null;
     private final FoodLogService service;
     private final FoodCalorieLookupService lookup;
+    private final boolean autoLookupInDialog = false;
 
 
     public CreateFoodDialog(Window owner, String suggestedName, FoodLogService service) {
@@ -154,7 +155,7 @@ public class CreateFoodDialog extends JDialog {
 
         private void recalcTotal() {
             double sum = 0;
-            for (IngredientRow row : tableModel.rows) {
+            for (IngredientRow row : rows) {
                 if (row.kcal != null) {
                     sum += row.kcal;
                 }
@@ -162,53 +163,64 @@ public class CreateFoodDialog extends JDialog {
             totalLabel.setText("Total kcal: " + sum);
         }
 
-
-
         @Override
         public void setValueAt(Object aValue, int r, int c) {
             IngredientRow row = rows.get(r);
-                switch (c) {
-                    case 0:
-                        row.name = String.valueOf(aValue).trim();
-                        break;
-                    case 1:
-                        try { row.amount = Double.parseDouble(String.valueOf(aValue)); }
-                        catch (Exception ignore) {}
-                        break;
-                    case 2:
-                        String u = String.valueOf(aValue).trim().toLowerCase();
-                        if (u.equals("g") || u.equals("ml")) row.unit = u;
-                        break;
-                    case 3:
-                        try {
-                            String s = String.valueOf(aValue).trim();
-                            row.kcal = (s.isEmpty() ? null : Double.parseDouble(s));
-                        } catch (Exception ignore) {}
-                        break;
+
+            switch (c) {
+                case 0 -> row.name = String.valueOf(aValue).trim();
+                case 1 -> {
+                    double oldAmount = row.amount;
+
+                    try {
+                        double newAmount = Double.parseDouble(String.valueOf(aValue));
+                        row.amount = newAmount;
+
+                        if (row.kcal != null && oldAmount > 0) {
+                            double perUnit = row.kcal / oldAmount;
+                            row.kcal = perUnit * newAmount;
+                        }
+                    } catch (Exception ignore) {
+                    }
                 }
+                case 2 -> {
+                    String u = String.valueOf(aValue).trim().toLowerCase();
+                    if (u.equals("g") || u.equals("ml")) row.unit = u;
+                }
+                case 3 -> {
+                    try {
+                        String s = String.valueOf(aValue).trim();
+                        row.kcal = (s.isEmpty() ? null : Double.parseDouble(s));
+                    } catch (Exception ignore) {}
+                }
+                default -> {}
+            }
 
-                fireTableCellUpdated(r, c);
+            fireTableCellUpdated(r, c);
 
-                // Auto-fetch kcal from lookup service
-                if ((c == 0 || c == 1 || c == 2) &&
-                        row.kcal == null &&
-                        row.name != null &&
-                        !row.name.isBlank()) {
+            if (autoLookupInDialog
+                    && (c == 0 || c == 1 || c == 2)
+                    && row.kcal == null
+                    && row.name != null
+                    && !row.name.isBlank()) {
 
-                    new Thread(() -> {
-                        try {
-                            Double k = lookup.lookupKcal(row.name, row.amount, row.unit);
-                            if (k != null) {
-                                row.kcal = k;
-                                SwingUtilities.invokeLater(() -> fireTableRowsUpdated(r, r));
+                new Thread(() -> {
+                    try {
+                        Double k = lookup.lookupKcal(row.name, row.amount, row.unit);
+                        if (k != null) {
+                            row.kcal = k;
+                            SwingUtilities.invokeLater(() -> {
+                                fireTableRowsUpdated(r, r);
                                 recalcTotal();
-                            }
-                        } catch (Exception ignored) {}
-                    }).start();
-                }
-            recalcTotal();
+                            });
+                        }
+                    } catch (Exception ignored) {}
+                }).start();
+            } else {
+                recalcTotal();
             }
         }
 
     }
+}
 
