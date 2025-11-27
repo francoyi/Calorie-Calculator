@@ -4,6 +4,7 @@ import com.caloriecalc.factory.RecommenderFactory;
 import com.caloriecalc.model.*;
 import com.caloriecalc.port.NutritionDataProvider;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +39,15 @@ public class DefaultMealRecommendationService extends MealRecommendationService 
             return Collections.emptyList(); // Handle alternative flow by returning an empty list
         }
 
-        return null;
+        ArrayList<MealEntry> result = new ArrayList<>();
+
+        for (FoodItem fi : lr.get(0).getFoodItems()) {
+            APIFoodItem apiFoodItem = (APIFoodItem) fi;
+            result.add(new MealEntry(apiFoodItem.name(), apiFoodItem.getSource(),
+                    new Serving(apiFoodItem.servingAmount(), "g"), apiFoodItem.kcalPerServing(),
+                    apiFoodItem.getSource(), null, null));
+        }
+
+        return result;
     }
 }
