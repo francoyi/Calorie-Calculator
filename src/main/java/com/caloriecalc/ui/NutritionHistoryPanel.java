@@ -2,6 +2,7 @@ package com.caloriecalc.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,7 +74,6 @@ public class NutritionHistoryPanel extends JPanel {
         int totalDays = sortedDates.size();
         int endIndex = totalDays - scrollOffset;
         int startIndex = Math.max(0, endIndex - VISIBLE_DAYS);
-
         endIndex = Math.max(startIndex, Math.min(endIndex, totalDays));
 
         prevBtn.setEnabled(startIndex > 0);
@@ -100,6 +100,8 @@ public class NutritionHistoryPanel extends JPanel {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
 
+            g.setColor(getForeground());
+
             if (sortedDates == null || sortedDates.isEmpty()) {
                 g.drawString("No history data available.", 50, 50);
                 return;
@@ -110,7 +112,7 @@ public class NutritionHistoryPanel extends JPanel {
 
             int w = getWidth();
             int h = getHeight();
-            int padding = 60;
+            int padding = 70;
             int graphH = h - 2 * padding;
             int graphW = w - 2 * padding;
 
@@ -124,22 +126,40 @@ public class NutritionHistoryPanel extends JPanel {
 
             double maxVal = goal;
             for (double val : data.values()) maxVal = Math.max(maxVal, val);
-            maxVal = Math.max(maxVal, 2500);
+            maxVal = maxVal * 1.1;
 
             g2.setColor(Color.GRAY);
             g2.drawLine(padding, h - padding, w - padding, h - padding);
             g2.drawLine(padding, padding, padding, h - padding);
 
-            g2.setColor(Color.DARK_GRAY);
+            g2.setColor(getForeground());
+            g2.setFont(new Font("SansSerif", Font.BOLD, 13));
+
+            String xTitle = "Date";
+            FontMetrics fm = g2.getFontMetrics();
+            int xTitleWidth = fm.stringWidth(xTitle);
+            g2.drawString(xTitle, padding + (graphW - xTitleWidth) / 2, h - 15);
+
+            String yTitle = "Calories (kcal)";
+            int yTitleWidth = fm.stringWidth(yTitle);
+            int yTitleX = 15;
+            int yTitleY = padding + (graphH + yTitleWidth) / 2;
+
+            AffineTransform original = g2.getTransform();
+            g2.rotate(Math.toRadians(-90), yTitleX, yTitleY);
+            g2.drawString(yTitle, yTitleX, yTitleY);
+            g2.setTransform(original);
+
+            g2.setColor(getForeground());
             g2.setFont(new Font("SansSerif", Font.PLAIN, 11));
-            g2.drawString(String.format("%.0f", maxVal), 5, padding + 5);
-            g2.drawString("0", 35, h - padding);
+            g2.drawString(String.format("%.0f", maxVal), padding - 35, padding + 5);
+            g2.drawString("0", padding - 15, h - padding);
 
             int goalY = padding + (int) ((1 - (goal / maxVal)) * graphH);
             g2.setColor(new Color(220, 50, 50));
             g2.setStroke(new BasicStroke(2));
             g2.drawLine(padding, goalY, w - padding, goalY);
-            g2.drawString("Goal: " + (int)goal, w - padding - 80, goalY - 5);
+            g2.drawString("Current Goal: " + (int)goal, w - padding - 80, goalY - 5);
 
             int numBars = viewDates.size();
             int slotWidth = graphW / VISIBLE_DAYS;
@@ -158,14 +178,14 @@ public class NutritionHistoryPanel extends JPanel {
                 else g2.setColor(new Color(100, 150, 250));
                 g2.fillRect(x, y, barWidth, barHeight);
 
-                g2.setColor(Color.BLACK);
-                g2.setFont(new Font("SansSerif", Font.BOLD, 12));
+                g2.setColor(getForeground());
+                g2.setFont(new Font("SansSerif", Font.BOLD, 11));
                 FontMetrics fmNum = g2.getFontMetrics();
                 String calStr = String.valueOf((int)val);
                 int calTextX = x + (barWidth - fmNum.stringWidth(calStr)) / 2;
                 g2.drawString(calStr, calTextX, y - 5);
 
-                g2.setColor(Color.BLACK);
+                g2.setColor(getForeground());
                 g2.setFont(new Font("SansSerif", Font.PLAIN, 11));
                 FontMetrics fmDate = g2.getFontMetrics();
                 String dateStr = date.getMonthValue() + "/" + date.getDayOfMonth();
