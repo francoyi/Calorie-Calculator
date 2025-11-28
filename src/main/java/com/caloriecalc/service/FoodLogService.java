@@ -117,4 +117,8 @@ public class FoodLogService {
     public com.caloriecalc.port.FoodLogRepository getRepository() {
         return repo;
     }
+
+    public com.caloriecalc.port.UserSettingsRepository getSettingsRepo() {
+        return settingsRepo;
+    }
 }
