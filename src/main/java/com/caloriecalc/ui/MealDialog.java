@@ -425,7 +425,7 @@ public class MealDialog extends JDialog {
             return (c == 1) ? Double.class : String.class;
         }
 
-        /** Fetch 列的按钮编辑器 */
+        /** The button editor for the Fetch column */
         public class ButtonEditor extends AbstractCellEditor implements TableCellEditor, java.awt.event.ActionListener {
             private final JButton button = new JButton();
             private int editingRow = -1;
@@ -476,7 +476,6 @@ public class MealDialog extends JDialog {
                     }
 
                     if (result != null && result.ingredients != null && !result.ingredients.isEmpty()) {
-                        // 使用 CreateFood 计算好的总 kcal
                         r.item = result.name;
                         r.kcalManual = result.totalKcal;
                         r.fromApi = false;

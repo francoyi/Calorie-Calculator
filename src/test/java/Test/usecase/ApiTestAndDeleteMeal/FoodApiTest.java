@@ -1,4 +1,4 @@
-package Test;
+package Test.usecase.ApiTestAndDeleteMeal;
 
 import com.caloriecalc.util.JsonUtil;
 import com.fasterxml.jackson.databind.JsonNode;
