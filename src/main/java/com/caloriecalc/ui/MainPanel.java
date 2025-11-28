@@ -6,6 +6,7 @@ import com.caloriecalc.model.UserSettings;
 import com.caloriecalc.port.UserMetricsRepository;
 import com.caloriecalc.service.FoodLogService;
 import com.caloriecalc.service.MealRecommendationService;
+import com.caloriecalc.service.VisualizeHistoryInteractor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +22,7 @@ public class MainPanel extends JPanel {
     private final JButton setGoalBtn = new JButton("Set Goal");
     private final JButton themeSwitchBtn = new JButton("Toggle Theme");
     private final JButton calExpecBtn = new JButton("Daily Calorie Burn Helper");
+    private final JButton historyBtn = new JButton("History Graph");
     private final JLabel dateLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel goalLabel = new JLabel("", SwingConstants.CENTER);
     private final UserMetricsRepository metricsRepo;
@@ -57,6 +59,7 @@ public class MainPanel extends JPanel {
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         actions.add(addMealBtn);
         actions.add(setGoalBtn);
+        actions.add(historyBtn);
         actions.add(themeSwitchBtn);
         actions.add(calExpecBtn);
         top.add(actions, BorderLayout.EAST);
@@ -83,6 +86,7 @@ public class MainPanel extends JPanel {
         setGoalBtn.addActionListener(e -> onSetGoal());
         calExpecBtn.addActionListener(e -> openCalcTDEE());
         themeSwitchBtn.addActionListener(e -> onSwitchTheme());
+        historyBtn.addActionListener(e -> onHistory());
         refresh();
     }
 
@@ -131,6 +135,19 @@ public class MainPanel extends JPanel {
 
         dailyPanel.renderDay(d, s);
         lastRendered = d;
+    }
+
+    private void onHistory() {
+        VisualizeHistoryPresenter presenter = new VisualizeHistoryPresenter(this);
+
+        VisualizeHistoryInteractor interactor = new VisualizeHistoryInteractor(
+                service.getRepository(),
+                service.getSettingsRepo(),
+                presenter
+        );
+
+        VisualizeHistoryController controller = new VisualizeHistoryController(interactor);
+        controller.execute();
     }
 
 

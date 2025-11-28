@@ -45,4 +45,9 @@ public class JsonFoodLogRepository extends AbstractJsonRepository<JsonFoodLogRep
         if (!replaced) r.days.add(day);
         atomicWrite(r);
     }
+
+    @Override
+    public synchronized java.util.List<DailyLog> getAllDays() {
+        return load().days;
+    }
 }
