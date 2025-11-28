@@ -3,6 +3,7 @@ package Test;
 import com.caloriecalc.model.DailyLog;
 import com.caloriecalc.model.UserSettings;
 import com.caloriecalc.port.FoodLogRepository;
+import com.caloriecalc.port.NutritionDataProvider;
 import com.caloriecalc.port.UserSettingsRepository;
 import com.caloriecalc.service.FoodLogService;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
+import com.caloriecalc.model.*;
+import com.caloriecalc.model.*;
+
 
 public class FoodLogServiceTest {
 
@@ -28,8 +32,14 @@ public class FoodLogServiceTest {
      * Returns dummy data for the current date and null for other dates.
      */
     static class MockFoodLogRepo implements FoodLogRepository {
+        private DailyLog savedLog;
+
         @Override
         public DailyLog getDay(LocalDate date) {
+            if (savedLog != null && savedLog.getDate().equals(date)) {
+                return savedLog;
+            }
+
             if (date.equals(LocalDate.now())) {
                 DailyLog log = new DailyLog(date);
                 log.setTotalKcal(500.0);
@@ -38,11 +48,28 @@ public class FoodLogServiceTest {
             }
             return null;
         }
-        @Override public void saveDay(DailyLog day) {}
+
+        @Override
+        public void saveDay(DailyLog day) {
+            this.savedLog = day;
+        }
 
         @Override
         public List<DailyLog> getAllDays() {
             return new ArrayList<>();
+        }
+    }
+
+    static class MockProvider implements NutritionDataProvider {
+        @Override
+        public NutritionValues fetchNutritionPer100(String term) {
+            if ("apple".equals(term)) {
+                return new NutritionValues(52.0, 0.3, 0.2, 14.0, 10.0, 2.4, 1.0);
+            }
+            if ("water".equals(term)) {
+                return new NutritionValues(null, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+            }
+            return null;
         }
     }
 
@@ -96,5 +123,152 @@ public class FoodLogServiceTest {
         assertNotNull(log);
         assertEquals(0.0, log.getTotalKcal(), 0.01);
         assertEquals(yesterday, log.getDate());
+    }
+
+    /**
+     * Comprehensive test for meal operations (Parsing, Saving, Deleting).
+     */
+    @Test
+    public void testMealOperations_FullCoverage() {
+        // 1. Setup dependencies
+        MockFoodLogRepo logRepo = new MockFoodLogRepo();
+        MockProvider provider = new MockProvider();
+        FoodLogService service = new FoodLogService(logRepo, provider, new MockSettingsRepo());
+        LocalDate today = LocalDate.now();
+
+        // 2. Test creating a new empty meal
+        service.resolveEntryFromInput("100g water");
+        Meal meal = service.newEmptyMeal(today, "Breakfast");
+        assertNotNull(meal);
+
+        // 3. Test input parsing when API finds the food (API hit)
+        MealEntry entry1 = service.resolveEntryFromInput("100g apple");
+        assertEquals("apple", entry1.name());
+        assertNotNull(entry1.nutritionPer100g());
+
+        // 4. Test input parsing when API does NOT find the food (API miss)
+        MealEntry entry2 = service.resolveEntryFromInput("100g unknown");
+        assertEquals("unknown", entry2.name());
+        assertNull(entry2.kcalForServing());
+
+        // 5. Create an edge-case entry with NULL calories
+        // We need this to test the "if (kcal != null)" check inside the saveMeal loop.
+        // If we only use normal food, that check always evaluates to true, leaving the false branch uncovered.
+        MealEntry nullKcalEntry = new MealEntry("Ghost Food", "Ghost", new Serving(0, "g"), null, "Manual", null, null);
+
+        // 6. Test saving a meal containing both valid and null-calorie entries
+        List<MealEntry> entries = new ArrayList<>();
+        entries.add(entry1);       // Valid kcal
+        entries.add(nullKcalEntry); // Null kcal
+        meal.setEntries(entries);
+
+        service.saveMeal(today, meal);
+
+        DailyLog saved = logRepo.getDay(today);
+        assertNotNull(saved);
+        assertEquals(1, saved.getMeals().size());
+        assertTrue(saved.getTotalKcal() > 0);
+
+        // 7. Test updating an existing meal
+        // This covers the loop logic where it finds an existing ID and sets "replaced = true".
+        meal.setLabel("Updated Breakfast");
+        service.saveMeal(today, meal);
+        assertEquals("Updated Breakfast", logRepo.getDay(today).getMeals().get(0).getLabel());
+
+        // 8. Test deleting a meal
+        service.deleteMeal(today, meal.getId());
+        assertTrue(logRepo.getDay(today).getMeals().isEmpty());
+
+        // 9. Test deleting from a date that has no log
+        // This covers the "if (day == null) return;" branch to ensure safety.
+        service.deleteMeal(today.minusDays(100), "fakeId");
+    }
+
+    @Test
+    public void testGettersAndConstructors_FullCoverage() {
+        MockFoodLogRepo repo = new MockFoodLogRepo();
+        MockSettingsRepo settingsRepo = new MockSettingsRepo();
+        MockProvider provider = new MockProvider();
+
+        FoodLogService service = new FoodLogService(repo, provider, settingsRepo);
+
+        assertNotNull(service.getRepository());
+        assertNotNull(service.getSettingsRepo());
+        assertNotNull(service.getSettings());
+
+        service.setDailyGoal(1500.0);
+        assertEquals(1500.0, service.getDailyGoal(), 0.01);
+    }
+
+    @Test
+    public void testGetDay_Null_CreatesFullyInitializedLog() {
+        MockFoodLogRepo repo = new MockFoodLogRepo();
+        FoodLogService service = new FoodLogService(repo, new MockProvider(), new MockSettingsRepo());
+
+        DailyLog log = service.getDay(LocalDate.of(2000, 1, 1));
+
+        assertNotNull(log);
+        assertNotNull(log.getMeals());
+        assertEquals(0.0, log.getTotalKcal());
+    }
+
+    @Test
+    public void testDeleteMeal_DayNotFound() {
+        MockFoodLogRepo repo = new MockFoodLogRepo();
+        FoodLogService service = new FoodLogService(repo, new MockProvider(), new MockSettingsRepo());
+
+        service.deleteMeal(LocalDate.of(1990, 1, 1), "some-id");
+    }
+
+    @Test
+    public void testSaveMealWithNullCalories() {
+        MockFoodLogRepo repo = new MockFoodLogRepo();
+        FoodLogService service = new FoodLogService(repo, null, new MockSettingsRepo());
+        LocalDate today = LocalDate.now();
+
+        Meal meal = service.newEmptyMeal(today, "Ghost Meal");
+        MealEntry nullEntry = new MealEntry("Ghost", "Ghost", new Serving(1,"g"), null, "Manual", null, null);
+        List<MealEntry> entries = new ArrayList<>();
+        entries.add(nullEntry);
+        meal.setEntries(entries);
+
+        service.saveMeal(today, meal);
+
+        assertNotNull(repo.getDay(today));
+    }
+
+    @Test
+    public void testParsingDefaults_NoAmountOrUnit() {
+        MockFoodLogRepo logRepo = new MockFoodLogRepo();
+        MockProvider provider = new MockProvider();
+        FoodLogService service = new FoodLogService(logRepo, provider, new MockSettingsRepo());
+
+        MealEntry entry = service.resolveEntryFromInput("apple");
+
+        assertEquals("apple", entry.name());
+        assertEquals(100.0, entry.serving().amount());
+        assertEquals("g", entry.serving().unit());
+
+        MealEntry entry3 = service.resolveEntryFromInput("100ml milk");
+        assertEquals("ml", entry3.serving().unit());
+
+        MealEntry entry4 = service.resolveEntryFromInput("   apple   ");
+        assertEquals("apple", entry4.name());
+    }
+
+    @Test
+    public void testEdgeCases_AbsoluteMax() {
+        MockFoodLogRepo repo = new MockFoodLogRepo();
+        FoodLogService service = new FoodLogService(repo, new MockProvider(), new MockSettingsRepo());
+
+        MealEntry e1 = service.resolveEntryFromInput("100ml milk");
+        assertEquals("ml", e1.serving().unit());
+
+        MealEntry e2 = service.resolveEntryFromInput("500g beef");
+        assertEquals(500.0, e2.serving().amount(), 0.1);
+
+        Meal emptyMeal = service.newEmptyMeal(LocalDate.now(), "Empty");
+        emptyMeal.setEntries(new ArrayList<>());
+        service.saveMeal(LocalDate.now(), emptyMeal);
     }
 }
