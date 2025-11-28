@@ -5,7 +5,7 @@
    - [@janiceelamm](http://github.com/janiceelamm)
    - [@Shourya](https://github.com/bALTASELAMIS17)
    - [@HaotianXu](https://github.com/maxhxu)
-   - Rasyid Rafi Pamuji (personal github username & github link)
+   - [@RasyidRafiPamuji](https://github.com/RasyidRP)
    - [@HaoyingZhu](https://github.com/HaoyingZhu)
    - [@ZhengyuYi](https://github.com/francoyi)
 
@@ -96,14 +96,14 @@ This project is built following the principles of **Clean Architecture** and **S
 
 ## 7. Use Case Assignments
 
-| Use Case                                                    | Lead Member             |
-| ----------------------------------------------------------- | ----------------------- |
-| UC 1: Search Food via External API                          | **Zhengyu Yi**          |
-| UC 2: Add API Food to Today's Record                        | **Zhengyu Yi**          |
-| UC 3: Create Local Food (Manual Entry)                      | **Janice Lam**          |
-| UC 6: Edit or Remove an Item from Today                     | **Zhengyu Yi**          |
-| UC 7: Set Daily Calorie Goal                                | **Haoying Zhu**         |
-| UC 8: View Past Day by Date                                 | **Haoying Zhu**         |
-| UC 10: Receive food recommendations/references              | **Max Xu**              |
-| UC 11: Calculate the user's basal metabolic rate (BMR)      | **Shourya Harsh Vardhan** |
-| UC 12: Visualize Daily Macronutrients                             | **Rasyid Rafi Pamuji**  |
+| Use Case                                               | Lead Member             |
+|--------------------------------------------------------| ----------------------- |
+| UC 1: Search Food via External API                     | **Zhengyu Yi**          |
+| UC 2: Add API Food to Today's Record                   | **Zhengyu Yi**          |
+| UC 3: Create Local Food (Manual Entry)                 | **Janice Lam**          |
+| UC 6: Edit or Remove an Item from Today                | **Zhengyu Yi**          |
+| UC 7: Set Daily Calorie Goal                           | **Haoying Zhu**         |
+| UC 8: View Past Day by Date                            | **Haoying Zhu**         |
+| UC 10: Receive food recommendations/references         | **Max Xu**              |
+| UC 11: Calculate the user's basal metabolic rate (BMR) | **Shourya Harsh Vardhan** |
+| UC 12: Visualize Daily Calorie Consumption             | **Rasyid Rafi Pamuji**  |
