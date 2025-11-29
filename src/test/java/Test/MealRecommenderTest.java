@@ -34,8 +34,6 @@ public class MealRecommenderTest {
             MealRecommender fr = new MealRecommender(foodItems, 2900);
             List<Recommendation> top = fr.getTopFoodRecommendations(10);
             for (int i = 0; i < top.size(); i++) {
-                System.out.println("#" + Integer.toString(i + 1) + " recommendation:");
-                System.out.println(top.get(i));
                 if (top.get(i).getCalories() > fr.getGoal()) {
                     flag = false;
                 }
