@@ -9,6 +9,17 @@ import com.caloriecalc.port.NutritionDataProvider;
 import com.caloriecalc.service.FoodLogService;
 import com.caloriecalc.service.MealRecommendationService;
 
+import com.caloriecalc.ui.myfoods.SaveToMyFoodController;
+import com.caloriecalc.ui.myfoods.SaveToMyFoodPresenter;
+import com.caloriecalc.ui.myfoods.MyFoodsViewModel;
+import com.caloriecalc.port.MyFoodRepository;
+import com.caloriecalc.repo.InMemoryMyFoodRepository;
+import com.caloriecalc.service.SaveToMyFoodInteractor;
+import com.caloriecalc.port.savetomyfood.SaveToMyFoodOutputBoundary;
+import com.caloriecalc.port.savetomyfood.SaveToMyFoodInputBoundary;
+
+
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;

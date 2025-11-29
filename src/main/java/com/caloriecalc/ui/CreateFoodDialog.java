@@ -7,8 +7,16 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.caloriecalc.model.Ingredient;
+import com.caloriecalc.port.MyFoodRepository;
+import com.caloriecalc.port.savetomyfood.SaveToMyFoodInputBoundary;
+import com.caloriecalc.port.savetomyfood.SaveToMyFoodOutputBoundary;
+import com.caloriecalc.repo.InMemoryMyFoodRepository;
 import com.caloriecalc.service.FoodLogService;
 import com.caloriecalc.service.FoodCalorieLookupService;
+import com.caloriecalc.service.SaveToMyFoodInteractor;
+import com.caloriecalc.ui.myfoods.MyFoodsViewModel;
+import com.caloriecalc.ui.myfoods.SaveToMyFoodController;
+import com.caloriecalc.ui.myfoods.SaveToMyFoodPresenter;
 
 public class CreateFoodDialog extends JDialog {
     private final JTextField nameField = new JTextField(30);
@@ -18,13 +26,15 @@ public class CreateFoodDialog extends JDialog {
     private final FoodLogService service;
     private final FoodCalorieLookupService lookup;
     private final boolean autoLookupInDialog = false;
+    private final SaveToMyFoodController saveController;
 
 
-    public CreateFoodDialog(Window owner, String suggestedName, FoodLogService service) {
+    public CreateFoodDialog(Window owner, String suggestedName, FoodLogService service, SaveToMyFoodController saveController) {
         super(owner, "Create Own Food", ModalityType.APPLICATION_MODAL);
         this.service = service;
         this.lookup = new FoodCalorieLookupService(service);
         setLayout(new BorderLayout(8, 8));
+        this.saveController = saveController;
 
         if (suggestedName != null) nameField.setText(suggestedName);
 
@@ -86,7 +96,16 @@ public class CreateFoodDialog extends JDialog {
                 list.add(new Ingredient(row.name.trim(), row.amount, row.unit, row.kcal));
             }
 
+
+            MyFoodRepository repo = new InMemoryMyFoodRepository();
+            MyFoodsViewModel vm = new MyFoodsViewModel();
+            SaveToMyFoodOutputBoundary presenter = new SaveToMyFoodPresenter(vm);
+            SaveToMyFoodInputBoundary interactor = new SaveToMyFoodInteractor(repo, presenter);
+            SaveToMyFoodController controller = new SaveToMyFoodController(interactor);
+
+            controller.save(name, list);
             result = new CreateFood(name, list);
+
             dispose();
         });
         cancel.addActionListener(e -> { result = null; dispose(); });
