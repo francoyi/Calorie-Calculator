@@ -99,7 +99,7 @@ This project is built following the principles of **Clean Architecture** and **S
 | Use Case                                               | Lead Member             |
 |--------------------------------------------------------| ----------------------- |
 | UC 1: Search Food via External API                     | **Zhengyu Yi**          |
-| UC 2: Add API Food to Today's Record                   | **Zhengyu Yi**          |
+| UC 2: Add API Food to Today's Record                   | **Janice Lam**          |
 | UC 3: Create Local Food (Manual Entry)                 | **Janice Lam**          |
 | UC 6: Edit or Remove an Item from Today                | **Zhengyu Yi**          |
 | UC 7: Set Daily Calorie Goal                           | **Haoying Zhu**         |
