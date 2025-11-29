@@ -17,6 +17,10 @@ public class MealRecommenderTest {
         FoodItemImpl b = new FoodItemImpl("b", 1400);
         FoodItemImpl c = new FoodItemImpl("c", 200);
 
+        assertEquals("", a.getSource(), "Source should be empty string");
+        assertEquals("", b.getSource(), "Source should be empty string");
+        assertEquals("", c.getSource(), "Source should be empty string");
+
         List<FoodItem> foodItems = new ArrayList<>();
         foodItems.add(a);
         foodItems.add(b);
