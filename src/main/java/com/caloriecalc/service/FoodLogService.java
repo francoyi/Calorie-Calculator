@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import com.caloriecalc.port.UserSettingsRepository;
 
-public class FoodLogService {
+public class FoodLogService implements GoalProvider {
     private final FoodLogRepository repo;
     private final NutritionDataProvider provider;
     private final UserSettingsRepository settingsRepo;
