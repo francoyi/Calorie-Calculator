@@ -2,10 +2,7 @@ package com.caloriecalc;
 
 import com.caloriecalc.factory.MealRecommenderFactory;
 import com.caloriecalc.factory.RecommenderFactory;
-import com.caloriecalc.port.FoodLogRepository;
-import com.caloriecalc.port.NutritionDataProvider;
-import com.caloriecalc.port.UserMetricsRepository;
-import com.caloriecalc.port.UserSettingsRepository;
+import com.caloriecalc.port.*;
 import com.caloriecalc.repo.JsonFoodLogRepository;
 import com.caloriecalc.repo.JsonUserMetricsRepository;
 import com.caloriecalc.repo.JsonUserSettingsRepository;
@@ -36,8 +33,9 @@ public class Main {
             UserMetricsRepository metricsRepo =
                     new JsonUserMetricsRepository(Path.of("data", "user_metrics.json"));
             RecommenderFactory recommenderFactory = new MealRecommenderFactory(service);
+            NutritionDataProviderImpl ndpi = new NutritionDataProviderImpl();
             MealRecommendationService mealRecommendationService = new DefaultMealRecommendationService(
-                    provider,
+                    ndpi,
                     recommenderFactory
             );
 

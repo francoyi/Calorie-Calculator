@@ -16,6 +16,7 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MealDialog extends JDialog {
@@ -100,6 +101,9 @@ public class MealDialog extends JDialog {
     }
 
     private void onRecommendMeal() {
+        while (tableModel.getRowCount() > 0) {
+            tableModel.remove(0);
+        }
         List<MealEntry> recommendedEntries = mealRecommendationService.recommendMealEntries();
 
         if (recommendedEntries.isEmpty()) {
@@ -107,8 +111,14 @@ public class MealDialog extends JDialog {
             JOptionPane.showMessageDialog(this, "Unable to recommend meal within your goal. Attempt setting another goal.", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             // Main flow: UI display logic
+            HashMap<String, MealRow> meMap = new HashMap<>();
             for (MealEntry entry : recommendedEntries) {
-                tableModel.addFromEntry(entry);
+                if (meMap.containsKey(entry.name())) {
+                    meMap.get(entry.name()).amount = meMap.get(entry.name()).amount + 100;
+                } else {
+                    tableModel.addFromEntry(entry);
+                    meMap.put(entry.name(), tableModel.rows.get(tableModel.rows.size() - 1));
+                }
             }
 
             recalcTotal();

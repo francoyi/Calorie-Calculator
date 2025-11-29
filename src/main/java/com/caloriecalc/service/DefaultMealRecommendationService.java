@@ -21,7 +21,33 @@ public class DefaultMealRecommendationService extends MealRecommendationService 
     @Override
     public List<MealEntry> recommendMealEntries() {
         // 1. TODO: magic constant here
-        List<String> foodNames = List.of("apple", "banana", "steak", "salmon", "soybeans", "cereal", "cookie");
+        List<String> foodNames = List.of(
+                "apple",
+                "banana",
+                "steak",
+                "salmon",
+                "soybeans",
+                "cereal",
+                "cookie",
+                "bread",
+                "milk",
+                "cheese",
+                "egg",
+                "chicken",
+                "rice",
+                "pasta",
+                "potato",
+                "carrot",
+                "orange",
+                "grape",
+                "yogurt",
+                "pizza",
+                "tuna",
+                "pork",
+                "lamb",
+                "tofu",
+                "lentils"
+        );
 
         // 2. Data fetching logic
         List<FoodItem> recommendedFoods = new ArrayList<>();
