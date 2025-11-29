@@ -3,11 +3,18 @@ package com.caloriecalc.ui;
 import com.caloriecalc.model.Meal;
 import com.caloriecalc.model.MealEntry;
 import com.caloriecalc.model.Serving;
-import com.caloriecalc.service.FoodCalorieLookupService;
+import com.caloriecalc.port.listmyfoods.ListMyFoodsInputBoundary;
+import com.caloriecalc.service.*;
 import com.caloriecalc.model.*;
 import com.caloriecalc.port.NutritionDataProvider;
-import com.caloriecalc.service.FoodLogService;
-import com.caloriecalc.service.MealRecommendationService;
+
+import com.caloriecalc.ui.myfoods.*;
+import com.caloriecalc.port.MyFoodRepository;
+import com.caloriecalc.repo.InMemoryMyFoodRepository;
+import com.caloriecalc.port.savetomyfood.SaveToMyFoodOutputBoundary;
+import com.caloriecalc.port.savetomyfood.SaveToMyFoodInputBoundary;
+
+
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -31,6 +38,8 @@ public class MealDialog extends JDialog {
     private final MealRecommendationService mealRecommendationService;
     private final FoodCalorieLookupService lookup;
     private boolean autoLookupOnEdit = true;
+    private final MyFoodRepository myFoodRepository;
+    private final SaveToMyFoodController saveController;
 
 
     /** For external calls, used to turn off/on the automatic API lookup */
@@ -39,13 +48,18 @@ public class MealDialog extends JDialog {
     }
 
     public MealDialog(Window owner, FoodLogService service, LocalDate date, Meal existing,
-                      MealRecommendationService mealRecommendationService) {
+                      MealRecommendationService mealRecommendationService, MyFoodRepository myFoodRepository) {
         super(owner, existing == null ? "Add Meal" : "Edit Meal", ModalityType.APPLICATION_MODAL);
         this.service = service;
         this.date = date;
         this.mealRecommendationService = mealRecommendationService;
         this.meal = existing == null ? service.newEmptyMeal(date, "Meal") : existing;
         this.lookup = new FoodCalorieLookupService(service);
+        this.myFoodRepository = myFoodRepository;
+        MyFoodsViewModel vm = new MyFoodsViewModel();
+        SaveToMyFoodOutputBoundary presenter = new SaveToMyFoodPresenter(vm);
+        SaveToMyFoodInputBoundary interactor = new SaveToMyFoodInteractor(myFoodRepository, presenter);
+        this.saveController = new SaveToMyFoodController(interactor);
         setSize(700, 500);
         setLocationRelativeTo(owner);
         setLayout(new BorderLayout(8, 8));
@@ -94,6 +108,7 @@ public class MealDialog extends JDialog {
         });
         save.addActionListener(e -> onSave());
         cancel.addActionListener(e -> dispose());
+
         recommendMealBtn.addActionListener(e -> onRecommendMeal());
         if (existing != null) {
             for (MealEntry me : existing.getEntries()) {
@@ -102,6 +117,20 @@ public class MealDialog extends JDialog {
             recalcTotal();
         }
     }
+
+    private void addChosenFoodToMealTable(MyFood chosen) {
+        MealRow newRow = new MealRow();
+        newRow.item = chosen.getName();
+        newRow.amount = 100;
+        newRow.unit = "g";
+        newRow.kcalManual = chosen.getTotalKcal();
+
+        tableModel.getRows().add(newRow);
+        tableModel.fireTableDataChanged();
+        recalcTotal();
+    }
+
+
 
     private void onRecommendMeal() {
         while (tableModel.getRowCount() > 0) {
@@ -125,6 +154,27 @@ public class MealDialog extends JDialog {
             }
 
             recalcTotal();
+        }
+    }
+
+    private void onBrowseMyFoods() {
+        // === Clean Architecture wiring ===
+        MyFoodsListViewModel vm = new MyFoodsListViewModel();
+        ListMyFoodsPresenter presenter = new ListMyFoodsPresenter(vm);
+        ListMyFoodsInputBoundary interactor =
+                new ListMyFoodsInteractor(myFoodRepository, presenter);
+        ListMyFoodsController controller = new ListMyFoodsController(interactor);
+
+        // Trigger the use case
+        controller.listFoods();
+
+        // === Open the dialog ===
+        MyFoodsDialog dlg = new MyFoodsDialog(this, vm.getFoods());
+        MyFood chosen = dlg.showDialog();
+
+        if (chosen != null) {
+            // Insert the chosen food into the table
+            addChosenFoodToMealTable(chosen);
         }
     }
 
@@ -258,6 +308,34 @@ public class MealDialog extends JDialog {
                 });
                 popup.add(item);
             }
+            JMenuItem browse = new JMenuItem("Browse My Foods");
+            browse.addActionListener(e -> {
+
+                // CA wiring for ListMyFoods
+                MyFoodsListViewModel vm = new MyFoodsListViewModel();
+                ListMyFoodsPresenter presenter = new ListMyFoodsPresenter(vm);
+                ListMyFoodsInputBoundary interactor =
+                        new ListMyFoodsInteractor(MealDialog.this.myFoodRepository, presenter);
+                ListMyFoodsController controller = new ListMyFoodsController(interactor);
+
+                controller.listFoods();
+
+                // Display dialog
+                MyFoodsDialog dlg = new MyFoodsDialog(SwingUtilities.getWindowAncestor(table), vm.getFoods());
+                MyFood chosen = dlg.showDialog();
+
+                if (chosen != null) {
+                    // Insert into Meal table
+                    int row = table.getEditingRow();
+                    if (row >= 0) {
+                        MealDialog.this.addChosenFoodToMealTable(chosen);
+                    }
+                }
+            });
+            popup.add(browse);
+
+
+
 
             JMenuItem create = new JMenuItem("Create own recipe");
             create.setFocusable(false);
@@ -265,11 +343,14 @@ public class MealDialog extends JDialog {
             create.addActionListener(e -> {
                 popup.setVisible(false);
 
+                SaveToMyFoodController saveController = MealDialog.this.saveController;
+
                 CreateFoodDialog dlg =
                         new CreateFoodDialog(
                                 SwingUtilities.getWindowAncestor(table),
                                 text,
-                                model.getService()
+                                model.getService(),
+                                saveController
                         );
                 CreateFoodDialog.CreateFood result = dlg.showDialog();
 
@@ -287,6 +368,13 @@ public class MealDialog extends JDialog {
                         recalcTotal();
                     }
                 }
+
+                MyFoodsListViewModel refreshVM = new MyFoodsListViewModel();
+                ListMyFoodsPresenter refreshPresenter = new ListMyFoodsPresenter(refreshVM);
+                ListMyFoodsInputBoundary refreshInteractor =
+                        new ListMyFoodsInteractor(MealDialog.this.myFoodRepository, refreshPresenter);
+                new ListMyFoodsController(refreshInteractor).listFoods();
+
                 SwingUtilities.invokeLater(field::requestFocusInWindow);
             });
             popup.addSeparator();
@@ -508,8 +596,10 @@ public class MealDialog extends JDialog {
                 if (r.suggestionAvailable) {
                     CreateFoodDialog.CreateFood result = null;
                     try {
+                        SaveToMyFoodController saveController = MealDialog.this.saveController;
+
                         CreateFoodDialog dlg =
-                                new CreateFoodDialog(SwingUtilities.getWindowAncestor(tableRef), r.item, service);
+                                new CreateFoodDialog(SwingUtilities.getWindowAncestor(tableRef), r.item, service,saveController);
                         result = dlg.showDialog();
                     } catch (Exception ignored) {
                     }

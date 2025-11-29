@@ -13,6 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import com.caloriecalc.model.*;
 import com.caloriecalc.model.*;
+import com.caloriecalc.repo.InMemoryMyFoodRepository;
 
 
 public class FoodLogServiceTest {
@@ -79,7 +80,7 @@ public class FoodLogServiceTest {
     @Test
     public void testSetDailyGoal_Success() {
         MockSettingsRepo mockRepo = new MockSettingsRepo();
-        FoodLogService service = new FoodLogService(null, null, mockRepo);
+        FoodLogService service = new FoodLogService(null, null, mockRepo, new InMemoryMyFoodRepository());
 
         service.setDailyGoal(2500.0);
 
@@ -92,7 +93,7 @@ public class FoodLogServiceTest {
      */
     @Test
     public void testSetDailyGoal_NegativeInput_ThrowsException() {
-        FoodLogService service = new FoodLogService(null, null, new MockSettingsRepo());
+        FoodLogService service = new FoodLogService(null, null, new MockSettingsRepo(),new InMemoryMyFoodRepository());
 
         assertThrows(IllegalArgumentException.class, () -> service.setDailyGoal(-100));
     }
@@ -102,7 +103,7 @@ public class FoodLogServiceTest {
      */
     @Test
     public void testGetDay_ExistingData() {
-        FoodLogService service = new FoodLogService(new MockFoodLogRepo(), null, new MockSettingsRepo());
+        FoodLogService service = new FoodLogService(new MockFoodLogRepo(), null, new MockSettingsRepo(),new InMemoryMyFoodRepository());
 
         DailyLog log = service.getDay(LocalDate.now());
 
@@ -115,7 +116,7 @@ public class FoodLogServiceTest {
      */
     @Test
     public void testGetDay_NoData_ReturnsNewEmptyLog() {
-        FoodLogService service = new FoodLogService(new MockFoodLogRepo(), null, new MockSettingsRepo());
+        FoodLogService service = new FoodLogService(new MockFoodLogRepo(), null, new MockSettingsRepo(),new InMemoryMyFoodRepository());
 
         LocalDate yesterday = LocalDate.now().minusDays(1);
         DailyLog log = service.getDay(yesterday);
@@ -130,7 +131,7 @@ public class FoodLogServiceTest {
         // Setup
         MockFoodLogRepo logRepo = new MockFoodLogRepo();
         MockProvider provider = new MockProvider();
-        FoodLogService service = new FoodLogService(logRepo, provider, new MockSettingsRepo());
+        FoodLogService service = new FoodLogService(logRepo, provider, new MockSettingsRepo(),new InMemoryMyFoodRepository());
         LocalDate today = LocalDate.now();
 
         // 1. Setup Meals
@@ -185,7 +186,7 @@ public class FoodLogServiceTest {
         MockSettingsRepo settingsRepo = new MockSettingsRepo();
         MockProvider provider = new MockProvider();
 
-        FoodLogService service = new FoodLogService(repo, provider, settingsRepo);
+        FoodLogService service = new FoodLogService(repo, provider, settingsRepo,new InMemoryMyFoodRepository());
 
         assertNotNull(service.getRepository());
         assertNotNull(service.getSettingsRepo());
@@ -198,7 +199,7 @@ public class FoodLogServiceTest {
     @Test
     public void testGetDay_Null_CreatesFullyInitializedLog() {
         MockFoodLogRepo repo = new MockFoodLogRepo();
-        FoodLogService service = new FoodLogService(repo, new MockProvider(), new MockSettingsRepo());
+        FoodLogService service = new FoodLogService(repo, new MockProvider(), new MockSettingsRepo(),new InMemoryMyFoodRepository());
 
         DailyLog log = service.getDay(LocalDate.of(2000, 1, 1));
 
@@ -210,7 +211,7 @@ public class FoodLogServiceTest {
     @Test
     public void testDeleteMeal_DayNotFound() {
         MockFoodLogRepo repo = new MockFoodLogRepo();
-        FoodLogService service = new FoodLogService(repo, new MockProvider(), new MockSettingsRepo());
+        FoodLogService service = new FoodLogService(repo, new MockProvider(), new MockSettingsRepo(),new InMemoryMyFoodRepository());
 
         service.deleteMeal(LocalDate.of(1990, 1, 1), "some-id");
     }
@@ -218,7 +219,7 @@ public class FoodLogServiceTest {
     @Test
     public void testSaveMealWithNullCalories() {
         MockFoodLogRepo repo = new MockFoodLogRepo();
-        FoodLogService service = new FoodLogService(repo, null, new MockSettingsRepo());
+        FoodLogService service = new FoodLogService(repo, null, new MockSettingsRepo(),new InMemoryMyFoodRepository());
         LocalDate today = LocalDate.now();
 
         Meal meal = service.newEmptyMeal(today, "Ghost Meal");
@@ -240,7 +241,7 @@ public class FoodLogServiceTest {
     public void testInputParsingEdgeCases() {
         MockFoodLogRepo logRepo = new MockFoodLogRepo();
         MockProvider provider = new MockProvider();
-        FoodLogService service = new FoodLogService(logRepo, provider, new MockSettingsRepo());
+        FoodLogService service = new FoodLogService(logRepo, provider, new MockSettingsRepo(),new InMemoryMyFoodRepository());
 
         // 1. Missing amount & unit -> default 100g
         MealEntry e1 = service.resolveEntryFromInput("apple");
@@ -264,7 +265,7 @@ public class FoodLogServiceTest {
     @Test
     public void testGoalAndGetters_FullCoverage() {
         MockSettingsRepo settingsRepo = new MockSettingsRepo();
-        FoodLogService service = new FoodLogService(new MockFoodLogRepo(), new MockProvider(), settingsRepo);
+        FoodLogService service = new FoodLogService(new MockFoodLogRepo(), new MockProvider(), settingsRepo,new InMemoryMyFoodRepository());
 
         service.setDailyGoal(2000.0);
         assertEquals(2000.0, service.getDailyGoal(), 0.1); // 覆盖 getDailyGoal
@@ -285,7 +286,7 @@ public class FoodLogServiceTest {
     public void testSaveMeal_NewDay_CreatesLog() {
         // Setup
         MockFoodLogRepo repo = new MockFoodLogRepo();
-        FoodLogService service = new FoodLogService(repo, new MockProvider(), new MockSettingsRepo());
+        FoodLogService service = new FoodLogService(repo, new MockProvider(), new MockSettingsRepo(),new InMemoryMyFoodRepository());
 
         // Use "Tomorrow" because our MockRepo only returns data for "Today".
         // For tomorrow, it returns null, forcing the Service to create a new Log.

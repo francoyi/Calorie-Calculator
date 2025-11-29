@@ -3,6 +3,7 @@ package com.caloriecalc.ui;
 import com.caloriecalc.Main;
 import com.caloriecalc.model.DailyLog;
 import com.caloriecalc.model.UserSettings;
+import com.caloriecalc.port.MyFoodRepository;
 import com.caloriecalc.port.UserMetricsRepository;
 import com.caloriecalc.service.FoodLogService;
 import com.caloriecalc.service.MealRecommendationService;
@@ -30,13 +31,16 @@ public class MainPanel extends JPanel {
     private final FoodLogService service;
     private final MealRecommendationService mealRecommendationService;
     private final DailyLogPanel dailyPanel;
+    private final MyFoodRepository myFoodRepo;
     private DailyLog lastRendered;
     // UserMetricsRepository metricsRepo
-    public MainPanel(FoodLogService service, MealRecommendationService mealRecommendationService, UserMetricsRepository metricsRepo) {
+    public MainPanel(FoodLogService service, MealRecommendationService mealRecommendationService, UserMetricsRepository metricsRepo, MyFoodRepository myFoodRepo) {
         this.service = service;
         this.mealRecommendationService = mealRecommendationService;
         this.dailyPanel = new DailyLogPanel(service, mealRecommendationService, this);
         this.metricsRepo = metricsRepo;
+        this.myFoodRepo = myFoodRepo;
+
 
         setLayout(new BorderLayout(8, 8));
 
@@ -122,7 +126,7 @@ public class MainPanel extends JPanel {
     }
 
     private void onAddMeal() {
-        MealDialog dlg = new MealDialog(SwingUtilities.getWindowAncestor(this), service, current, null, mealRecommendationService);
+        MealDialog dlg = new MealDialog(SwingUtilities.getWindowAncestor(this), service, current, null, mealRecommendationService,myFoodRepo);
         dlg.setVisible(true);
         refresh();
     }

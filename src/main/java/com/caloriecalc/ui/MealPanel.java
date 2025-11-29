@@ -50,7 +50,7 @@ public class MealPanel extends JPanel {
         add(btns, BorderLayout.SOUTH);
 
         edit.addActionListener(e -> {
-            MealDialog dlg = new MealDialog(SwingUtilities.getWindowAncestor(this), service, meal.getDate(), meal, mealRecommendationService);
+            MealDialog dlg = new MealDialog(SwingUtilities.getWindowAncestor(this), service, meal.getDate(), meal, mealRecommendationService,service.getMyFoodRepository());
             dlg.setVisible(true);
             mainPanel.refresh();
         });
