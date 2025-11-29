@@ -12,6 +12,10 @@ public class Meal {
     private List<MealEntry> entries = new ArrayList<>();
     private double totalKcal;
 
+    public Meal() {
+
+    }
+
     public Meal(String id, LocalDate date, String label) {
         this.id = id;
         this.date = date;
