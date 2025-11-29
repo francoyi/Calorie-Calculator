@@ -64,6 +64,9 @@ public class MealDialog extends JDialog {
         TableColumn itemColumn = table.getColumnModel().getColumn(0);
         itemColumn.setCellEditor(new AutoCompleteEditor(tableModel, table));
 
+        TableColumn fetchCol = table.getColumnModel().getColumn(4);
+        fetchCol.setCellEditor(tableModel.new ButtonEditor(table));
+
         add(new JScrollPane(table), BorderLayout.CENTER);
 
         JPanel bottom = new JPanel(new BorderLayout());
@@ -193,12 +196,14 @@ public class MealDialog extends JDialog {
             field.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
                 @Override
                 public void insertUpdate(javax.swing.event.DocumentEvent e) {
-                    if (popup.isVisible()) popup.setVisible(false);
+                    pushToModel();
+                    SwingUtilities.invokeLater(() -> showSuggestions());
                 }
 
                 @Override
                 public void removeUpdate(javax.swing.event.DocumentEvent e) {
-                    if (popup.isVisible()) popup.setVisible(false);
+                    pushToModel();
+                    SwingUtilities.invokeLater(() -> showSuggestions());
                 }
 
                 @Override
@@ -206,7 +211,30 @@ public class MealDialog extends JDialog {
                     // no-op
                 }
             });
+
         }
+        private void hidePopup() {
+            if (popup.isVisible()) popup.setVisible(false);
+        }
+
+        private void updateCreateButton() {
+            pushToModel();
+        }
+
+        // Push edits INTO the model while typing
+        private void pushToModel() {
+            int row = table.getEditingRow();
+            if (row < 0) return;
+
+            MealRow r = model.getRows().get(row);
+
+            r.item = field.getText();
+            r.suggestionAvailable = true;
+
+            model.fireTableCellUpdated(row, 0);
+            model.fireTableCellUpdated(row, 4); // repaint button column
+        }
+
 
         private void showSuggestions() {
             if (!field.isDisplayable() || !field.isShowing()) {
@@ -231,7 +259,7 @@ public class MealDialog extends JDialog {
                 popup.add(item);
             }
 
-            JMenuItem create = new JMenuItem("Create own food");
+            JMenuItem create = new JMenuItem("Create own recipe");
             create.setFocusable(false);
             create.setRequestFocusEnabled(false);
             create.addActionListener(e -> {
@@ -366,7 +394,7 @@ public class MealDialog extends JDialog {
                         row.item = newName;
                         row.kcalManual = null;
                         row.fromApi = false;
-                        row.suggestionAvailable = false;
+                        row.suggestionAvailable = true;
                     }
                 }
                 case 1 -> {
@@ -394,6 +422,7 @@ public class MealDialog extends JDialog {
             }
 
             fireTableCellUpdated(r, c);
+            fireTableCellUpdated(r, 4);
 
             boolean needLookup = false;
 
