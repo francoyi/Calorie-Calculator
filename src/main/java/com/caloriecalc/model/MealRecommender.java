@@ -1,6 +1,7 @@
 package com.caloriecalc.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MealRecommender implements Recommender {
@@ -9,16 +10,13 @@ public class MealRecommender implements Recommender {
     private final int goal;
 
     /**
-     * Computes the recommendationList, for queries
+     * Computes the recommendationList, for queries. Less likely to recommend
+     * the same food multiple times.
      *
      * @param foodItems list of available food items
      * @param maxKCal   upper bound on calorie queries
      */
     public MealRecommender(List<FoodItem> foodItems, double maxKCal) {
-        /*
-            TODO: this recommendation algorithm needs some work.
-            it really likes recommending a ton of really low calorie items
-        */
         this.foodItems = foodItems;
         this.goal = (int) maxKCal;
         this.recommendationList = new ArrayList<>(this.goal + 1);
@@ -27,12 +25,30 @@ public class MealRecommender implements Recommender {
             this.recommendationList.add(new Recommendation(new ArrayList<>()));
         }
 
-        for (int i = 0; i <= maxKCal; i++) {
+        for (int i = 0; i <= this.goal; i++) {
+            if (recommendationList.get(i).getFoodItems().isEmpty() && i != 0) {
+                continue;
+            }
+
             for (FoodItem foodItem : foodItems) {
-                int nxt = (int) (recommendationList.get(i).getCalories() + foodItem.kcalPerServing());
-                if (nxt <= this.goal) {
-                    recommendationList.set(nxt, (new Recommendation(recommendationList.get(i).getFoodItems())));
-                    recommendationList.get(nxt).addFoodItem(foodItem);
+                for (int count = 1; count <= 3; count++) {
+                    int caloriesToAdd = (int) (foodItem.kcalPerServing() * count);
+                    int nxt = i + caloriesToAdd;
+
+                    if (nxt <= this.goal) {
+                        int currentCount = 0;
+                        if (i != 0) {
+                            currentCount = Collections.frequency(recommendationList.get(i).getFoodItems(), foodItem);
+                        }
+
+                        if (currentCount + count <= 3) {
+                            Recommendation newRecommendation = new Recommendation(recommendationList.get(i).getFoodItems());
+                            for (int k = 0; k < count; k++) {
+                                newRecommendation.addFoodItem(foodItem);
+                            }
+                            recommendationList.set(nxt, newRecommendation);
+                        }
+                    }
                 }
             }
         }

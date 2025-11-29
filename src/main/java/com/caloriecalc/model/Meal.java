@@ -13,6 +13,7 @@ public class Meal {
     private double totalKcal;
 
     public Meal() {
+
     }
 
     public Meal(String id, LocalDate date, String label) {

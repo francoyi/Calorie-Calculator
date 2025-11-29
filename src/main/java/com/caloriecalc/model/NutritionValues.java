@@ -12,4 +12,9 @@ public record NutritionValues(Double energyKcal, Double proteinG, Double fatG, D
         Double so = sodiumMg == null ? null : sodiumMg * factor;
         return new NutritionValues(e, p, f, c, s, fi, so);
     }
+
+    public Double kcalPer100g() {
+        return energyKcal == null ? null : energyKcal;
+    }
+
 }

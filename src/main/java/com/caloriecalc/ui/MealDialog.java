@@ -23,6 +23,7 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MealDialog extends JDialog {
@@ -77,6 +78,9 @@ public class MealDialog extends JDialog {
         TableColumn itemColumn = table.getColumnModel().getColumn(0);
         itemColumn.setCellEditor(new AutoCompleteEditor(tableModel, table));
 
+        TableColumn fetchCol = table.getColumnModel().getColumn(4);
+        fetchCol.setCellEditor(tableModel.new ButtonEditor(table));
+
         add(new JScrollPane(table), BorderLayout.CENTER);
 
         JPanel bottom = new JPanel(new BorderLayout());
@@ -129,6 +133,9 @@ public class MealDialog extends JDialog {
 
 
     private void onRecommendMeal() {
+        while (tableModel.getRowCount() > 0) {
+            tableModel.remove(0);
+        }
         List<MealEntry> recommendedEntries = mealRecommendationService.recommendMealEntries();
 
         if (recommendedEntries.isEmpty()) {
@@ -136,8 +143,14 @@ public class MealDialog extends JDialog {
             JOptionPane.showMessageDialog(this, "Unable to recommend meal within your goal. Attempt setting another goal.", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             // Main flow: UI display logic
+            HashMap<String, MealRow> meMap = new HashMap<>();
             for (MealEntry entry : recommendedEntries) {
-                tableModel.addFromEntry(entry);
+                if (meMap.containsKey(entry.name())) {
+                    meMap.get(entry.name()).amount = meMap.get(entry.name()).amount + 100;
+                } else {
+                    tableModel.addFromEntry(entry);
+                    meMap.put(entry.name(), tableModel.rows.get(tableModel.rows.size() - 1));
+                }
             }
 
             recalcTotal();
@@ -233,12 +246,14 @@ public class MealDialog extends JDialog {
             field.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
                 @Override
                 public void insertUpdate(javax.swing.event.DocumentEvent e) {
-                    if (popup.isVisible()) popup.setVisible(false);
+                    pushToModel();
+                    SwingUtilities.invokeLater(() -> showSuggestions());
                 }
 
                 @Override
                 public void removeUpdate(javax.swing.event.DocumentEvent e) {
-                    if (popup.isVisible()) popup.setVisible(false);
+                    pushToModel();
+                    SwingUtilities.invokeLater(() -> showSuggestions());
                 }
 
                 @Override
@@ -246,7 +261,30 @@ public class MealDialog extends JDialog {
                     // no-op
                 }
             });
+
         }
+        private void hidePopup() {
+            if (popup.isVisible()) popup.setVisible(false);
+        }
+
+        private void updateCreateButton() {
+            pushToModel();
+        }
+
+        // Push edits INTO the model while typing
+        private void pushToModel() {
+            int row = table.getEditingRow();
+            if (row < 0) return;
+
+            MealRow r = model.getRows().get(row);
+
+            r.item = field.getText();
+            r.suggestionAvailable = true;
+
+            model.fireTableCellUpdated(row, 0);
+            model.fireTableCellUpdated(row, 4); // repaint button column
+        }
+
 
         private void showSuggestions() {
             if (!field.isDisplayable() || !field.isShowing()) {
@@ -444,7 +482,7 @@ public class MealDialog extends JDialog {
                         row.item = newName;
                         row.kcalManual = null;
                         row.fromApi = false;
-                        row.suggestionAvailable = false;
+                        row.suggestionAvailable = true;
                     }
                 }
                 case 1 -> {
@@ -472,6 +510,7 @@ public class MealDialog extends JDialog {
             }
 
             fireTableCellUpdated(r, c);
+            fireTableCellUpdated(r, 4);
 
             boolean needLookup = false;
 
@@ -513,7 +552,7 @@ public class MealDialog extends JDialog {
             return (c == 1) ? Double.class : String.class;
         }
 
-        /** Fetch 列的按钮编辑器 */
+        /** The button editor for the Fetch column */
         public class ButtonEditor extends AbstractCellEditor implements TableCellEditor, java.awt.event.ActionListener {
             private final JButton button = new JButton();
             private int editingRow = -1;
@@ -566,7 +605,6 @@ public class MealDialog extends JDialog {
                     }
 
                     if (result != null && result.ingredients != null && !result.ingredients.isEmpty()) {
-                        // 使用 CreateFood 计算好的总 kcal
                         r.item = result.name;
                         r.kcalManual = result.totalKcal;
                         r.fromApi = false;

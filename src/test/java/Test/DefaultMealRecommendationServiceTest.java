@@ -37,9 +37,6 @@ class DefaultMealRecommendationServiceTest {
         this.defaultMealRecommendationService = new DefaultMealRecommendationService(provider, factory);
 
         List<MealEntry> mealEntries = defaultMealRecommendationService.recommendMealEntries();
-        for (MealEntry mealEntry : mealEntries) {
-            System.out.println(mealEntry);
-        }
 
         assertNotNull(mealEntries, "mealEntries should not be null");
     }
