@@ -114,6 +114,18 @@ public class MealDialog extends JDialog {
         }
     }
 
+    private void addChosenFoodToMealTable(MyFood chosen) {
+        MealRow newRow = new MealRow();
+        newRow.item = chosen.getName();
+        newRow.amount = 100;
+        newRow.unit = "g";
+        newRow.kcalManual = chosen.getTotalKcal();
+
+        tableModel.getRows().add(newRow);
+        tableModel.fireTableDataChanged();
+        recalcTotal();
+    }
+
 
 
     private void onRecommendMeal() {
@@ -149,15 +161,7 @@ public class MealDialog extends JDialog {
 
         if (chosen != null) {
             // Insert the chosen food into the table
-            MealRow newRow = new MealRow();
-            newRow.item = chosen.getName();
-            newRow.amount = 100;
-            newRow.unit = "g";
-            newRow.kcalManual = chosen.getTotalKcal();
-
-            tableModel.getRows().add(newRow);
-            tableModel.fireTableDataChanged();
-            recalcTotal();
+            addChosenFoodToMealTable(chosen);
         }
     }
 
@@ -286,10 +290,7 @@ public class MealDialog extends JDialog {
                     // Insert into Meal table
                     int row = table.getEditingRow();
                     if (row >= 0) {
-                        MealRow r = model.getRows().get(row);
-                        r.item = chosen.getName();
-                        r.kcalManual = chosen.getTotalKcal();
-                        model.fireTableRowsUpdated(row, row);
+                        MealDialog.this.addChosenFoodToMealTable(chosen);
                     }
                 }
             });
