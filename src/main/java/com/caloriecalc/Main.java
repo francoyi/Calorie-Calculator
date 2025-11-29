@@ -20,6 +20,8 @@ import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.*;
 import java.awt.Window;
 import java.nio.file.Path;
+import com.caloriecalc.port.MyFoodRepository;
+import com.caloriecalc.repo.InMemoryMyFoodRepository;
 
 public class Main {
 
@@ -32,7 +34,8 @@ public class Main {
             FoodLogRepository foodLogRepo = new JsonFoodLogRepository(Path.of("data", "food_log.json"));
             UserSettingsRepository settingsRepo = new JsonUserSettingsRepository(Path.of("data", "user_settings.json"));
             NutritionDataProvider provider = new OpenFoodFactsClient();
-            FoodLogService service = new FoodLogService(foodLogRepo, provider, settingsRepo);
+            MyFoodRepository myFoodRepo = new InMemoryMyFoodRepository();
+            FoodLogService service = new FoodLogService(foodLogRepo, provider, settingsRepo,myFoodRepo);
             UserMetricsRepository metricsRepo =
                     new JsonUserMetricsRepository(Path.of("data", "user_metrics.json"));
             RecommenderFactory recommenderFactory = new MealRecommenderFactory(service);
@@ -41,7 +44,7 @@ public class Main {
                     recommenderFactory
             );
 
-            MainPanel mainPanel = new MainPanel(service, mealRecommendationService, metricsRepo);
+            MainPanel mainPanel = new MainPanel(service, mealRecommendationService, metricsRepo, myFoodRepo);
             MainFrame mainFrame = new MainFrame(mainPanel);
 
             mainFrame.setVisible(true);

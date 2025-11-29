@@ -2,6 +2,7 @@ package com.caloriecalc.service;
 
 import com.caloriecalc.model.*;
 import com.caloriecalc.port.FoodLogRepository;
+import com.caloriecalc.port.MyFoodRepository;
 import com.caloriecalc.port.NutritionDataProvider;
 import com.caloriecalc.util.UnitParser;
 
@@ -18,11 +19,14 @@ public class FoodLogService {
     private final NutritionDataProvider provider;
     private final UserSettingsRepository settingsRepo;
     private final ZoneId zone = ZoneId.of("America/Toronto");
+    private final MyFoodRepository myFoodRepository;
 
-    public FoodLogService(FoodLogRepository repo, NutritionDataProvider provider, UserSettingsRepository settingsRepo) {
+
+    public FoodLogService(FoodLogRepository repo, NutritionDataProvider provider, UserSettingsRepository settingsRepo,MyFoodRepository myFoodRepository) {
         this.repo = repo;
         this.provider = provider;
         this.settingsRepo = settingsRepo;
+        this.myFoodRepository = myFoodRepository;
     }
 
     public DailyLog getDay(LocalDate date) {
@@ -37,6 +41,10 @@ public class FoodLogService {
 
     public Meal newEmptyMeal(LocalDate date, String label) {
         return new Meal(UUID.randomUUID().toString(), date, label);
+    }
+
+    public MyFoodRepository getMyFoodRepository() {
+        return myFoodRepository;
     }
 
     /**

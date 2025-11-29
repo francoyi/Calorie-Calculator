@@ -78,4 +78,7 @@ public class SaveToMyFoodInteractor implements SaveToMyFoodInputBoundary {
                 food
         ));
     }
+
+    public static class ListMyFoodsInteractor {
+    }
 }

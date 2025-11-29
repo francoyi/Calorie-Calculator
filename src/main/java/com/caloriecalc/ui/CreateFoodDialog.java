@@ -97,13 +97,7 @@ public class CreateFoodDialog extends JDialog {
             }
 
 
-            MyFoodRepository repo = new InMemoryMyFoodRepository();
-            MyFoodsViewModel vm = new MyFoodsViewModel();
-            SaveToMyFoodOutputBoundary presenter = new SaveToMyFoodPresenter(vm);
-            SaveToMyFoodInputBoundary interactor = new SaveToMyFoodInteractor(repo, presenter);
-            SaveToMyFoodController controller = new SaveToMyFoodController(interactor);
-
-            controller.save(name, list);
+            saveController.save(name, list);
             result = new CreateFood(name, list);
 
             dispose();
