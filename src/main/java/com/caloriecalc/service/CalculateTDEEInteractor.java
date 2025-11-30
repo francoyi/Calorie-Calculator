@@ -21,10 +21,8 @@ public class CalculateTDEEInteractor implements CalculateTDEEInputBoundary {
             final double weightKg = input.metric() ? input.weight() : input.weight() * 0.453592;
             final double heightCm = input.metric() ? input.height() : input.height() * 2.54;
 
-
             ActivityLevel lvl = input.activityLevel();
             CalDevianceRate rate = input.caldeviancerate();
-
 
             UserMetrics userMetrics = new UserMetrics(
                     input.ageYears(),
