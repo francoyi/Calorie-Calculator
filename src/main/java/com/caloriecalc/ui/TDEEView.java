@@ -13,7 +13,7 @@ import com.caloriecalc.service.CalculateTDEEInteractor;
 import com.caloriecalc.service.FoodLogService;
 import com.caloriecalc.service.MifflinStJeorBMR;
 
-public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
+public class TDEEView extends JDialog implements CalculateTDEEOutputBoundary {
 
     private final UserMetricsRepository metricsRepository;
 
@@ -61,8 +61,8 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
 
     private Result result = null;
 
-    public TDEEDialog(Window owner, FoodLogService foodService, UserMetricsRepository metricsRepository,
-                      Runnable refreshCallback) {
+    public TDEEView(Window owner, FoodLogService foodService, UserMetricsRepository metricsRepository,
+                    Runnable refreshCallback) {
         super(owner, "Daily Calorie Burn Calculator (TDEE)", ModalityType.APPLICATION_MODAL);
 
         this.foodService = foodService;

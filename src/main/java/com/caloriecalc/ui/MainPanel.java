@@ -96,7 +96,7 @@ public class MainPanel extends JPanel {
 
     private void openCalcTDEE() {
         Window owner = SwingUtilities.getWindowAncestor(this);
-        new TDEEDialog(owner, service, metricsRepo, this::refresh).setVisible(true);
+        new TDEEView(owner, service, metricsRepo, this::refresh).setVisible(true);
     }
 
 
