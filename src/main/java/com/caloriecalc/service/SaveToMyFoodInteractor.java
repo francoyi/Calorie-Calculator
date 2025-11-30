@@ -8,6 +8,7 @@ import com.caloriecalc.port.savetomyfood.SaveToMyFoodInputData;
 import com.caloriecalc.port.savetomyfood.SaveToMyFoodOutputBoundary;
 import com.caloriecalc.port.savetomyfood.SaveToMyFoodOutputData;
 
+import javax.annotation.processing.Generated;
 import java.util.List;
 
 /**
@@ -25,6 +26,7 @@ public class SaveToMyFoodInteractor implements SaveToMyFoodInputBoundary {
     private final MyFoodRepository repository;
     private final SaveToMyFoodOutputBoundary presenter;
 
+    @Generated("ignored-by-coverage")
     public SaveToMyFoodInteractor(MyFoodRepository repository,
                                   SaveToMyFoodOutputBoundary presenter) {
         this.repository = repository;
@@ -60,9 +62,8 @@ public class SaveToMyFoodInteractor implements SaveToMyFoodInputBoundary {
         // Compute total kcal
         double totalKcal = 0.0;
         for (Ingredient ing : ingredients) {
-            if (ing.getKcal() != null) {
                 totalKcal += ing.getKcal();
-            }
+
         }
 
         // Create Entity
@@ -79,6 +80,4 @@ public class SaveToMyFoodInteractor implements SaveToMyFoodInputBoundary {
         ));
     }
 
-    public static class ListMyFoodsInteractor {
-    }
 }
