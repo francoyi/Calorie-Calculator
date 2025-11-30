@@ -13,7 +13,7 @@ import com.caloriecalc.service.CalculateTDEEInteractor;
 import com.caloriecalc.service.FoodLogService;
 import com.caloriecalc.service.MifflinStJeorBMR;
 
-public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
+public class TDEEView extends JDialog{
 
     private final UserMetricsRepository metricsRepository;
 
@@ -61,8 +61,8 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
 
     private Result result = null;
 
-    public TDEEDialog(Window owner, FoodLogService foodService, UserMetricsRepository metricsRepository,
-                      Runnable refreshCallback) {
+    public TDEEView(Window owner, FoodLogService foodService, UserMetricsRepository metricsRepository,
+                    Runnable refreshCallback) {
         super(owner, "Daily Calorie Burn Calculator (TDEE)", ModalityType.APPLICATION_MODAL);
 
         this.foodService = foodService;
@@ -71,9 +71,11 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
 
     setSize(700, 500);
 
-        this.interactor = new CalculateTDEEInteractor(new MifflinStJeorBMR(), this);
+    TDEEViewPresenter presenter = new TDEEViewPresenter(this);
+    this.interactor = new CalculateTDEEInteractor(new MifflinStJeorBMR(), presenter);
 
-    makeUI();
+
+        makeUI();
     restoreLastInputs();
     wireActions();
 
@@ -302,7 +304,7 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
                     age, weight, height, metric, sex, level, calrate
             ));
         } catch (NumberFormatException ex) {
-            presentValidationError("Please enter valid numeric values for age, weight, and height.");
+            showValidationError("Please enter valid numeric values for age, weight, and height.");
         }
     }
 
@@ -334,33 +336,30 @@ public class TDEEDialog extends JDialog implements CalculateTDEEOutputBoundary {
         );
     }
 
-    @Override
-    public void present(CalculateTDEEOutputData output) {
-        SwingUtilities.invokeLater(() -> {
-            result = new Result(output.bmr(), output.tdee(), output.formulaName());
-            String text = """
-                    BMR (%s): %.1f kcal/day
-                    Activity factor: %.2f
-                    Estimated TDEE: %.1f kcal/day
-                    Deficit/Surplus: %.1f kcal/day
-                    """.formatted(
-                    output.formulaName(),
-                    output.bmr(),
-                    output.activityFactor(),
-                    output.tdee(),
-                    output.calDeviance()
-            );
-            resultArea.setText(text);
-        });
+    void showResult(CalculateTDEEOutputData output) {
+        result = new Result(output.bmr(), output.tdee(), output.formulaName());
+        String text = """
+            BMR (%s): %.1f kcal/day
+            Activity factor: %.2f
+            Estimated TDEE: %.1f kcal/day
+            Deficit/Surplus: %.1f kcal/day
+            """.formatted(
+                output.formulaName(),
+                output.bmr(),
+                output.activityFactor(),
+                output.tdee(),
+                output.calDeviance()
+        );
+        resultArea.setText(text);
     }
 
-    @Override
-    public void presentValidationError(String message) {
-        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(
+    void showValidationError(String message) {
+        JOptionPane.showMessageDialog(
                 this,
                 message,
                 "Invalid input",
                 JOptionPane.ERROR_MESSAGE
-        ));
+        );
     }
+
 }
