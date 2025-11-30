@@ -1,6 +1,6 @@
 # Calorie-Calculator
 
-**Team Name:** csc207-We-are-cooking234  
+**Group Number:** 14  
 **Team Members:** 
    - [@janiceelamm](http://github.com/janiceelamm)
    - [@Shourya](https://github.com/bALTASELAMIS17)
