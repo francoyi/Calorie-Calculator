@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class MainFrame extends JFrame {
     public MainFrame(JPanel mainPanel) {
-        super("CalorieCalculation");
+        super("Calorie Calculator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 600);
         setLocationRelativeTo(null);
