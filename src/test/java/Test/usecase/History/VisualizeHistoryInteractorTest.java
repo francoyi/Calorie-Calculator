@@ -82,4 +82,38 @@ public class VisualizeHistoryInteractorTest {
         assertEquals(1500.0, presenter.receivedData.caloriesPerDay().get(dates.get(0)));
         assertEquals(2000.0, presenter.receivedData.caloriesPerDay().get(dates.get(1)));
     }
+
+    @Test
+    void testNoHistoryData_ShouldFail() {
+        FoodLogRepository emptyRepo = new FoodLogRepository() {
+            @Override
+            public List<DailyLog> getAllDays() {
+                return new ArrayList<>();
+            }
+            @Override public DailyLog getDay(LocalDate date) { return null; }
+            @Override public void saveDay(DailyLog day) {}
+        };
+
+        UserSettingsRepository mockSettings = new UserSettingsRepository() {
+            @Override public UserSettings getSettings() { return new UserSettings(2000.0); }
+            @Override public void saveSettings(UserSettings settings) {}
+        };
+
+        class TestPresenter implements VisualizeHistoryOutputBoundary {
+            String error;
+            @Override public void present(VisualizeHistoryOutputData output) {
+                fail("Should not succeed when no data exists");
+            }
+            @Override public void prepareFailView(String error) {
+                this.error = error;
+            }
+        }
+        TestPresenter presenter = new TestPresenter();
+
+        VisualizeHistoryInteractor interactor = new VisualizeHistoryInteractor(emptyRepo, mockSettings, presenter);
+        interactor.execute(new VisualizeHistoryInputData());
+
+        assertNotNull(presenter.error);
+        assertEquals("No history data found.", presenter.error);
+    }
 }
