@@ -308,4 +308,17 @@ public class FoodLogServiceTest {
         assertEquals(tomorrow, saved.getDate());
         assertEquals(1, saved.getMeals().size());
     }
+
+    /**
+     * Test the new MyFoodRepository getter added by teammates.
+     */
+    @Test
+    public void testGetMyFoodRepository() {
+        // Arrange
+        InMemoryMyFoodRepository myFoodRepo = new InMemoryMyFoodRepository();
+        FoodLogService service = new FoodLogService(null, null, new MockSettingsRepo(), myFoodRepo);
+
+        // Act & Assert
+        assertNotNull(service.getMyFoodRepository(), "Should return the injected MyFoodRepository");
+    }
 }
