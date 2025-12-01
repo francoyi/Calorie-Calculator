@@ -1,8 +1,8 @@
 package Test.usecase.RecommenderTests;
 
-import com.caloriecalc.model.FoodItem;
-import com.caloriecalc.model.MealRecommender;
-import com.caloriecalc.model.Recommendation;
+import com.caloriecalc.entity.FoodItem;
+import com.caloriecalc.entity.MealRecommender;
+import com.caloriecalc.entity.Recommendation;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
