@@ -1,4 +1,4 @@
-package com.caloriecalc.port.tdee;
+package Test.usecase.RecommenderTests;
 
 import com.caloriecalc.model.NutritionValues;
 import com.caloriecalc.port.NutritionDataProvider;
