@@ -1,7 +1,6 @@
 package com.caloriecalc.usecase.foodcalorielookup;
 
 import com.caloriecalc.entity.*;
-import com.caloriecalc.model.*;
 import com.caloriecalc.usecase.foodlog.FoodLogRepository;
 import com.caloriecalc.usecase.myfoods.MyFoodRepository;
 import com.caloriecalc.usecase.searchfood.NutritionDataProvider;

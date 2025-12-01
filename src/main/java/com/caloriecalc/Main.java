@@ -2,7 +2,6 @@ package com.caloriecalc;
 
 import com.caloriecalc.entity.MealRecommenderFactory;
 import com.caloriecalc.entity.RecommenderFactory;
-import com.caloriecalc.port.*;
 import com.caloriecalc.infrastructure.repo.JsonFoodLogRepository;
 import com.caloriecalc.infrastructure.repo.JsonUserMetricsRepository;
 import com.caloriecalc.infrastructure.repo.JsonUserSettingsRepository;

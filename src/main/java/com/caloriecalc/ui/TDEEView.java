@@ -9,7 +9,6 @@ import com.caloriecalc.entity.CalDevianceRate;
 import com.caloriecalc.entity.UserMetrics;
 import com.caloriecalc.interfaceadapters.TDEE.TDEEViewPresenter;
 import com.caloriecalc.usecase.tdee.UserMetricsRepository;
-import com.caloriecalc.port.tdee.*;
 import com.caloriecalc.usecase.tdee.CalculateTDEEInteractor;
 import com.caloriecalc.usecase.foodcalorielookup.FoodLogService;
 import com.caloriecalc.entity.MifflinStJeorBMR;
@@ -340,7 +339,7 @@ public class TDEEView extends JDialog{
         );
     }
 
-    void showResult(CalculateTDEEOutputData output) {
+    public void showResult(CalculateTDEEOutputData output) {
         result = new Result(output.bmr(), output.tdee(), output.formulaName());
         String text = """
             BMR (%s): %.1f kcal/day
@@ -357,7 +356,7 @@ public class TDEEView extends JDialog{
         resultArea.setText(text);
     }
 
-    void showValidationError(String message) {
+    public void showValidationError(String message) {
         JOptionPane.showMessageDialog(
                 this,
                 message,

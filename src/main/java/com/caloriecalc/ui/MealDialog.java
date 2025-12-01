@@ -16,7 +16,6 @@ import com.caloriecalc.entity.MealRecommendationService;
 import com.caloriecalc.usecase.myfoods.listmyfoods.ListMyFoodsInteractor;
 import com.caloriecalc.usecase.myfoods.savetomyfood.SaveToMyFoodInteractor;
 import com.caloriecalc.usecase.myfoods.listmyfoods.ListMyFoodsInputBoundary;
-import com.caloriecalc.model.*;
 
 import com.caloriecalc.usecase.myfoods.MyFoodRepository;
 import com.caloriecalc.usecase.myfoods.savetomyfood.SaveToMyFoodOutputBoundary;

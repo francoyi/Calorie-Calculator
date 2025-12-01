@@ -3,7 +3,6 @@ package com.caloriecalc.usecase.tdee;
 import com.caloriecalc.entity.ActivityLevel;
 import com.caloriecalc.entity.CalDevianceRate;
 import com.caloriecalc.entity.UserMetrics;
-import com.caloriecalc.port.tdee.*;
 
 public class CalculateTDEEInteractor implements CalculateTDEEInputBoundary {
     private final BMRFormula bmrFormula;

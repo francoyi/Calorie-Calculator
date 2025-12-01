@@ -2,7 +2,6 @@ package com.caloriecalc.usecase.mealrecommendation;
 
 import com.caloriecalc.entity.*;
 import com.caloriecalc.entity.RecommenderFactory;
-import com.caloriecalc.model.*;
 import com.caloriecalc.usecase.searchfood.NutritionDataProvider;
 
 import java.util.ArrayList;
