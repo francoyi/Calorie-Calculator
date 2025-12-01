@@ -1,9 +1,9 @@
 package com.caloriecalc.ui;
 
-import com.caloriecalc.model.Meal;
-import com.caloriecalc.model.MealEntry;
-import com.caloriecalc.service.FoodLogService;
-import com.caloriecalc.service.MealRecommendationService;
+import com.caloriecalc.entity.Meal;
+import com.caloriecalc.entity.MealEntry;
+import com.caloriecalc.usecase.foodcalorielookup.FoodLogService;
+import com.caloriecalc.entity.MealRecommendationService;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;

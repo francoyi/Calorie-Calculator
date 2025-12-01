@@ -1,6 +1,6 @@
 package Test.usecase.RecommenderTests;
 
-import com.caloriecalc.model.FoodItem;
+import com.caloriecalc.entity.FoodItem;
 
 public class FoodItemImpl implements FoodItem {
     private final String name;

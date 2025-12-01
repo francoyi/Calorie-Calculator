@@ -1,13 +1,13 @@
 package Test.usecase.History;
 
-import com.caloriecalc.model.DailyLog;
-import com.caloriecalc.model.UserSettings;
-import com.caloriecalc.port.FoodLogRepository;
-import com.caloriecalc.port.UserSettingsRepository;
-import com.caloriecalc.port.history.VisualizeHistoryInputData;
-import com.caloriecalc.port.history.VisualizeHistoryOutputBoundary;
-import com.caloriecalc.port.history.VisualizeHistoryOutputData;
-import com.caloriecalc.service.VisualizeHistoryInteractor;
+import com.caloriecalc.entity.DailyLog;
+import com.caloriecalc.entity.UserSettings;
+import com.caloriecalc.usecase.foodlog.FoodLogRepository;
+import com.caloriecalc.usecase.usersettings.UserSettingsRepository;
+import com.caloriecalc.usecase.history.VisualizeHistoryInputData;
+import com.caloriecalc.usecase.history.VisualizeHistoryOutputBoundary;
+import com.caloriecalc.usecase.history.VisualizeHistoryOutputData;
+import com.caloriecalc.usecase.history.VisualizeHistoryInteractor;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

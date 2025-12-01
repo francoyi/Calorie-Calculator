@@ -1,10 +1,10 @@
 package Test.usecase.MifflinBMR;
 
-import com.caloriecalc.model.ActivityLevel;
-import com.caloriecalc.model.CalDevianceRate;
-import com.caloriecalc.model.UserMetrics;
-import com.caloriecalc.port.tdee.BMRFormula;
-import com.caloriecalc.service.MifflinStJeorBMR;
+import com.caloriecalc.entity.ActivityLevel;
+import com.caloriecalc.entity.CalDevianceRate;
+import com.caloriecalc.entity.UserMetrics;
+import com.caloriecalc.usecase.tdee.BMRFormula;
+import com.caloriecalc.entity.MifflinStJeorBMR;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertEquals;

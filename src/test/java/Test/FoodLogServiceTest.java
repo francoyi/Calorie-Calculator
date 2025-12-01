@@ -1,19 +1,17 @@
 package Test;
 
-import com.caloriecalc.model.DailyLog;
-import com.caloriecalc.model.UserSettings;
-import com.caloriecalc.port.FoodLogRepository;
-import com.caloriecalc.port.NutritionDataProvider;
-import com.caloriecalc.port.UserSettingsRepository;
-import com.caloriecalc.service.FoodLogService;
+import com.caloriecalc.entity.*;
+import com.caloriecalc.usecase.foodlog.FoodLogRepository;
+import com.caloriecalc.usecase.searchfood.NutritionDataProvider;
+import com.caloriecalc.usecase.usersettings.UserSettingsRepository;
+import com.caloriecalc.usecase.foodcalorielookup.FoodLogService;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
-import com.caloriecalc.model.*;
-import com.caloriecalc.model.*;
-import com.caloriecalc.repo.InMemoryMyFoodRepository;
+
+import com.caloriecalc.usecase.myfoods.savetomyfood.InMemoryMyFoodRepository;
 
 
 public class FoodLogServiceTest {

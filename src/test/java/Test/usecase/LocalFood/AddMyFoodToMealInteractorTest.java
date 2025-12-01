@@ -1,8 +1,10 @@
 package Test.usecase.LocalFood;
 
-import com.caloriecalc.port.addmyfoodtomeal.*;
-import com.caloriecalc.service.AddMyFoodToMealInteractor;
+import com.caloriecalc.usecase.myfoods.addmyfoodtomeal.AddMyFoodToMealInteractor;
 
+import com.caloriecalc.usecase.myfoods.addmyfoodtomeal.AddMyFoodToMealInputData;
+import com.caloriecalc.usecase.myfoods.addmyfoodtomeal.AddMyFoodToMealOutputBoundary;
+import com.caloriecalc.usecase.myfoods.addmyfoodtomeal.AddMyFoodToMealOutputData;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,7 +31,7 @@ class AddMyFoodToMealInteractorTest {
         AddMyFoodToMealInputData input =
                 new AddMyFoodToMealInputData(
                         "Pasta",
-                        550.0   // total kcal
+                        550.0,100.0,"g"
                 );
 
         // Act
@@ -53,7 +55,7 @@ class AddMyFoodToMealInteractorTest {
         AddMyFoodToMealInputData input =
                 new AddMyFoodToMealInputData(
                         "Chicken",   // name
-                        300.0        // total kcal
+                        300.0,100.0,"g"       // total kcal
                 );
 
         // Act

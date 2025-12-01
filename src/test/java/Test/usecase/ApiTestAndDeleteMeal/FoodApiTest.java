@@ -1,6 +1,8 @@
 package Test.usecase.ApiTestAndDeleteMeal;
 
-import com.caloriecalc.util.JsonUtil;
+import com.caloriecalc.entity.NutritionValues;
+import com.caloriecalc.infrastructure.datasource.OpenFoodFactsClient;
+import com.caloriecalc.infrastructure.util.JsonUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 
@@ -76,12 +78,12 @@ public class FoodApiTest {
     @Test
     public void openFoodFactsClient_fetchNutritionPer100_returnsNonNullValues() {
         // create client
-        com.caloriecalc.service.OpenFoodFactsClient client =
-                new com.caloriecalc.service.OpenFoodFactsClient();
+        OpenFoodFactsClient client =
+                new OpenFoodFactsClient();
 
         String term = "cake";
 
-        com.caloriecalc.model.NutritionValues values =
+        NutritionValues values =
                 client.fetchNutritionPer100(term);
 
         assertNotNull(values); //should return non-empty nutrient values.

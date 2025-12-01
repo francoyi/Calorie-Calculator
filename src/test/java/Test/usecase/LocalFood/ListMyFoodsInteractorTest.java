@@ -1,11 +1,13 @@
 package Test.usecase.LocalFood;
 
-import com.caloriecalc.model.Ingredient;
-import com.caloriecalc.model.MyFood;
-import com.caloriecalc.port.MyFoodRepository;
-import com.caloriecalc.port.listmyfoods.*;
-import com.caloriecalc.service.ListMyFoodsInteractor;
+import com.caloriecalc.entity.Ingredient;
+import com.caloriecalc.entity.MyFood;
+import com.caloriecalc.usecase.myfoods.MyFoodRepository;
+import com.caloriecalc.usecase.myfoods.listmyfoods.ListMyFoodsInteractor;
 
+import com.caloriecalc.usecase.myfoods.listmyfoods.ListMyFoodsInputData;
+import com.caloriecalc.usecase.myfoods.listmyfoods.ListMyFoodsOutputBoundary;
+import com.caloriecalc.usecase.myfoods.listmyfoods.ListMyFoodsOutputData;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -50,8 +52,8 @@ class ListMyFoodsInteractorTest {
         Ingredient spinach = new Ingredient("Spinach", 23.0, "g", 50.0);
         Ingredient pumpkin = new Ingredient("Pumpkin", 50.0, "g", 80.0);
 
-        MyFood f1 = new MyFood("Smoothie", List.of(blueberries, spinach),150.0);
-        MyFood f2 = new MyFood("Salad", List.of(spinach,pumpkin),130.0);
+        MyFood f1 = new MyFood("Smoothie", List.of(blueberries, spinach),150.0,100.0,"g");
+        MyFood f2 = new MyFood("Salad", List.of(spinach,pumpkin),130.0,100.0,"g");
 
         FakeRepo repo = new FakeRepo(List.of(f1, f2));
         FakePresenter presenter = new FakePresenter();
