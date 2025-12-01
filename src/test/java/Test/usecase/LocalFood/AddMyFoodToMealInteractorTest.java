@@ -31,7 +31,7 @@ class AddMyFoodToMealInteractorTest {
         AddMyFoodToMealInputData input =
                 new AddMyFoodToMealInputData(
                         "Pasta",
-                        550.0   // total kcal
+                        550.0,100.0,"g"
                 );
 
         // Act
@@ -55,7 +55,7 @@ class AddMyFoodToMealInteractorTest {
         AddMyFoodToMealInputData input =
                 new AddMyFoodToMealInputData(
                         "Chicken",   // name
-                        300.0        // total kcal
+                        300.0,100.0,"g"       // total kcal
                 );
 
         // Act

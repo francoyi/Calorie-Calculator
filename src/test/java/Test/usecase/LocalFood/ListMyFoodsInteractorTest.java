@@ -52,8 +52,8 @@ class ListMyFoodsInteractorTest {
         Ingredient spinach = new Ingredient("Spinach", 23.0, "g", 50.0);
         Ingredient pumpkin = new Ingredient("Pumpkin", 50.0, "g", 80.0);
 
-        MyFood f1 = new MyFood("Smoothie", List.of(blueberries, spinach),150.0);
-        MyFood f2 = new MyFood("Salad", List.of(spinach,pumpkin),130.0);
+        MyFood f1 = new MyFood("Smoothie", List.of(blueberries, spinach),150.0,100.0,"g");
+        MyFood f2 = new MyFood("Salad", List.of(spinach,pumpkin),130.0,100.0,"g");
 
         FakeRepo repo = new FakeRepo(List.of(f1, f2));
         FakePresenter presenter = new FakePresenter();
