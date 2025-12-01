@@ -3,12 +3,12 @@ package Test.usecase.TDEE;
 import com.caloriecalc.entity.ActivityLevel;
 import com.caloriecalc.entity.CalDevianceRate;
 import com.caloriecalc.entity.UserMetrics;
-import com.caloriecalc.usecase.tdee.BMRFormula;
-import com.caloriecalc.usecase.tdee.CalculateTDEEInputData;
-import com.caloriecalc.usecase.tdee.CalculateTDEEOutputBoundary;
-import com.caloriecalc.usecase.tdee.CalculateTDEEOutputData;
-import com.caloriecalc.usecase.tdee.CalculateTDEEInteractor;
-import com.caloriecalc.entity.MifflinStJeorBMR;
+import com.caloriecalc.usecase.tdee.BmrFormula;
+import com.caloriecalc.usecase.tdee.CalculateTdeeInputData;
+import com.caloriecalc.usecase.tdee.CalculateTdeeOutputBoundary;
+import com.caloriecalc.usecase.tdee.CalculateTdeeOutputData;
+import com.caloriecalc.usecase.tdee.CalculateTdeeInteractor;
+import com.caloriecalc.entity.MifflinStJeorBmr;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TDEEInteractorTest {
     @Test
     public void failureAgeNotAbove18() {
-        BMRFormula bmrFormula = new BMRFormula() {
+        BmrFormula bmrFormula = new BmrFormula() {
             @Override
             public double computeBmr(UserMetrics userMetrics) {
                 fail("BMR should not be computed when age is below 18");
@@ -29,12 +29,12 @@ public class TDEEInteractorTest {
             }
         };
 
-        class TestPresenter implements CalculateTDEEOutputBoundary {
+        class TestPresenter implements CalculateTdeeOutputBoundary {
             String validationErrorMessage = null;
-            CalculateTDEEOutputData outputData = null;
+            CalculateTdeeOutputData outputData = null;
 
             @Override
-            public void present(CalculateTDEEOutputData data) {
+            public void present(CalculateTdeeOutputData data) {
                 this.outputData = data;
             }
 
@@ -45,9 +45,9 @@ public class TDEEInteractorTest {
         }
 
         TestPresenter presenter = new TestPresenter();
-        CalculateTDEEInteractor interactor = new CalculateTDEEInteractor(bmrFormula, presenter);
+        CalculateTdeeInteractor interactor = new CalculateTdeeInteractor(bmrFormula, presenter);
 
-        CalculateTDEEInputData input = new CalculateTDEEInputData(
+        CalculateTdeeInputData input = new CalculateTdeeInputData(
                         12,
                         70.0,
                         175.0,
@@ -66,7 +66,7 @@ public class TDEEInteractorTest {
 
     @Test
     public void failureNegWeight() {
-        BMRFormula bmrFormula = new BMRFormula() {
+        BmrFormula bmrFormula = new BmrFormula() {
             @Override
             public double computeBmr(UserMetrics userMetrics) {
                 fail("BMR should not be computed when Weight is negative.");
@@ -79,12 +79,12 @@ public class TDEEInteractorTest {
             }
         };
 
-        class TestPresenter implements CalculateTDEEOutputBoundary {
+        class TestPresenter implements CalculateTdeeOutputBoundary {
             String validationErrorMessage = null;
-            CalculateTDEEOutputData outputData = null;
+            CalculateTdeeOutputData outputData = null;
 
             @Override
-            public void present(CalculateTDEEOutputData data) {
+            public void present(CalculateTdeeOutputData data) {
                 this.outputData = data;
             }
 
@@ -95,9 +95,9 @@ public class TDEEInteractorTest {
         }
 
         TestPresenter presenter = new TestPresenter();
-        CalculateTDEEInteractor interactor = new CalculateTDEEInteractor(bmrFormula, presenter);
+        CalculateTdeeInteractor interactor = new CalculateTdeeInteractor(bmrFormula, presenter);
 
-        CalculateTDEEInputData input = new CalculateTDEEInputData(
+        CalculateTdeeInputData input = new CalculateTdeeInputData(
                 29,
                 -10.0,
                 175.0,
@@ -116,7 +116,7 @@ public class TDEEInteractorTest {
 
     @Test
     public void failureNegHeight() {
-        BMRFormula bmrFormula = new BMRFormula() {
+        BmrFormula bmrFormula = new BmrFormula() {
             @Override
             public double computeBmr(UserMetrics userMetrics) {
                 fail("BMR should not be computed when Height is negative.");
@@ -129,12 +129,12 @@ public class TDEEInteractorTest {
             }
         };
 
-        class TestPresenter implements CalculateTDEEOutputBoundary {
+        class TestPresenter implements CalculateTdeeOutputBoundary {
             String validationErrorMessage = null;
-            CalculateTDEEOutputData outputData = null;
+            CalculateTdeeOutputData outputData = null;
 
             @Override
-            public void present(CalculateTDEEOutputData data) {
+            public void present(CalculateTdeeOutputData data) {
                 this.outputData = data;
             }
 
@@ -145,9 +145,9 @@ public class TDEEInteractorTest {
         }
 
         TestPresenter presenter = new TestPresenter();
-        CalculateTDEEInteractor interactor = new CalculateTDEEInteractor(bmrFormula, presenter);
+        CalculateTdeeInteractor interactor = new CalculateTdeeInteractor(bmrFormula, presenter);
 
-        CalculateTDEEInputData input = new CalculateTDEEInputData(
+        CalculateTdeeInputData input = new CalculateTdeeInputData(
                 29,
                 80.0,
                 -175.0,
@@ -166,14 +166,14 @@ public class TDEEInteractorTest {
 
     @Test
     public void passAgeExact18() {
-        BMRFormula bmrFormula = new TestBMR1600();
+        BmrFormula bmrFormula = new TestBmr1600();
 
-        class TestPresenter implements CalculateTDEEOutputBoundary {
-            CalculateTDEEOutputData output;
+        class TestPresenter implements CalculateTdeeOutputBoundary {
+            CalculateTdeeOutputData output;
             String error;
 
             @Override
-            public void present(CalculateTDEEOutputData data) {
+            public void present(CalculateTdeeOutputData data) {
                 this.output = data;
             }
 
@@ -184,9 +184,9 @@ public class TDEEInteractorTest {
         }
 
         TestPresenter presenter = new TestPresenter();
-        CalculateTDEEInteractor interactor = new CalculateTDEEInteractor(bmrFormula, presenter);
+        CalculateTdeeInteractor interactor = new CalculateTdeeInteractor(bmrFormula, presenter);
 
-        CalculateTDEEInputData input = new CalculateTDEEInputData(
+        CalculateTdeeInputData input = new CalculateTdeeInputData(
                         18,
                         70.0,
                         175.0,
@@ -208,13 +208,13 @@ public class TDEEInteractorTest {
     
     @Test
     public void passFlooredPositiveOutput() {
-        BMRFormula bmrFormula = new MifflinStJeorBMR();
-        class TestPresenter implements CalculateTDEEOutputBoundary {
-            CalculateTDEEOutputData output;
+        BmrFormula bmrFormula = new MifflinStJeorBmr();
+        class TestPresenter implements CalculateTdeeOutputBoundary {
+            CalculateTdeeOutputData output;
             String error;
 
             @Override
-            public void present(CalculateTDEEOutputData data) {
+            public void present(CalculateTdeeOutputData data) {
                 this.output = data;
             }
 
@@ -225,9 +225,9 @@ public class TDEEInteractorTest {
         }
 
         TestPresenter presenter = new TestPresenter();
-        CalculateTDEEInteractor interactor = new CalculateTDEEInteractor(bmrFormula, presenter);
+        CalculateTdeeInteractor interactor = new CalculateTdeeInteractor(bmrFormula, presenter);
 
-        CalculateTDEEInputData input = new CalculateTDEEInputData(
+        CalculateTdeeInputData input = new CalculateTdeeInputData(
                 98,
                 7.0,
                 17.0,
@@ -250,13 +250,13 @@ public class TDEEInteractorTest {
 
     @Test
     public void passFlooredDevRatePositiveOutput() {
-        BMRFormula bmrFormula = new MifflinStJeorBMR();
-        class TestPresenter implements CalculateTDEEOutputBoundary {
-            CalculateTDEEOutputData output;
+        BmrFormula bmrFormula = new MifflinStJeorBmr();
+        class TestPresenter implements CalculateTdeeOutputBoundary {
+            CalculateTdeeOutputData output;
             String error;
 
             @Override
-            public void present(CalculateTDEEOutputData data) {
+            public void present(CalculateTdeeOutputData data) {
                 this.output = data;
             }
 
@@ -267,9 +267,9 @@ public class TDEEInteractorTest {
         }
 
         TestPresenter presenter = new TestPresenter();
-        CalculateTDEEInteractor interactor = new CalculateTDEEInteractor(bmrFormula, presenter);
+        CalculateTdeeInteractor interactor = new CalculateTdeeInteractor(bmrFormula, presenter);
 
-        CalculateTDEEInputData input = new CalculateTDEEInputData(
+        CalculateTdeeInputData input = new CalculateTdeeInputData(
                 498,
                 7.0,
                 17.0,
@@ -292,14 +292,14 @@ public class TDEEInteractorTest {
 
     @Test
     public void passImperialEqualMetric() {
-        BMRFormula bmrFormula = new MifflinStJeorBMR();
+        BmrFormula bmrFormula = new MifflinStJeorBmr();
 
-        class TestPresenter implements CalculateTDEEOutputBoundary {
-            CalculateTDEEOutputData output;
+        class TestPresenter implements CalculateTdeeOutputBoundary {
+            CalculateTdeeOutputData output;
             String error;
 
             @Override
-            public void present(CalculateTDEEOutputData data) { output = data; }
+            public void present(CalculateTdeeOutputData data) { output = data; }
 
             @Override
             public void presentValidationError(String message) { error = message; }
@@ -308,10 +308,10 @@ public class TDEEInteractorTest {
         TestPresenter pMetric = new TestPresenter();
         TestPresenter pImperial = new TestPresenter();
 
-        CalculateTDEEInteractor interMetric = new CalculateTDEEInteractor(bmrFormula, pMetric);
-        CalculateTDEEInteractor interImperial = new CalculateTDEEInteractor(bmrFormula, pImperial);
+        CalculateTdeeInteractor interMetric = new CalculateTdeeInteractor(bmrFormula, pMetric);
+        CalculateTdeeInteractor interImperial = new CalculateTdeeInteractor(bmrFormula, pImperial);
 
-        CalculateTDEEInputData metricInput = new CalculateTDEEInputData(
+        CalculateTdeeInputData metricInput = new CalculateTdeeInputData(
                         25,
                         80.0,
                         180.0,
@@ -321,7 +321,7 @@ public class TDEEInteractorTest {
                 CalDevianceRate.MAINTAIN_0wk
                 );
 
-        CalculateTDEEInputData imperialInput = new CalculateTDEEInputData(
+        CalculateTdeeInputData imperialInput = new CalculateTdeeInputData(
                         25,
                         80.0 / 0.453592,
                         180.0 / 2.54,
