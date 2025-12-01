@@ -1,11 +1,10 @@
-package com.caloriecalc.service;
+package Test.usecase.RecommenderTests;
 
+import com.caloriecalc.service.MealRecommendationService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-
-import static org.junit.Assert.*;
 
 class MealRecommendationServiceTest {
     @Test

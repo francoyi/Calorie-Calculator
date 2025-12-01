@@ -1,4 +1,4 @@
-package com.caloriecalc.FoodItemImpl;
+package Test.usecase.RecommenderTests;
 
 import com.caloriecalc.model.FoodItem;
 

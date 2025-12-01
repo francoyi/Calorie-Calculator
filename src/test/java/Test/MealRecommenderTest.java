@@ -1,6 +1,6 @@
 package Test;
 
-import com.caloriecalc.FoodItemImpl.FoodItemImpl;
+import Test.usecase.RecommenderTests.FoodItemImpl;
 import com.caloriecalc.model.FoodItem;
 import com.caloriecalc.model.MealRecommender;
 import com.caloriecalc.model.Recommendation;
