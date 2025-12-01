@@ -1,4 +1,4 @@
-package com.caloriecalc.testutil;
+package Test.usecase.RecommenderTests;
 
 import com.caloriecalc.port.FoodLogRepository;
 import com.caloriecalc.port.NutritionDataProvider;
