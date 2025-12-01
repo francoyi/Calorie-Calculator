@@ -4,7 +4,7 @@ import com.caloriecalc.entity.ActivityLevel;
 import com.caloriecalc.entity.CalDevianceRate;
 import com.caloriecalc.entity.UserMetrics;
 
-public record CalculateTDEEInputData(
+public record CalculateTdeeInputData(
         int ageYears,
         double weight,
         double height,

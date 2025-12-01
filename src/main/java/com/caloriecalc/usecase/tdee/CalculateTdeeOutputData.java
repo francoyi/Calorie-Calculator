@@ -1,6 +1,6 @@
 package com.caloriecalc.usecase.tdee;
 
-public record CalculateTDEEOutputData(
+public record CalculateTdeeOutputData(
         double bmr,
         double tdee,
         String formulaName,

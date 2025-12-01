@@ -7,14 +7,14 @@ import java.util.Locale;
 import com.caloriecalc.entity.ActivityLevel;
 import com.caloriecalc.entity.CalDevianceRate;
 import com.caloriecalc.entity.UserMetrics;
-import com.caloriecalc.interfaceadapters.TDEE.TDEEViewPresenter;
+import com.caloriecalc.interfaceadapters.TDEE.TdeeViewPresenter;
+import com.caloriecalc.usecase.tdee.CalculateTdeeInputBoundary;
+import com.caloriecalc.usecase.tdee.CalculateTdeeInputData;
+import com.caloriecalc.usecase.tdee.CalculateTdeeInteractor;
 import com.caloriecalc.usecase.tdee.UserMetricsRepository;
-import com.caloriecalc.usecase.tdee.CalculateTDEEInteractor;
 import com.caloriecalc.usecase.foodcalorielookup.FoodLogService;
-import com.caloriecalc.entity.MifflinStJeorBMR;
-import com.caloriecalc.usecase.tdee.CalculateTDEEInputBoundary;
-import com.caloriecalc.usecase.tdee.CalculateTDEEInputData;
-import com.caloriecalc.usecase.tdee.CalculateTDEEOutputData;
+import com.caloriecalc.entity.MifflinStJeorBmr;
+import com.caloriecalc.usecase.tdee.CalculateTdeeOutputData;
 
 public class TDEEView extends JDialog{
 
@@ -44,7 +44,7 @@ public class TDEEView extends JDialog{
     // Result box
     private final JTextArea resultArea = new JTextArea(6, 15);
 
-    private final CalculateTDEEInputBoundary interactor;
+    private final CalculateTdeeInputBoundary interactor;
     private final FoodLogService foodService;
     private final Runnable refreshCallback;
 
@@ -74,8 +74,8 @@ public class TDEEView extends JDialog{
 
     setSize(700, 500);
 
-    TDEEViewPresenter presenter = new TDEEViewPresenter(this);
-    this.interactor = new CalculateTDEEInteractor(new MifflinStJeorBMR(), presenter);
+    TdeeViewPresenter presenter = new TdeeViewPresenter(this);
+    this.interactor = new CalculateTdeeInteractor(new MifflinStJeorBmr(), presenter);
 
 
         makeUI();
@@ -303,7 +303,7 @@ public class TDEEView extends JDialog{
             }
 
 
-            interactor.execute(new CalculateTDEEInputData(
+            interactor.execute(new CalculateTdeeInputData(
                     age, weight, height, metric, sex, level, calrate
             ));
         } catch (NumberFormatException ex) {
@@ -339,7 +339,7 @@ public class TDEEView extends JDialog{
         );
     }
 
-    public void showResult(CalculateTDEEOutputData output) {
+    public void showResult(CalculateTdeeOutputData output) {
         result = new Result(output.bmr(), output.tdee(), output.formulaName());
         String text = """
             BMR (%s): %.1f kcal/day

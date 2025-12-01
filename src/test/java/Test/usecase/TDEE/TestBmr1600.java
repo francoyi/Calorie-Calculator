@@ -1,16 +1,16 @@
 package Test.usecase.TDEE;
 
 import com.caloriecalc.entity.UserMetrics;
-import com.caloriecalc.usecase.tdee.BMRFormula;
+import com.caloriecalc.usecase.tdee.BmrFormula;
 
-public class TestBMR1600 implements BMRFormula {
+public class TestBmr1600 implements BmrFormula {
     @Override
     public String name() {
         return "Testing BMR - 1600";
     }
 
     @Override
-    public double computeBmr(UserMetrics a) {
+    public double computeBmr(UserMetrics userMetrics) {
         return 1600;
     }
 }
