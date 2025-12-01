@@ -21,7 +21,6 @@ Calorie-Calculator is an intelligent food diary application designed to help use
 *   **Daily Dashboard:** View a real-time summary of today's food intake and total calories.
 *   **Personalized Goals:** Set and track daily calorie goals to stay on target.
 *   **Historical Log:** Browse and analyze dietary records from any past date.
-*   **Frequently Used Meals:** Combine multiple food items into a reusable "meal" for quick, one-click logging.
 
 ## 3. Tech Stack
 
