@@ -4,7 +4,7 @@ import com.caloriecalc.entity.UserMetrics;
 
 // Raw Output - BMR formula is ALLOWED to output negative numbers!!! Anything using this must handle it as such.
 /**
- * Represents a way for computing a user's Basal Metabolic Rate (BMR).
+ * Represents a Strategy for computing a user's Basal Metabolic Rate (BMR).
  *
  * <p>
  * Implementations of this interface provide different BMR formulas
