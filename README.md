@@ -16,11 +16,12 @@ Calorie-Calculator is an intelligent food diary application designed to help use
 
 ## 2. Core Features
 
-*   **API-Powered Food Search:** Instantly search a massive online database (OpenFoodFacts) for nutritional information.
-*   **Manual Food Entry:** Log custom or special foods that are not available in the API.
-*   **Daily Dashboard:** View a real-time summary of today's food intake and total calories.
-*   **Personalized Goals:** Set and track daily calorie goals to stay on target.
-*   **Historical Log:** Browse and analyze dietary records from any past date.
+*   **Smart Search:** Search food via OpenFoodFacts API.
+*   **Custom Recipes:** Manually create special foods.
+*   **Personalization:** Set daily goals & track history.
+*   **TDEE Calculator:** Calculate body energy needs.
+*   **Smart Suggestions:** Algorithm-based meal recommendations.
+*   **Visualization:** View diet trends via charts.
 
 ## 3. Tech Stack
 
