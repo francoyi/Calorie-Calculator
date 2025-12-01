@@ -1,6 +1,8 @@
-package com.caloriecalc.model;
+package Test.usecase.RecommenderTests;
 
-import com.caloriecalc.FoodItemImpl.FoodItemImpl;
+import com.caloriecalc.model.FoodItem;
+import com.caloriecalc.model.MealRecommender;
+import com.caloriecalc.model.Recommendation;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

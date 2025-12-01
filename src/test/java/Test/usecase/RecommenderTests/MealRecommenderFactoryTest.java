@@ -1,6 +1,6 @@
-package com.caloriecalc.factory;
+package Test.usecase.RecommenderTests;
 
-import com.caloriecalc.FoodItemImpl.FoodItemImpl;
+import com.caloriecalc.factory.MealRecommenderFactory;
 import com.caloriecalc.model.FoodItem;
 import com.caloriecalc.model.MealRecommender;
 import com.caloriecalc.model.Recommender;
@@ -11,7 +11,6 @@ import com.caloriecalc.repo.JsonFoodLogRepository;
 import com.caloriecalc.repo.JsonUserSettingsRepository;
 import com.caloriecalc.service.FoodLogService;
 import com.caloriecalc.service.OpenFoodFactsClient;
-import com.caloriecalc.testutil.FoodLogServiceImpl;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

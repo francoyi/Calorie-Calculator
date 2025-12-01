@@ -1,20 +1,15 @@
-package Test;
+package Test.usecase.RecommenderTests;
 
 
 import com.caloriecalc.factory.MealRecommenderFactory;
-import com.caloriecalc.factory.RecommenderFactory;
 import com.caloriecalc.model.MealEntry;
 import com.caloriecalc.port.FoodLogRepository;
 import com.caloriecalc.port.NutritionDataProvider;
 import com.caloriecalc.port.UserSettingsRepository;
-import com.caloriecalc.port.tdee.NutritionDataProviderImpl;
 import com.caloriecalc.repo.JsonFoodLogRepository;
 import com.caloriecalc.repo.JsonUserSettingsRepository;
 import com.caloriecalc.service.DefaultMealRecommendationService;
 import com.caloriecalc.service.FoodLogService;
-import com.caloriecalc.service.MealRecommendationService;
-import com.caloriecalc.service.OpenFoodFactsClient;
-import com.caloriecalc.testutil.FoodLogServiceImpl;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
