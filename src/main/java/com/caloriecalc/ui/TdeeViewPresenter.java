@@ -1,20 +1,20 @@
 package com.caloriecalc.ui;
 
-import com.caloriecalc.port.tdee.CalculateTDEEOutputBoundary;
-import com.caloriecalc.port.tdee.CalculateTDEEOutputData;
+import com.caloriecalc.port.tdee.CalculateTdeeOutputBoundary;
+import com.caloriecalc.port.tdee.CalculateTdeeOutputData;
 
 import javax.swing.*;
 
-public class TDEEViewPresenter implements CalculateTDEEOutputBoundary {
+public class TdeeViewPresenter implements CalculateTdeeOutputBoundary {
 
     private final TDEEView view;
 
-    public TDEEViewPresenter(TDEEView view) {
+    public TdeeViewPresenter(TDEEView view) {
         this.view = view;
     }
 
     @Override
-    public void present(CalculateTDEEOutputData output) {
+    public void present(CalculateTdeeOutputData output) {
         SwingUtilities.invokeLater(() -> view.showResult(output));
     }
 

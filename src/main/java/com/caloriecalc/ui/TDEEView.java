@@ -9,9 +9,9 @@ import com.caloriecalc.model.CalDevianceRate;
 import com.caloriecalc.model.UserMetrics;
 import com.caloriecalc.port.UserMetricsRepository;
 import com.caloriecalc.port.tdee.*;
-import com.caloriecalc.service.CalculateTDEEInteractor;
+import com.caloriecalc.service.CalculateTdeeInteractor;
 import com.caloriecalc.service.FoodLogService;
-import com.caloriecalc.service.MifflinStJeorBMR;
+import com.caloriecalc.service.MifflinStJeorBmr;
 
 public class TDEEView extends JDialog{
 
@@ -41,7 +41,7 @@ public class TDEEView extends JDialog{
     // Result box
     private final JTextArea resultArea = new JTextArea(6, 15);
 
-    private final CalculateTDEEInputBoundary interactor;
+    private final CalculateTdeeInputBoundary interactor;
     private final FoodLogService foodService;
     private final Runnable refreshCallback;
 
@@ -71,8 +71,8 @@ public class TDEEView extends JDialog{
 
     setSize(700, 500);
 
-    TDEEViewPresenter presenter = new TDEEViewPresenter(this);
-    this.interactor = new CalculateTDEEInteractor(new MifflinStJeorBMR(), presenter);
+    TdeeViewPresenter presenter = new TdeeViewPresenter(this);
+    this.interactor = new CalculateTdeeInteractor(new MifflinStJeorBmr(), presenter);
 
 
         makeUI();
@@ -300,7 +300,7 @@ public class TDEEView extends JDialog{
             }
 
 
-            interactor.execute(new CalculateTDEEInputData(
+            interactor.execute(new CalculateTdeeInputData(
                     age, weight, height, metric, sex, level, calrate
             ));
         } catch (NumberFormatException ex) {
@@ -323,7 +323,6 @@ public class TDEEView extends JDialog{
         int goal = (int) Math.round(result.tdee);
         foodService.setDailyGoal(goal);
 
-
         if (refreshCallback != null) {
             refreshCallback.run();
         }
@@ -336,7 +335,7 @@ public class TDEEView extends JDialog{
         );
     }
 
-    void showResult(CalculateTDEEOutputData output) {
+    void showResult(CalculateTdeeOutputData output) {
         result = new Result(output.bmr(), output.tdee(), output.formulaName());
         String text = """
             BMR (%s): %.1f kcal/day

@@ -3,8 +3,8 @@ package Test.usecase.MifflinBMR;
 import com.caloriecalc.model.ActivityLevel;
 import com.caloriecalc.model.CalDevianceRate;
 import com.caloriecalc.model.UserMetrics;
-import com.caloriecalc.port.tdee.BMRFormula;
-import com.caloriecalc.service.MifflinStJeorBMR;
+import com.caloriecalc.port.tdee.BmrFormula;
+import com.caloriecalc.service.MifflinStJeorBmr;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -13,7 +13,7 @@ public class mifflinBmrFormulaTest {
 
     @Test
     void passCorrectName() {
-        BMRFormula bmrFormula = new MifflinStJeorBMR();
+        BmrFormula bmrFormula = new MifflinStJeorBmr();
         String bmrName = bmrFormula.name();
 
         assertEquals("Mifflin-St Jeor", bmrName);
@@ -21,7 +21,7 @@ public class mifflinBmrFormulaTest {
 
     @Test
     void passCalcBMR() {
-        BMRFormula bmrFormula = new MifflinStJeorBMR();
+        BmrFormula bmrFormula = new MifflinStJeorBmr();
         String bmrName = bmrFormula.name();
 
         UserMetrics userMetrics = new UserMetrics(
@@ -41,7 +41,7 @@ public class mifflinBmrFormulaTest {
 
     @Test
     void passCalcNegBMR() {
-        BMRFormula bmrFormula = new MifflinStJeorBMR();
+        BmrFormula bmrFormula = new MifflinStJeorBmr();
         String bmrName = bmrFormula.name();
 
         UserMetrics userMetrics = new UserMetrics(

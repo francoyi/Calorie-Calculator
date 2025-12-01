@@ -5,17 +5,17 @@ import com.caloriecalc.model.CalDevianceRate;
 import com.caloriecalc.model.UserMetrics;
 import com.caloriecalc.port.tdee.*;
 
-public class CalculateTDEEInteractor implements CalculateTDEEInputBoundary {
-    private final BMRFormula bmrFormula;
-    private final CalculateTDEEOutputBoundary presenter;
+public class CalculateTdeeInteractor implements CalculateTdeeInputBoundary {
+    private final BmrFormula bmrFormula;
+    private final CalculateTdeeOutputBoundary presenter;
 
-    public CalculateTDEEInteractor(BMRFormula bmrFormula, CalculateTDEEOutputBoundary presenter) {
+    public CalculateTdeeInteractor(BmrFormula bmrFormula, CalculateTdeeOutputBoundary presenter) {
         this.bmrFormula = bmrFormula;
         this.presenter = presenter;
     }
 
     @Override
-    public void execute(CalculateTDEEInputData input) {
+    public void execute(CalculateTdeeInputData input) {
         try {
 
             final double weightKg = input.metric() ? input.weight() : input.weight() * 0.453592;
@@ -35,7 +35,7 @@ public class CalculateTDEEInteractor implements CalculateTDEEInputBoundary {
             userTDEE = userTDEE + rate.devianceRate;
             userTDEE = Math.max(0, userTDEE);
 
-            presenter.present(new CalculateTDEEOutputData(userBMR, userTDEE, bmrFormula.name(), lvl.multiplier,
+            presenter.present(new CalculateTdeeOutputData(userBMR, userTDEE, bmrFormula.name(), lvl.multiplier,
                     rate.devianceRate
             ));
 
