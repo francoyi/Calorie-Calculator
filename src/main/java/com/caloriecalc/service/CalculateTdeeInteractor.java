@@ -3,11 +3,17 @@ package com.caloriecalc.service;
 import com.caloriecalc.model.ActivityLevel;
 import com.caloriecalc.model.CalDevianceRate;
 import com.caloriecalc.model.UserMetrics;
-import com.caloriecalc.port.tdee.*;
+import com.caloriecalc.port.tdee.BmrFormula;
+import com.caloriecalc.port.tdee.CalculateTdeeInputBoundary;
+import com.caloriecalc.port.tdee.CalculateTdeeInputData;
+import com.caloriecalc.port.tdee.CalculateTdeeOutputBoundary;
+import com.caloriecalc.port.tdee.CalculateTdeeOutputData;
 
 public class CalculateTdeeInteractor implements CalculateTdeeInputBoundary {
     private final BmrFormula bmrFormula;
     private final CalculateTdeeOutputBoundary presenter;
+    double inToCm = 0.453592;
+    double kgToLbs = 2.54;
 
     public CalculateTdeeInteractor(BmrFormula bmrFormula, CalculateTdeeOutputBoundary presenter) {
         this.bmrFormula = bmrFormula;
@@ -17,29 +23,38 @@ public class CalculateTdeeInteractor implements CalculateTdeeInputBoundary {
     @Override
     public void execute(CalculateTdeeInputData input) {
         try {
+            final double weightKg;
+            final double heightCm;
 
-            final double weightKg = input.metric() ? input.weight() : input.weight() * 0.453592;
-            final double heightCm = input.metric() ? input.height() : input.height() * 2.54;
+            if (input.metric()) {
+                weightKg = input.weight();
+                heightCm = input.height();
+            }
+            else {
+                weightKg = input.weight() * inToCm;
+                heightCm = input.height() * kgToLbs;
+            }
 
             ActivityLevel lvl = input.activityLevel();
-            CalDevianceRate rate = input.caldeviancerate();
+            final CalDevianceRate rate = input.caldeviancerate();
 
-            UserMetrics userMetrics = new UserMetrics(input.ageYears(), weightKg, heightCm, input.sex(), lvl, rate,
-                    input.metric()
+            final UserMetrics userMetrics = new UserMetrics(input.ageYears(), weightKg, heightCm, input.sex(),
+                    lvl, rate, input.metric()
             );
 
-            double userBMR = bmrFormula.computeBmr(userMetrics);
-            userBMR = Math.max(0, userBMR);
+            double userBmr = bmrFormula.computeBmr(userMetrics);
+            userBmr = Math.max(0, userBmr);
 
-            double userTDEE = userBMR * lvl.multiplier;
-            userTDEE = userTDEE + rate.devianceRate;
-            userTDEE = Math.max(0, userTDEE);
+            double userTdee = userBmr * lvl.multiplier;
+            userTdee = userTdee + rate.devianceRate;
+            userTdee = Math.max(0, userTdee);
 
-            presenter.present(new CalculateTdeeOutputData(userBMR, userTDEE, bmrFormula.name(), lvl.multiplier,
+            presenter.present(new CalculateTdeeOutputData(userBmr, userTdee, bmrFormula.name(), lvl.multiplier,
                     rate.devianceRate
             ));
 
-        } catch (IllegalArgumentException ex) {
+        }
+        catch (IllegalArgumentException ex) {
             presenter.presentValidationError(ex.getMessage());
         }
     }
