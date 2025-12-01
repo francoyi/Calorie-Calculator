@@ -20,7 +20,7 @@ public class DefaultMealRecommendationService extends MealRecommendationService 
 
     @Override
     public List<MealEntry> recommendMealEntries() {
-        // 1. TODO: magic constant here
+        // 1. magic constant here
         List<String> foodNames = List.of(
                 "apple",
                 "banana",

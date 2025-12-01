@@ -1,4 +1,6 @@
-package com.caloriecalc.service;
+package Test.usecase.RecommenderTests;
+
+import com.caloriecalc.service.MealRecommendationService;
 
 import com.caloriecalc.entity.MealRecommendationService;
 

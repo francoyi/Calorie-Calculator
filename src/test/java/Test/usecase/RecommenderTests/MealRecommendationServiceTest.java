@@ -1,6 +1,6 @@
-package com.caloriecalc.service;
+package Test.usecase.RecommenderTests;
 
-import com.caloriecalc.entity.MealRecommendationService;
+import com.caloriecalc.service.MealRecommendationService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
