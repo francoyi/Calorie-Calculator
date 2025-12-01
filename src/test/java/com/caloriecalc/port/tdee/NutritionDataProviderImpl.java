@@ -1,7 +1,7 @@
 package com.caloriecalc.port.tdee;
 
-import com.caloriecalc.model.NutritionValues;
-import com.caloriecalc.port.NutritionDataProvider;
+import com.caloriecalc.entity.NutritionValues;
+import com.caloriecalc.usecase.searchfood.NutritionDataProvider;
 
 public class NutritionDataProviderImpl implements NutritionDataProvider {
 

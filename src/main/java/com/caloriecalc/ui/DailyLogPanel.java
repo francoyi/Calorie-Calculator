@@ -1,10 +1,10 @@
 package com.caloriecalc.ui;
 
-import com.caloriecalc.model.DailyLog;
-import com.caloriecalc.model.Meal;
-import com.caloriecalc.model.UserSettings;
-import com.caloriecalc.service.FoodLogService;
-import com.caloriecalc.service.MealRecommendationService;
+import com.caloriecalc.entity.DailyLog;
+import com.caloriecalc.entity.Meal;
+import com.caloriecalc.entity.UserSettings;
+import com.caloriecalc.usecase.foodcalorielookup.FoodLogService;
+import com.caloriecalc.entity.MealRecommendationService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

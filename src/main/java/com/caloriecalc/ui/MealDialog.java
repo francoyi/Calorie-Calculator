@@ -1,18 +1,26 @@
 
 package com.caloriecalc.ui;
-import com.caloriecalc.model.Meal;
-import com.caloriecalc.model.MealEntry;
-import com.caloriecalc.model.Serving;
-import com.caloriecalc.port.listmyfoods.ListMyFoodsInputBoundary;
-import com.caloriecalc.service.*;
+import com.caloriecalc.entity.Meal;
+import com.caloriecalc.entity.MealEntry;
+import com.caloriecalc.entity.MyFood;
+import com.caloriecalc.entity.Serving;
+import com.caloriecalc.interfaceadapters.ListMyFoods.ListMyFoodsController;
+import com.caloriecalc.interfaceadapters.ListMyFoods.ListMyFoodsPresenter;
+import com.caloriecalc.interfaceadapters.ListMyFoods.MyFoodsListViewModel;
+import com.caloriecalc.interfaceadapters.SaveToMyFood.MyFoodsViewModel;
+import com.caloriecalc.interfaceadapters.SaveToMyFood.SaveToMyFoodController;
+import com.caloriecalc.interfaceadapters.SaveToMyFood.SaveToMyFoodPresenter;
+import com.caloriecalc.usecase.foodcalorielookup.FoodCalorieLookupService;
+import com.caloriecalc.usecase.foodcalorielookup.FoodLogService;
+import com.caloriecalc.entity.MealRecommendationService;
+import com.caloriecalc.usecase.myfoods.listmyfoods.ListMyFoodsInteractor;
+import com.caloriecalc.usecase.myfoods.savetomyfood.SaveToMyFoodInteractor;
+import com.caloriecalc.usecase.myfoods.listmyfoods.ListMyFoodsInputBoundary;
 import com.caloriecalc.model.*;
-import com.caloriecalc.port.NutritionDataProvider;
 
-import com.caloriecalc.ui.myfoods.*;
-import com.caloriecalc.port.MyFoodRepository;
-import com.caloriecalc.repo.InMemoryMyFoodRepository;
-import com.caloriecalc.port.savetomyfood.SaveToMyFoodOutputBoundary;
-import com.caloriecalc.port.savetomyfood.SaveToMyFoodInputBoundary;
+import com.caloriecalc.usecase.myfoods.MyFoodRepository;
+import com.caloriecalc.usecase.myfoods.savetomyfood.SaveToMyFoodOutputBoundary;
+import com.caloriecalc.usecase.myfoods.savetomyfood.SaveToMyFoodInputBoundary;
 
 
 
@@ -119,14 +127,23 @@ public class MealDialog extends JDialog {
     }
 
     private void addChosenFoodToMealTable(MyFood chosen) {
-        MealRow newRow = new MealRow();
-        newRow.item = chosen.getName();
-        newRow.amount = 100;
-        newRow.unit = "g";
-        newRow.kcalManual = chosen.getTotalKcal();
+        int row = tableModel.getRows().size() - 1;  // default to last row
 
-        tableModel.getRows().add(newRow);
-        tableModel.fireTableDataChanged();
+        // If table is actively editing a row, update THAT row instead
+        KeyboardFocusManager fm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        Component c = fm.getFocusOwner();
+        JTable table = (JTable) SwingUtilities.getAncestorOfClass(JTable.class, c);
+        if (table != null && table.getEditingRow() >= 0) {
+            row = table.getEditingRow();
+        }
+
+        MealRow r = tableModel.getRows().get(row);
+        r.item = chosen.getName();
+        r.amount = chosen.getAmount();      // ✔ THIS is the fix you wanted
+        r.unit = chosen.getUnit();
+        r.kcalManual = chosen.getTotalKcal();
+
+        tableModel.fireTableRowsUpdated(row, row);
         recalcTotal();
     }
 
@@ -213,7 +230,7 @@ public class MealDialog extends JDialog {
 
     private class MealRow {
         String item = "";
-        double amount = 100.0;
+        double amount = 0.0;
         String unit = "g";
         Double kcalManual = null;
 
@@ -328,7 +345,23 @@ public class MealDialog extends JDialog {
                     // Insert into Meal table
                     int row = table.getEditingRow();
                     if (row >= 0) {
-                        MealDialog.this.addChosenFoodToMealTable(chosen);
+                        MealRow r = model.getRows().get(row);
+
+                        // ✔ Update values in the existing row
+                        r.item = chosen.getName();
+                        r.amount = chosen.getAmount();
+                        r.unit = chosen.getUnit();
+                        r.kcalManual = chosen.getTotalKcal();
+
+                        r.fromApi = false;
+                        r.suggestionAvailable = false;
+
+                        // Update editor field to show correct name
+                        field.setText(chosen.getName());
+
+                        //  Refresh table + totals
+                        model.fireTableRowsUpdated(row, row);
+                        MealDialog.this.recalcTotal();
                     }
                 }
             });
@@ -419,7 +452,10 @@ public class MealDialog extends JDialog {
       }
 
         public void addEmpty() {
-            rows.add(new MealRow());
+            MealRow r = new MealRow();
+            r.amount = 100.0;       // ✔ GOOD: neutral default
+            r.unit = "g";         // still okay or leave empty
+            rows.add(r);
             fireTableRowsInserted(rows.size() - 1, rows.size() - 1);
         }
 

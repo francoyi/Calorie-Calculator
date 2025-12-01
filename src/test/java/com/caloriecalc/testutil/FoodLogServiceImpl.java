@@ -1,10 +1,10 @@
 package com.caloriecalc.testutil;
 
-import com.caloriecalc.port.FoodLogRepository;
-import com.caloriecalc.port.NutritionDataProvider;
-import com.caloriecalc.port.UserSettingsRepository;
-import com.caloriecalc.service.FoodLogService;
-import com.caloriecalc.repo.InMemoryMyFoodRepository;
+import com.caloriecalc.usecase.foodlog.FoodLogRepository;
+import com.caloriecalc.usecase.searchfood.NutritionDataProvider;
+import com.caloriecalc.usecase.usersettings.UserSettingsRepository;
+import com.caloriecalc.usecase.foodcalorielookup.FoodLogService;
+import com.caloriecalc.usecase.myfoods.savetomyfood.InMemoryMyFoodRepository;
 public class FoodLogServiceImpl extends FoodLogService {
     public FoodLogServiceImpl(FoodLogRepository repo, NutritionDataProvider provider, UserSettingsRepository settingsRepo) {
         super(repo, provider, settingsRepo, new InMemoryMyFoodRepository());

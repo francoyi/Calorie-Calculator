@@ -1,24 +1,30 @@
 package com.caloriecalc;
 
-import com.caloriecalc.factory.MealRecommenderFactory;
-import com.caloriecalc.factory.RecommenderFactory;
+import com.caloriecalc.entity.MealRecommenderFactory;
+import com.caloriecalc.entity.RecommenderFactory;
 import com.caloriecalc.port.*;
-import com.caloriecalc.repo.JsonFoodLogRepository;
-import com.caloriecalc.repo.JsonUserMetricsRepository;
-import com.caloriecalc.repo.JsonUserSettingsRepository;
-import com.caloriecalc.service.DefaultMealRecommendationService;
-import com.caloriecalc.service.FoodLogService;
-import com.caloriecalc.service.MealRecommendationService;
-import com.caloriecalc.service.OpenFoodFactsClient;
+import com.caloriecalc.infrastructure.repo.JsonFoodLogRepository;
+import com.caloriecalc.infrastructure.repo.JsonUserMetricsRepository;
+import com.caloriecalc.infrastructure.repo.JsonUserSettingsRepository;
+import com.caloriecalc.usecase.mealrecommendation.DefaultMealRecommendationService;
+import com.caloriecalc.usecase.foodcalorielookup.FoodLogService;
+import com.caloriecalc.entity.MealRecommendationService;
+import com.caloriecalc.infrastructure.datasource.OpenFoodFactsClient;
 import com.caloriecalc.ui.MainFrame;
 import com.caloriecalc.ui.MainPanel;
+import com.caloriecalc.usecase.foodlog.FoodLogRepository;
+import com.caloriecalc.usecase.myfoods.MyFoodRepository;
+import com.caloriecalc.usecase.searchfood.NutritionDataProvider;
+import com.caloriecalc.usecase.searchfood.NutritionDataProviderImpl;
+import com.caloriecalc.usecase.tdee.UserMetricsRepository;
+import com.caloriecalc.usecase.usersettings.UserSettingsRepository;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.*;
 import java.awt.Window;
 import java.nio.file.Path;
-import com.caloriecalc.port.MyFoodRepository;
-import com.caloriecalc.repo.InMemoryMyFoodRepository;
+
+import com.caloriecalc.usecase.myfoods.savetomyfood.InMemoryMyFoodRepository;
 
 public class Main {
 

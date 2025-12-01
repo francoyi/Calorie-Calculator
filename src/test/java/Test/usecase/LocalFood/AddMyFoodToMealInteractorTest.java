@@ -1,8 +1,10 @@
 package Test.usecase.LocalFood;
 
-import com.caloriecalc.port.addmyfoodtomeal.*;
-import com.caloriecalc.service.AddMyFoodToMealInteractor;
+import com.caloriecalc.usecase.myfoods.addmyfoodtomeal.AddMyFoodToMealInteractor;
 
+import com.caloriecalc.usecase.myfoods.addmyfoodtomeal.AddMyFoodToMealInputData;
+import com.caloriecalc.usecase.myfoods.addmyfoodtomeal.AddMyFoodToMealOutputBoundary;
+import com.caloriecalc.usecase.myfoods.addmyfoodtomeal.AddMyFoodToMealOutputData;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,11 +1,13 @@
 package Test.usecase.LocalFood;
 
-import com.caloriecalc.model.Ingredient;
-import com.caloriecalc.model.MyFood;
-import com.caloriecalc.port.MyFoodRepository;
-import com.caloriecalc.port.listmyfoods.*;
-import com.caloriecalc.service.ListMyFoodsInteractor;
+import com.caloriecalc.entity.Ingredient;
+import com.caloriecalc.entity.MyFood;
+import com.caloriecalc.usecase.myfoods.MyFoodRepository;
+import com.caloriecalc.usecase.myfoods.listmyfoods.ListMyFoodsInteractor;
 
+import com.caloriecalc.usecase.myfoods.listmyfoods.ListMyFoodsInputData;
+import com.caloriecalc.usecase.myfoods.listmyfoods.ListMyFoodsOutputBoundary;
+import com.caloriecalc.usecase.myfoods.listmyfoods.ListMyFoodsOutputData;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

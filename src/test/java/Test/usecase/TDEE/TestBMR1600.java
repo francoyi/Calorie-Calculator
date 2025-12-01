@@ -1,7 +1,7 @@
 package Test.usecase.TDEE;
 
-import com.caloriecalc.model.UserMetrics;
-import com.caloriecalc.port.tdee.BMRFormula;
+import com.caloriecalc.entity.UserMetrics;
+import com.caloriecalc.usecase.tdee.BMRFormula;
 
 public class TestBMR1600 implements BMRFormula {
     @Override

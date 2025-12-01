@@ -1,14 +1,14 @@
 package Test.usecase.TDEE;
 
-import com.caloriecalc.model.ActivityLevel;
-import com.caloriecalc.model.CalDevianceRate;
-import com.caloriecalc.model.UserMetrics;
-import com.caloriecalc.port.tdee.BMRFormula;
-import com.caloriecalc.port.tdee.CalculateTDEEInputData;
-import com.caloriecalc.port.tdee.CalculateTDEEOutputBoundary;
-import com.caloriecalc.port.tdee.CalculateTDEEOutputData;
-import com.caloriecalc.service.CalculateTDEEInteractor;
-import com.caloriecalc.service.MifflinStJeorBMR;
+import com.caloriecalc.entity.ActivityLevel;
+import com.caloriecalc.entity.CalDevianceRate;
+import com.caloriecalc.entity.UserMetrics;
+import com.caloriecalc.usecase.tdee.BMRFormula;
+import com.caloriecalc.usecase.tdee.CalculateTDEEInputData;
+import com.caloriecalc.usecase.tdee.CalculateTDEEOutputBoundary;
+import com.caloriecalc.usecase.tdee.CalculateTDEEOutputData;
+import com.caloriecalc.usecase.tdee.CalculateTDEEInteractor;
+import com.caloriecalc.entity.MifflinStJeorBMR;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

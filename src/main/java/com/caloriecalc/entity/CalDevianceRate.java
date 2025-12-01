@@ -1,0 +1,16 @@
+package com.caloriecalc.entity;
+
+public enum CalDevianceRate {
+    MAINTAIN_0wk(0),
+    LOSE_250wk(-275),
+    LOSE_500wk(-550),
+    GAIN_250wk(275),
+    GAIN_500wk(550);
+
+
+    public final int devianceRate;
+
+    CalDevianceRate(int devianceRate) {
+        this.devianceRate = devianceRate;
+    }
+}

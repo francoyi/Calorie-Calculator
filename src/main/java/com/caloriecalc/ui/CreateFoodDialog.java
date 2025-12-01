@@ -6,17 +6,10 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import com.caloriecalc.model.Ingredient;
-import com.caloriecalc.port.MyFoodRepository;
-import com.caloriecalc.port.savetomyfood.SaveToMyFoodInputBoundary;
-import com.caloriecalc.port.savetomyfood.SaveToMyFoodOutputBoundary;
-import com.caloriecalc.repo.InMemoryMyFoodRepository;
-import com.caloriecalc.service.FoodLogService;
-import com.caloriecalc.service.FoodCalorieLookupService;
-import com.caloriecalc.service.SaveToMyFoodInteractor;
-import com.caloriecalc.ui.myfoods.MyFoodsViewModel;
-import com.caloriecalc.ui.myfoods.SaveToMyFoodController;
-import com.caloriecalc.ui.myfoods.SaveToMyFoodPresenter;
+import com.caloriecalc.entity.Ingredient;
+import com.caloriecalc.usecase.foodcalorielookup.FoodLogService;
+import com.caloriecalc.usecase.foodcalorielookup.FoodCalorieLookupService;
+import com.caloriecalc.interfaceadapters.SaveToMyFood.SaveToMyFoodController;
 
 public class CreateFoodDialog extends JDialog {
     private final JTextField nameField = new JTextField(30);
@@ -117,10 +110,10 @@ public class CreateFoodDialog extends JDialog {
 
     public static class CreateFood {
         public final String name;
-        public final java.util.List<com.caloriecalc.model.Ingredient> ingredients;
+        public final java.util.List<Ingredient> ingredients;
         public final double totalKcal;
 
-        public CreateFood(String name, java.util.List<com.caloriecalc.model.Ingredient> ingredients) {
+        public CreateFood(String name, java.util.List<Ingredient> ingredients) {
             this.name = name;
             this.ingredients = ingredients;
             double sum = 0;

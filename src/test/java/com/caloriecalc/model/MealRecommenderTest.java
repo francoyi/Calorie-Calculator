@@ -1,5 +1,8 @@
 package com.caloriecalc.model;
 
+import com.caloriecalc.entity.FoodItem;
+import com.caloriecalc.entity.MealRecommender;
+import com.caloriecalc.entity.Recommendation;
 import com.caloriecalc.FoodItemImpl.FoodItemImpl;
 import org.junit.jupiter.api.Test;
 

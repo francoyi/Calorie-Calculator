@@ -1,13 +1,15 @@
 package com.caloriecalc.ui;
 
 import com.caloriecalc.Main;
-import com.caloriecalc.model.DailyLog;
-import com.caloriecalc.model.UserSettings;
-import com.caloriecalc.port.MyFoodRepository;
-import com.caloriecalc.port.UserMetricsRepository;
-import com.caloriecalc.service.FoodLogService;
-import com.caloriecalc.service.MealRecommendationService;
-import com.caloriecalc.service.VisualizeHistoryInteractor;
+import com.caloriecalc.entity.DailyLog;
+import com.caloriecalc.entity.UserSettings;
+import com.caloriecalc.interfaceadapters.TDEE.VisualizeHistoryController;
+import com.caloriecalc.interfaceadapters.VisualizeHistory.VisualizeHistoryPresenter;
+import com.caloriecalc.usecase.myfoods.MyFoodRepository;
+import com.caloriecalc.usecase.tdee.UserMetricsRepository;
+import com.caloriecalc.usecase.foodcalorielookup.FoodLogService;
+import com.caloriecalc.entity.MealRecommendationService;
+import com.caloriecalc.usecase.history.VisualizeHistoryInteractor;
 
 import javax.swing.*;
 import java.awt.*;
