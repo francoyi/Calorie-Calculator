@@ -3,7 +3,7 @@ package com.caloriecalc.ui;
 import com.caloriecalc.Main;
 import com.caloriecalc.entity.DailyLog;
 import com.caloriecalc.entity.UserSettings;
-import com.caloriecalc.interfaceadapters.TDEE.VisualizeHistoryController;
+import com.caloriecalc.interfaceadapters.VisualizeHistory.VisualizeHistoryController;
 import com.caloriecalc.interfaceadapters.VisualizeHistory.VisualizeHistoryPresenter;
 import com.caloriecalc.usecase.myfoods.MyFoodRepository;
 import com.caloriecalc.usecase.tdee.UserMetricsRepository;

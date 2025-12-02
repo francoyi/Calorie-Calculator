@@ -1,4 +1,4 @@
-package com.caloriecalc.interfaceadapters.TDEE;
+package com.caloriecalc.interfaceadapters.VisualizeHistory;
 import com.caloriecalc.usecase.history.VisualizeHistoryInputBoundary;
 import com.caloriecalc.usecase.history.VisualizeHistoryInputData;
 
